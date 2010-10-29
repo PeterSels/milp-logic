@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libMilpSolver", "libMilpSolver\libMilpSolver.vcproj", "{D45C9372-EFF6-4AFB-BE29-D2889E9825F8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "milpSolverTest", "milpSolverTest\milpSolverTest.vcproj", "{0730113B-2182-492C-80F3-1455D2CABB74}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D45C9372-EFF6-4AFB-BE29-D2889E9825F8} = {D45C9372-EFF6-4AFB-BE29-D2889E9825F8}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D45C9372-EFF6-4AFB-BE29-D2889E9825F8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D45C9372-EFF6-4AFB-BE29-D2889E9825F8}.Debug|Win32.Build.0 = Debug|Win32
+		{D45C9372-EFF6-4AFB-BE29-D2889E9825F8}.Release|Win32.ActiveCfg = Release|Win32
+		{D45C9372-EFF6-4AFB-BE29-D2889E9825F8}.Release|Win32.Build.0 = Release|Win32
+		{0730113B-2182-492C-80F3-1455D2CABB74}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0730113B-2182-492C-80F3-1455D2CABB74}.Debug|Win32.Build.0 = Debug|Win32
+		{0730113B-2182-492C-80F3-1455D2CABB74}.Release|Win32.ActiveCfg = Release|Win32
+		{0730113B-2182-492C-80F3-1455D2CABB74}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
