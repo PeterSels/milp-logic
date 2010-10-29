@@ -17,7 +17,6 @@ include_directories(
 
 link_directories(
   /Library/gurobi301/mac64/lib
-  c:/xpressmp/lib
   ${MilpSolver_SOURCE_DIR}/libMilpSolver
 )
 
