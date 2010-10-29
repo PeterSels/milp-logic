@@ -28,3 +28,4 @@ add_definitions(
 
 #add_library(../libMilpSolver/Debug/MilpSolver.lib SHARED ${SOURCES} ${HEADERS})
 add_library(MilpSolver STATIC ${SOURCES} ${HEADERS})
+
