@@ -4,7 +4,10 @@
 
 #ifdef _WIN32
 #include <windows.h>
-  // for Sleep
+  // for Sleep in seconds
+#else
+#include <unistd.h>
+  // for sleep in seconds
 #endif
 
 #include "HasSolver.h"
@@ -51,6 +54,14 @@ CplexSolver::CplexSolver(unsigned int maxGetLicenseSeconds,
   assert(maxSolveSeconds_ >= 0);
 }
 
+void CplexSolver::anyOSSleep(unsigned int nSeconds) {
+#ifdef _WIN32
+	Sleep(nSeconds);
+#else
+	sleep(nSeconds);
+#endif
+}
+
 void CplexSolver::resetModel() {
   if (model_!=0) {
     deleteModelAndEnv();
@@ -75,9 +86,9 @@ void CplexSolver::resetModel() {
 		    case 15:  // No Token 
 			    //std::cerr << "License Wait .... " << ++n  << std::endl;
           {
-			      int val = (rand() * 2000 / RAND_MAX);
-			      Sleep(val);
-          }
+			      int nSeconds = (rand() * 2000 / RAND_MAX);
+						anyOSSleep(nSeconds);
+					}
 			    break;
 		    case 4: // No server
 			    throw string(message[MESSAGE_NO_SERVER]);
@@ -361,7 +372,11 @@ bool CplexSolver::solve(double gap) {
   */
 
 /////////////////////////
+#ifdef _WIN32
   string cplexLogFileName = "out\\cplex.out"; // hard coded Windows dir
+#else
+  string cplexLogFileName = "out/cplex.out"; // hard coded *nix dir
+#endif
   ofstream cplexLogStr(cplexLogFileName.c_str());
 	global_cplex_->setOut(cplexLogStr);
   //cplex.exportModel(getName(nameFile,"LP")); // parent will do this later
@@ -556,7 +571,7 @@ IloCplex * CplexSolver::getLicense(int toToken) {
 	time_t t0=time(0); 
   srand((unsigned)time(NULL)); 
   string str;
-  int errorCode, val;
+  int errorCode;
 
 	while (!gotLicense) {
 		// To Token
@@ -580,9 +595,11 @@ IloCplex * CplexSolver::getLicense(int toToken) {
 				    throw string(message[MESSAGE_NO_LICENSE]); 
 				    break; 
 			    case 15 :  // No Token 
+					  {
 				    //std::cerr << "License Wait .... " << ++n << std::endl; 
-				    val=(rand()*2000/RAND_MAX); 
-				    Sleep(val); 
+				    unsigned int nSeconds =(rand()*2000/RAND_MAX); 
+						anyOSSleep(nSeconds);
+					  }
 				    break; 
 			    case 4 :   // No Server
 				    //throw string(ex.getMessage()); 

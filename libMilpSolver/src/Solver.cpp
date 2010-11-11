@@ -43,8 +43,14 @@ void Solver::addConjunctionConstr(
   
   addConstr(conjunctionBinVarA, "<=", conjunctionBinVarB, name + "_a_le_b");
   addConstr(conjunctionBinVarA, "<=", conjunctionBinVarC, name + "_a_le_c");
+  SolverExpr oneExpr
+#ifdef USE_CPLEX_NATIVE
+	(*global_env_)
+#endif
+	;
+	oneExpr += 1;
   addConstr(SolverExpr(conjunctionBinVarB + conjunctionBinVarC), "<=", 
-            SolverExpr(1+conjunctionBinVarA), name + "_b_plus_c_le_1_plus_a");  // - -> + !!!
+            SolverExpr(conjunctionBinVarA+oneExpr), name + "_b_plus_c_le_1_plus_a");  // - -> + !!!
 }
 
 
@@ -79,7 +85,13 @@ void Solver::addNegationConstr(
   const SolverVar & binVarB, 
   const std::string & name) {
 
-  addConstr(binVarA, "==", 1 - binVarB, name + "_a_not_b");
+  SolverExpr oneExpr
+#ifdef USE_CPLEX_NATIVE
+	(*global_env_)
+#endif
+	;
+	oneExpr += 1;	
+  addConstr(binVarA, "==", oneExpr - binVarB, name + "_a_not_b");
 }
 
 

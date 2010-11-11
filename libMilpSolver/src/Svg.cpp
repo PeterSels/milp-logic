@@ -42,9 +42,11 @@ void Svg::addCircle(
   const string strokeColor,
   const string fillColor) {
 
-  strstr_ << "<circle cx='" << cx << "' cy='" << cy << "' r='" << radius << "'" << endl;
+  strstr_ << "<circle cx='" << cx << "' cy='" << cy << "' r='" 
+	<< radius << "'" << endl;
   strstr_ << "stroke='" << strokeColor
-    << "' stroke-width='" << strokeWidth << "' fill='" << fillColor << "'/>" << endl;
+    << "' stroke-width='" << strokeWidth << "' fill='" << fillColor 
+	<< "'/>" << endl;
 }
 
 void Svg::addText(
@@ -55,7 +57,8 @@ void Svg::addText(
   const string fontName,
   unsigned int angle) {
 
-  strstr_ << "<g font-size='" << fontSize << "' font-family='" << fontName << "' >\n";
+  strstr_ << "<g font-size='" << fontSize << "' font-family='" 
+	<< fontName << "' >\n";
   strstr_ << "<text ";
   strstr_ << " style='stroke:none; fill:" << color << ";'";
   strstr_ << " x='" << x << "' y='" << y << "'";

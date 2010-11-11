@@ -11,6 +11,7 @@ class CplexSolver : public Solver {
 public:
   CplexSolver(unsigned int maxGetLicenseSeconds, unsigned int maxSolveSeconds);
 
+	void anyOSSleep(unsigned int);
   // setting up model
   void resetModel();
   void deleteModelAndEnv();
