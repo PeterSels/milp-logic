@@ -160,11 +160,17 @@ void GurobiSolver::exportModelAsMpsFile(const string & fileNamePrefix) const {
 }
 
 void GurobiSolver::setMinimize() {
-  model_->set(GRB_IntAttr_ModelSense, 1); // minimize (is in fact default)
+	model_->set(GRB_StringAttr_ModelName, "GurobiModelMin");
+  //model_->set(GRB_IntAttr_ModelSense, 1); // minimize (is in fact default)
+  //model_->setIntAttr("ModelSense", 1); // minimize (is in fact default)
+	model_->update();
 }
 
 void GurobiSolver::setMaximize() {
-  model_->set(GRB_IntAttr_ModelSense, 0); // maximize (is not default)
+	model_->set(GRB_StringAttr_ModelName, "GurobiModelMax");
+  //model_->set(GRB_IntAttr_ModelSense, 0); // maximize (is not default)
+  model_->set(GRB_IntAttr_ModelSense, -1); // maximize (is not default)
+	model_->update();
 }
 
 bool GurobiSolver::solve(double gap) {

@@ -84,7 +84,7 @@ void CplexSolver::resetModel() {
 			    throw string(message[MESSAGE_NO_LICENSE]);
 			    break;
 		    case 15:  // No Token 
-			    //std::cerr << "License Wait .... " << ++n  << std::endl;
+			    //std::cout << "License Wait .... " << ++n  << std::endl;
           {
 			      int nSeconds = (rand() * 2000 / RAND_MAX);
 						anyOSSleep(nSeconds);
@@ -108,14 +108,14 @@ void CplexSolver::resetModel() {
     
   } catch (...) {
     // somehow not printed
-    cerr << "ERROR: Cplex exception catched at calling new SolverModel()" << endl;
+    cout << "ERROR: Cplex exception catched at calling new SolverModel()" << endl;
   }
   if (model_==0) {
     // somehow not printed
-    cerr << "ERROR: Could not initialize Cplex problem." << endl;
-    cerr << "  Possible cause is that another Cplex is already running," << endl;
-    cerr << "  or that your license server is not correctly set up." << endl;
-    cerr << "Quitting." << endl;
+    cout << "ERROR: Could not initialize Cplex problem." << endl;
+    cout << "  Possible cause is that another Cplex is already running," << endl;
+    cout << "  or that your license server is not correctly set up." << endl;
+    cout << "Quitting." << endl;
     assert(false);
     exit(0);
   }
@@ -184,9 +184,9 @@ const SolverConstr & CplexSolver::addConstr(
     constr.setName(lpConvert(name).c_str());
     constrVector_.push_back(constr);
   } else {
-    cerr << "ERROR: In CplexSolver::addConstr(...)" << endl;
-    cerr << "  Wrong comparator argument string " << comp << " supplied." << endl;
-    cerr << "  Should be '==', '<=' or '>='." << endl;
+    cout << "ERROR: In CplexSolver::addConstr(...)" << endl;
+    cout << "  Wrong comparator argument string " << comp << " supplied." << endl;
+    cout << "  Should be '==', '<=' or '>='." << endl;
     assert(false);
     exit(0);
   }
@@ -213,9 +213,9 @@ const SolverConstr & CplexSolver::addConstr(
     constr.setName(lpConvert(name).c_str());
     constrVector_.push_back(constr);
   } else {
-    cerr << "ERROR: In CplexSolver::addConstr(...)" << endl;
-    cerr << "  Wrong comparator argument string " << comp << " supplied." << endl;
-    cerr << "  Should be '==', '<=' or '>='." << endl;
+    cout << "ERROR: In CplexSolver::addConstr(...)" << endl;
+    cout << "  Wrong comparator argument string " << comp << " supplied." << endl;
+    cout << "  Should be '==', '<=' or '>='." << endl;
     assert(false);
     exit(0);
   }
@@ -242,9 +242,9 @@ const SolverConstr & CplexSolver::addConstr(
     constr.setName(lpConvert(name).c_str());
     constrVector_.push_back(constr);
   } else {
-    cerr << "ERROR: In CplexSolver::addConstr(...)" << endl;
-    cerr << "  Wrong comparator argument string " << comp << " supplied." << endl;
-    cerr << "  Should be '==', '<=' or '>='." << endl;
+    cout << "ERROR: In CplexSolver::addConstr(...)" << endl;
+    cout << "  Wrong comparator argument string " << comp << " supplied." << endl;
+    cout << "  Should be '==', '<=' or '>='." << endl;
     assert(false);
     exit(0);
   }
@@ -283,7 +283,7 @@ void CplexSolver::addSos1SolverSpecific(
   assert(valid);
   //return sosVector_.back();
 #else
-  cerr << "ERROR: Not supported in Cplex MilpSolver lib yet." << endl;
+  cout << "ERROR: Not supported in Cplex MilpSolver lib yet." << endl;
   assert(false);
   exit(0);
   model_->add(IloSOS1(*env_,
@@ -317,40 +317,17 @@ void CplexSolver::exportModelAsMpsFile(const string & fileNamePrefix) const {
   // interprets this as Microsoft Access Table 
 }
 
-
-
-
 void CplexSolver::setMinimize() {
-  //-//model_->add(*objFunction_); // CHECKME: do this only here 
-  // io at every oobjFunction_ change?
-  //IloObjective obj(*env_, *objFunction_, IloObjective::Minimize);  
-
-  //model_->add(IloMinimize(env, *objFunction_);
   sense_ = -1;
 }
 
 void CplexSolver::setMaximize() {
-  //-//model_->add(*objFunction_); // CHECKME: do this only here 
-  // io at every objFunction_ change?
-  //IloObjective obj(*env_, *objFunction_, IloObjective::Maximize);  
-
-  //model_->add(IloMaximize(env, objFunction_);
   sense_ = +1;
 }
 
+// Everything is handled here, nothing is thrown out
 bool CplexSolver::solve(double gap) {
   cout << "In CplexSolver::solve()" << endl;
-
-  /* Cplex:
-  0 no messages printed;
-  1 error messages only printed;
-  2 warnings and errors printed;
-  3 warnings, errors, and Optimizer log printed (default);
-  4 all messages printed.
-  */  
-
-///////
-
   IloObjective obj;
   if (sense_ == -1) {
     obj = IloMinimize(*env_, *objFunction_);
@@ -358,20 +335,17 @@ bool CplexSolver::solve(double gap) {
     assert(sense_ == +1);
     obj = IloMaximize(*env_, *objFunction_);
   }
-  model_->add(obj); 
+  model_->add(obj);
 
   global_cplex_ = 0;
-  global_cplex_ = getLicense(maxGetLicenseSeconds_); 
-  global_cplex_->extract(*model_);
-  /*
-  const bool doLpModelExport = false;
-  if (doLpModelExport) {
-    string fileNamePrefix = "CplexSolver";
-    global_cplex_->exportModel((fileNamePrefix + ".lp").c_str());
+  try {
+    global_cplex_ = getLicense(maxGetLicenseSeconds_); 
+  } catch (string &str) { // so catch it an re-throw
+    cout << str << endl;
+    return false;
   }
-  */
+  global_cplex_->extract(*model_);
 
-/////////////////////////
 #ifdef _WIN32
   string cplexLogFileName = "out\\cplex.out"; // hard coded Windows dir
 #else
@@ -379,29 +353,8 @@ bool CplexSolver::solve(double gap) {
 #endif
   ofstream cplexLogStr(cplexLogFileName.c_str());
 	global_cplex_->setOut(cplexLogStr);
-  //cplex.exportModel(getName(nameFile,"LP")); // parent will do this later
-
-  //cout << "Go solver " << endl;
-  //TUTimer myClock;
-  //cplex.setParam(IloCplex::EpGap,0.05);
-  //cpxMaster.setParam(IloCplex::AdvInd,0);
-  //cplex.setParam(IloCplex::MIPEmphasis,2);
   global_cplex_->setParam(IloCplex::TiLim, maxSolveSeconds_);
   global_cplex_->setParam(IloCplex::EpGap, gap); // was 0.05
-  //cpxMaster.setParam(IloCplex::TreLim,MaxTreeSize);
-
-///////////////
-  /*
-  IloObjective obj(*env_, *objFunction_, 
-    (sense == -1) ? IloObjective::Minimize : IloObjective::Maximize);  
-  */
-  ///////
-
-  //IloCplex cplex(*model_);
-
-  //model_->setMsgLevel(3);
-  //cplex.setAnyProperty(  ... );
-  //solver().setVerbose(Lpsolve.IMPORTANT);
 
   solved_ = false;
   (void)global_cplex_->solve(/*"g"*/); 
@@ -433,11 +386,8 @@ bool CplexSolver::solve(double gap) {
     cout << "WARNING: Model solution gave error." << endl;
     solved_ = false;
   } else {
-    cout << "WARNING: No integer solution found!" << endl;
-    cout << "ERROR: Model solution gave error." << endl;
-    assert(!solved_);
-    assert(false);
-    exit(0);
+    cout << "WARNING: Model solution unknown status." << endl;
+    solved_ = false;
   }
 
   if (solved_) {
@@ -560,65 +510,76 @@ void CplexSolver::deleteModelAndEnv() {
   global_cplex_ = 0;
 }
 
-IloCplex * CplexSolver::getLicense(int toToken) {
+// throws string:
+// - if license not gotten or 
+// - any other unrecoverable cplex license get problem
+// no other object types are thrown out
+IloCplex * CplexSolver::getLicense(int maxLicenseGetSeconds) {
   IloCplex * cplex = 0;
 
   bool gotLicense = false;
-  int n=0;
-   /* Seed the random-number generator with current time so that
-    * the numbers will be different every time we run.
-    */
+	// Seed the random-number generator with current time so that
+	// the numbers will be different every time we run.
 	time_t t0=time(0); 
   srand((unsigned)time(NULL)); 
   string str;
   int errorCode;
 
+	cout << "Trying to get Cplex license for the next " 
+	  << maxLicenseGetSeconds << " seconds ..." << endl;
 	while (!gotLicense) {
-		// To Token
-		if (difftime(time(0), t0) > (double)toToken) {
+		double dt = difftime(time(0), t0);
+		cout << dt << " seconds" << endl;
+		if (dt > (double)maxLicenseGetSeconds) {
 			stringstream strm; 
-			strm << message[MESSAGE_NO_TOKEN] << toToken << " sec."; 			
-			throw strm.str(); 
+			strm << message[MESSAGE_NO_TOKEN] << maxLicenseGetSeconds << " sec."; 			
+			throw strm.str();
     }
+
     try {
       cplex = new IloCplex(*env_); 
-      //cplex.setOut(log); 
-      //log << "Antoine joubert " << std::endl; 
-      gotLicense=true; 	
+      gotLicense = true;
+			cout << "Got Cplex license." << endl;
     } catch (IloCplex::Exception& ex) {
+			cout << "Did not get Cplex license." << endl;
       if (ex.getStatus() == 32201) {
-        //cerr << ex << endl; 			
+        //cout << ex << endl; 			
 			  istringstream flux(ex.getMessage()); 
 			  flux >> str >> str >> str >> str >> str >> errorCode; 
 			  switch(errorCode) {
-			    case 16 : // LIcence file not found
-				    throw string(message[MESSAGE_NO_LICENSE]); 
+			    case 16 : // No Licence file found
+						cout << "No license file found" << endl;
+				    throw string(message[MESSAGE_NO_LICENSE]);
 				    break; 
-			    case 15 :  // No Token 
+			    case 15 :  // No License Token 
 					  {
-				    //std::cerr << "License Wait .... " << ++n << std::endl; 
-				    unsigned int nSeconds =(rand()*2000/RAND_MAX); 
+				    //std::cout << "License Wait .... " << ++n << std::endl; 
+				    unsigned int nSeconds =(rand() * 2000 / RAND_MAX); 
+						cout << "No license token gotten" << endl;
+						cout << "Sleeping " << nSeconds 
+							<< " seconds before next license poll." << endl;
 						anyOSSleep(nSeconds);
 					  }
 				    break; 
-			    case 4 :   // No Server
+			    case 4 :   // No License Server
+						cout << "No license server found." << endl;
 				    //throw string(ex.getMessage()); 
 				    throw string(message[MESSAGE_NO_SERVER]); 
-				    break; 
+				    break;
 			    default:
+						cout << "Unknown license problem." << endl;
 				    throw string(ex.getMessage()); 
-   	    }	
-      } else {
+   	    }
+      } else { 
         throw string(ex.getMessage()); 
       }
-    } 
-    catch (string &str) {
-      throw str; 
+      // maybe new IloCplex can throw a string too      
+    } catch (string &str) { // so catch it an re-throw
+      throw str;
     }
 	}
-  return cplex;
+  return cplex; // 0 if bad
 }
-
 
 CplexSolver::~CplexSolver() {
   deleteModelAndEnv();

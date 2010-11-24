@@ -34,7 +34,6 @@ public:
     const SolverExpr & lhs, const std::string & comp, const SolverExpr & rhs,
     const std::string & name);
 
-  //const SolverSos & 
   void addSos1SolverSpecific(
     const std::string & name,
     const std::vector<SolverVar> & vars, 

@@ -49,7 +49,16 @@ void Solver::addConjunctionConstr(
 #endif
 	;
 	oneExpr += 1;
-  addConstr(SolverExpr(conjunctionBinVarB + conjunctionBinVarC), "<=", 
+	
+	
+	SolverExpr expr
+#ifdef USE_CPLEX_NATIVE
+	(*global_env_)
+#endif
+	;
+	expr += conjunctionBinVarB;
+	expr += conjunctionBinVarC;
+  addConstr(expr, "<=", 
             SolverExpr(conjunctionBinVarA+oneExpr), name + "_b_plus_c_le_1_plus_a");  // - -> + !!!
 }
 
@@ -75,9 +84,17 @@ void Solver::addDisjunctionConstr(
   
   addConstr(disjunctionBinVarA, ">=", disjunctionBinVarB, name + "_a_ge_b");
   addConstr(disjunctionBinVarA, ">=", disjunctionBinVarC, name + "_a_ge_c");
+	
+	SolverExpr expr
+#ifdef USE_CPLEX_NATIVE
+	(*global_env_)
+#endif
+	;
+	expr += disjunctionBinVarB;
+	expr += disjunctionBinVarC;
+	
   addConstr(SolverExpr(disjunctionBinVarA), "<=", 
-            SolverExpr(
-              disjunctionBinVarB + disjunctionBinVarC), name + "_a_le_b_plus_c");
+            expr, name + "_a_le_b_plus_c");
 }
 
 void Solver::addNegationConstr(
@@ -142,7 +159,7 @@ void Solver::addEqualConstr(
 	/*
 	// shorter is:
 	// When eqBinVar==1, this constraints lhs == rhs, just fine
-	// but when eqBinVar==0 this does not constraint anything 
+	// but when eqBinVar==0 this does not constrain anything 
   double Mle1 = (lhsUpperBound - rhsLowerBound);
   addConstr(lhsExpr - rhsExpr + (Mle1 * eqBinVar), 
 						"<=", Mle1, name + "_eq_1");
@@ -168,8 +185,6 @@ void Solver::addEqualConstr(
 	 addConjunctionConstr(eqBinVar, leBinVar, geBinVar, name + "_eq_le" + "_eq_ge" + "_conj");	
 }
 
-
-//////////
 const SolverVar Solver::addEqualBinVar(
   double objCoef,
   const SolverExpr & lhsExpr,
@@ -211,8 +226,6 @@ void Solver::addEqualConstr(
 	 addConjunctionConstr(eqBinVar, leBinVar, geBinVar, 
      name + "_eq_le" + "_eq_ge" + "_conj");	
 }
-
-////////////
 
 const SolverVar Solver::addLessOrEqualBinVar(double objCoef,
 																						 const SolverExpr & lhsExpr,
@@ -256,8 +269,6 @@ void Solver::addLessOrEqualConstr(const SolverVar & leBinVar,
 						">=", (Mle0 - unit) * leBinVar + unit, name + "_le_0"); //  not('lhs < rhs') is equivalent to 'lhs >= rhs + unit'
 }
 
-//////////---------
-
 const SolverVar Solver::addLessOrEqualBinVar(double objCoef,
 																						 const SolverExpr & lhsExpr,
 																						 double lhsLowerBound,  double lhsUpperBound,
@@ -295,10 +306,9 @@ void Solver::addLessOrEqualConstr(const SolverVar & leBinVar,
 	// real constraint when leBinVar=0, says nothing new when 1
   double Mle0 = (lhsLowerBound - rhs);  
   addConstr(lhsExpr - rhs, 
-						">=", (Mle0 - unit) * leBinVar + unit, name + "_le_0"); //  not('lhs < rhs') is equivalent to 'lhs >= rhs + unit'
+						">=", (Mle0 - unit) * leBinVar + unit, name + "_le_0"); 
+  //  not('lhs < rhs') is equivalent to 'lhs >= rhs + unit'
 }
-
-//////////---------
 
 void Solver::addImplication(
   const SolverVar & binVarA, 
@@ -330,9 +340,26 @@ void Solver::addSos1(const SolverVar & x) {
   assert( 0 <= lo);
   assert( 0 <= hi);
   assert(lo <= hi);
+	
+	SolverExpr sos1SumExpr
+#ifdef USE_CPLEX_NATIVE
+	(*global_env_)
+#endif
+	;	
 
-  SolverExpr sos1SumExpr = 0;
-  SolverExpr sos1ScalarProductExpr_x = 0;
+	SolverExpr sos1ScalarProductExpr_x
+#ifdef USE_CPLEX_NATIVE
+	(*global_env_)
+#endif
+	;	
+
+	SolverExpr oneExpr
+#ifdef USE_CPLEX_NATIVE
+	(*global_env_)
+#endif
+	;	
+	oneExpr += 1;
+	
   vector<SolverVar> sosVarVector;
   vector<double> sosWeightVector;
   for (unsigned int i=(unsigned int)lo; i<=(unsigned int)hi; i++) {
@@ -354,9 +381,6 @@ void Solver::addSos1(const SolverVar & x) {
   bool manuallyAddConstraints = MANUALLY_ADD_SOS_CONSTRAINTS;
   if (manuallyAddConstraints) {
     // according to http://lpsolve.sourceforge.net/5.0/SOS.htm
-    SolverExpr oneExpr;
-    oneExpr += 1;
-    //addConstr(sos1SumExpr,             "==", SolverExpr(1), 
     addConstr(sos1SumExpr,             "==", oneExpr, 
       xName + "_sos1_sum_is_1"); // convexity row (3)
     addConstr(sos1ScalarProductExpr_x, "==", x,             
@@ -377,12 +401,10 @@ void Solver::addSos1(
   const SolverVar & x, const SolverVar & y, double (*fPtr)(int)) {
   
   double loDouble = getLowerBound(x);
-  //cout << "lowerBound = " << loDouble << endl;
   int lo = (int)loDouble;
   assert(lo == loDouble);
 
   double hiDouble = getUpperBound(x);
-  //cout << "upperBound = " << hiDouble << endl;
   int hi = (int)hiDouble;
   assert(hi == hiDouble);
   string xName = getName(x);
@@ -390,10 +412,25 @@ void Solver::addSos1(
   assert( 0 <= lo);
   assert( 0 <= hi);
   assert(lo <= hi);
-  
-  SolverExpr sos1SumExpr = 0;
-  SolverExpr sos1ScalarProductExpr_x = 0;
-  SolverExpr sos2ScalarProductExpr_y = 0;
+
+	SolverExpr sos1SumExpr
+#ifdef USE_CPLEX_NATIVE
+	(*global_env_)
+#endif
+	;  
+	
+	SolverExpr sos1ScalarProductExpr_x
+#ifdef USE_CPLEX_NATIVE
+	(*global_env_)
+#endif
+	; 	
+	
+	SolverExpr sos2ScalarProductExpr_y
+#ifdef USE_CPLEX_NATIVE
+	(*global_env_)
+#endif
+	; 	
+	
   vector<SolverVar> sosVarVector;
   vector<double> sosWeightVector;
   for (unsigned int i=(unsigned int)lo; i<=(unsigned int)hi; i++) {
@@ -415,8 +452,12 @@ void Solver::addSos1(
   bool manuallyAddConstraints = MANUALLY_ADD_SOS_CONSTRAINTS;
   if (manuallyAddConstraints) {
     // according to http://lpsolve.sourceforge.net/5.0/SOS.htm
-    SolverExpr oneExpr;
-    oneExpr += 1;
+		SolverExpr oneExpr
+#ifdef USE_CPLEX_NATIVE
+		(*global_env_)
+#endif
+		;     
+		oneExpr += 1;
     addConstr(sos1SumExpr,             "==", oneExpr, 
               xName + "_sos1_sum_is_1"); // convexity row (3)
     addConstr(sos1ScalarProductExpr_x, "==", x,             
@@ -434,8 +475,6 @@ void Solver::addSos1(
       // which one(s)?...FIXME
   }
 }
-
-
 
 // For the lp file the solver will write out.
 // from: http://lpsolve.sourceforge.net/5.5/lp-format.htm

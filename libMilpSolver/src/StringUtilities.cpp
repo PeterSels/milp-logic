@@ -16,32 +16,19 @@ std::string toString(char ch) {
   return str;
 }
 
+// for Latex
 // FIXME: For now, supposing there is only one underscore per string argument str
 string escapeUnderscore(const string & str) {
   string news = str;
   unsigned int npos = (unsigned int)str.length();
   unsigned int pos = (unsigned int)str.find('_');
   if (pos<npos) {
-    news.insert(pos, "\\"); // for Latex
+    news.insert(pos, "\\");
   }
   return news;
 }
 
 string toTime_HH_MM(unsigned int units) {
-  /*
-  ostringstream oStrStr;
-  //oStrStr << (units/UU_PER_HR) << ":" << (units % UU_PER_HR);
-  unsigned int rest = units;
-  
-  unsigned int hh = rest / UU_PER_HR;
-  rest -= hh;
-  
-  unsigned int mm = rest / UU;
-  rest -= mm;
-  
-  string str = oStrStr.str();
-  return str;
-  */
   string str = toTime_HH_MM_SS(units);
   str = str.substr(0, 5);
   return str;
@@ -186,7 +173,6 @@ double readDoubleUpTo(istream & istr, char ch) {
 void replaceAllOddByEven(string & str, const string & oddEven) {
   unsigned int oeLen = (unsigned int)oddEven.length();
   assert(oeLen % 2 == 0);
-  //unsigned int nChars = oeLen / 2;
   for (unsigned int i=0; i<oeLen; i+=2) {
     char oldCh = oddEven[i];
     char newCh = oddEven[i+1];
@@ -208,8 +194,6 @@ bool replace(string & str, char oldCh, char newCh) {
    return false;
   } else {
     str[pos] = newCh;
-    //string pre = str.substr(0, pos);
-    //string post = str.substr(pos+1); 
     return true;
   }
 }
@@ -254,7 +238,6 @@ void parseWhiteSpaceAndOneLineCComment(istream & istr) {
 				do {
 					//istr >> ch; // skips isspace internally, while we need to catch '\n'
 					istr.get(ch); // does not skip anything and will show up with ''n'
-					//cerr << ch;
 				} while (ch!='\n'); // supposing transparently translated to correct CR/CR+LF/LF code(s) in Win/*nix systems
 			} else {
 				istr.unget(); // puts back non '/'

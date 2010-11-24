@@ -59,15 +59,7 @@ const SolverVar & XpressSolver::addLpVar(
   model_->setObj(objFunction_);
   return var;
 }
-/*
-const SolverVar & GurobiSolver::addLpVar(
-  double lo, double hi, double objCoef, const std::string & name) {
-  varVector_.push_back(model_->addVar(
-    lo, hi, objCoef, GRB_CONTINUOUS, lpConvert(name).c_str()));
-  model_->update();
-  return varVector_.back();
-}
-*/
+
 const SolverVar & XpressSolver::addIntVar(
   int lo, int hi, double objCoef, const std::string & name) {
   SolverVar & var = model_->newVar(
@@ -221,9 +213,6 @@ void XpressSolver::exportModelAsMpsFile(const string & fileNamePrefix) const {
   // but we avoid .mat extension 'coz Windows 
   // interprets this as Microsoft Access Table 
 }
-
-
-
 
 void XpressSolver::setMinimize() {
   model_->setSense(XPRB_MINIM);

@@ -82,7 +82,6 @@ private:
   unsigned int maxGetLicenseSeconds_;
   unsigned int maxSolveSeconds_;
   SolverExpr * objFunction_;
-  //IloObjective objFunction_;
   SolverEnv * env_;
   int sense_;
 };

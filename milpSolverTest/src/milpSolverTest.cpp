@@ -9,9 +9,11 @@ using namespace std;
 #include "XpressSolver.h"
 #include "CplexSolver.h"
 
+// User can turn on one of the below defines 
+// by setting it to true to activate the respective test.
 #define TEST_SOS (false)
-#define TEST_BIN_LE_EQS (false)
-#define TEST_BIN_EQ_EQS (true)
+#define TEST_BIN_LE_EQS (true)
+#define TEST_BIN_EQ_EQS (false)
 
 #ifdef USE_CPLEX_NATIVE
 extern IloEnv * global_env_;
@@ -27,7 +29,8 @@ double f(int i) {
   }
 }
 
-void resetModel(unsigned int maxGetLicenseSeconds, unsigned int maxSolverSeconds) {
+void resetModel(unsigned int maxGetLicenseSeconds, 
+								unsigned int maxSolverSeconds) {
 	cout << "resetModel" << endl;
   if (solver_==0) {
 #ifdef USE_GUROBI_NATIVE
@@ -45,7 +48,6 @@ void resetModel(unsigned int maxGetLicenseSeconds, unsigned int maxSolverSeconds
   cout << endl;
 }
 
-
 int main(int argc, char * argv[]) {
   cout << "milpSolverTest" << endl;
 	
@@ -53,9 +55,7 @@ int main(int argc, char * argv[]) {
 	resetModel(1*60, 5*60); // arguments used by cplex only
   
   if (TEST_SOS) {
-		
-    // dirty debug:
-    int i=1;
+		int i=0;
     cout << "<<<<<<<<<<<<<<<<<< " << i << " >>>>>>>>>>>>>>" << endl;
     if (i==0) {
       bool min = false; // max if false
@@ -70,6 +70,9 @@ int main(int argc, char * argv[]) {
       } else {
         solver_->setMaximize();
       }
+			
+			solver_->exportModelAsLpFile("sosx");			
+			
 			double gap = 0.0;
       bool solved = solver_->solve(gap);
       
@@ -103,6 +106,9 @@ int main(int argc, char * argv[]) {
       solver_->addSos1(x, y, f);
       
       solver_->setMinimize();
+			
+			solver_->exportModelAsLpFile("sosxyf");						
+			
 			double gap = 0.0;
       bool solved = solver_->solve(gap);
       
@@ -138,24 +144,52 @@ int main(int argc, char * argv[]) {
     const SolverVar s1 = solver_->addIntVar( 0, 10, 1, "s1");
     const SolverVar e1 = solver_->addIntVar(10, 50, 0, "e1");
 		
-    //SolverExpr lhs0 = b0 + m0 + s0;
-    SolverExpr lhs
+    //SolverExpr lhs0 = b0 + m0 + s0; // worked for all not for Gurobi v4.0
+    SolverExpr lhs0
 #ifdef USE_CPLEX_NATIVE
       (*global_env_)
 #endif
     ;
-    lhs = b0 + m0 + s0;
-    solver_->addConstr(lhs, "==", e0, "c0");
-    solver_->addConstr(b1 + m1 + s1, "==", e1, "c1");
+    lhs0 += b0;
+		lhs0 += m0;
+		lhs0 += s0;
+    solver_->addConstr(lhs0, "==", e0, "c0");
+		
+    SolverExpr lhs1
+#ifdef USE_CPLEX_NATIVE
+		(*global_env_)
+#endif
+    ;
+    lhs1 += b1;
+		lhs1 += m1;
+		lhs1 += s1;
+    solver_->addConstr(lhs1, "==", e1, "c1");
+		
+		
+		SolverExpr le0LhsExpr
+#ifdef USE_CPLEX_NATIVE
+    (*global_env_)
+#endif
+		;
+		le0LhsExpr += b0;
+		le0LhsExpr += 3;
 		
     SolverVar le0 = solver_->addLessOrEqualBinVar(0, 
-																									b0+3, 10+3, 40+3,
+																									le0LhsExpr, 10+3, 40+3,
 																									b1,   10,   50,
 																									1,
 																									"le0_0before1"
 																									);
+		
+		SolverExpr le1LhsExpr
+#ifdef USE_CPLEX_NATIVE
+    (*global_env_)
+#endif
+		;
+		le1LhsExpr += b1;
+		le1LhsExpr += 3;
     SolverVar le1 = solver_->addLessOrEqualBinVar(0, 
-																									b1+3, 10+3, 50+3, 
+																									le1LhsExpr, 10+3, 50+3, 
 																									b0,   10,   40,
 																									1,
 																									"le1_1before0"
@@ -170,7 +204,7 @@ int main(int argc, char * argv[]) {
       assert(sense == +1);
       solver_->setMaximize();
     }
-    //solver_->exportModelAsLpFile("le.lp");
+    solver_->exportModelAsLpFile("le");
 		
 		double gap = 0.0;
     bool solved = solver_->solve(gap);
@@ -209,7 +243,8 @@ int main(int argc, char * argv[]) {
     } else {
       assert(le0Val==0);
       assert(le1Val==1);
-    }
+    }	
+		
 	} else if (TEST_BIN_EQ_EQS) {
 		
     const SolverVar xVar = solver_->addIntVar(10, 100, 0, "x");
@@ -221,16 +256,11 @@ int main(int argc, char * argv[]) {
     thirtyFiveExpr += 35;
     SolverVar eq = solver_->addEqualBinVar(1, 
 																					 xVar,           10, 100,
-//#ifdef USE_CPLEX_NATIVE
-//																					 35,
-//#else
 																					 thirtyFiveExpr, 10, 100,
-//#endif
                                            1,
 																					 "x_eq_35");
-		//solver_->addConstr(xVar, "==", 27, "xIs37");
     solver_->setMaximize();
-    //solver_->exportModelAsLpFile("eq");
+    solver_->exportModelAsLpFile("eq");
 		
 		double gap = 0.0;
     bool solved = solver_->solve(gap);
@@ -247,7 +277,6 @@ int main(int argc, char * argv[]) {
   cout << "(r,c,nz) = (" << r << ", " << c << ", " << nz << ")" << endl;
   unsigned int ns = solver_->getNumberOfSets();
   cout << "ns = " << ns << endl;
-	
 	
 	return 0;
 }

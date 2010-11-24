@@ -96,7 +96,6 @@ public:
     double unit,
     const std::string & name);
 
-  //////////////////----
   const SolverVar addLessOrEqualBinVar(double objCoef,
 																			 const SolverExpr & lhsExpr,
 																			 double lhsLowerBound,  double lhsUpperBound,
@@ -110,7 +109,6 @@ public:
 														double rhs, 
 														double unit,
 														const std::string & name);
-  //////////////////----
 
   // a = (b == c)
   const SolverVar addEqualBinVar(
@@ -130,7 +128,6 @@ public:
     double unit,
     const std::string & name);
 	
-  //////////////
   const SolverVar addEqualBinVar(
     double objCoef,
     const SolverExpr & lhsExpr,
@@ -145,8 +142,6 @@ public:
     double rhs,
     double unit,
     const std::string & name);
-  //////////////
-
 
   // a => b
   void addImplication(
@@ -159,13 +154,8 @@ public:
     const SolverVar & binVarB,
     const std::string & name);
 
-
   // special ordered set type 1
-  /*
-  virtual void addSos1(
-    const std::vector<const SolverVar *> & vars);
-  */
-  virtual //const SolverSos & 
+  virtual
   void addSos1SolverSpecific(
     const std::string & name,
     const std::vector<SolverVar> & vars, 
