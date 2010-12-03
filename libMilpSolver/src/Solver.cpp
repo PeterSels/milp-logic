@@ -62,8 +62,6 @@ void Solver::addConjunctionConstr(
             SolverExpr(conjunctionBinVarA+oneExpr), name + "_b_plus_c_le_1_plus_a");  // - -> + !!!
 }
 
-
-
 const SolverVar Solver::addDisjunctionBinVar(
   double objCoef,
   const SolverVar & disjunctionBinVarB, 

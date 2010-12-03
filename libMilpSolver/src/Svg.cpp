@@ -49,6 +49,26 @@ void Svg::addCircle(
 	<< "'/>" << endl;
 }
 
+void Svg::addRectangle(unsigned int x,
+											 unsigned int y,
+											 unsigned int width, 
+											 unsigned int height,
+											 unsigned int strokeWidth,
+											 const string & strokeColor,
+											 const string & fillColor,
+											 float strokeOpacity,
+											 float fillOpacity) {
+  strstr_ << "<rect x='" << x << "' y='" << y 
+	<< "' width='" << width 
+	<< "' height='" << height
+	<< "' style='fill:" << fillColor 
+	<< ";stroke:" << strokeColor 
+	<< ";stroke-width:" << strokeWidth << ";"
+	<< "fill-opacity:" << fillOpacity 
+	<< ";stroke-opacity:" << strokeOpacity << "'" 
+	<< "/>" << endl;	 
+}
+
 void Svg::addText(
   unsigned int x, unsigned int y,
   const string & text,
