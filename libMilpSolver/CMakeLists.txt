@@ -6,6 +6,7 @@ file(GLOB_RECURSE HEADERS "*.h")
 
 set(SOURCES 
   src/BclException.cpp
+  src/ScheduleSvg.cpp
   src/Solver.cpp
   src/Svg.cpp
   src/StringUtilities.cpp

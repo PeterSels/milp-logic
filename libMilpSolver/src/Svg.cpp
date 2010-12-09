@@ -17,21 +17,38 @@ void Svg::addHeader() {
   strstr_ << "<?xml version='1.0' standalone='no'?>\n";
   strstr_ << "<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN'\n";
   strstr_ << "'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>\n";
-  strstr_ << "<svg width='" << width_ << "px' height='" << height_
-	    << "px' version='1.1' xmlns='http://www.w3.org/2000/svg'>\n";
-  strstr_ << "<desc>Svg File</desc>\n";
+	
+  strstr_ << "<svg " << "version='1.1' baseProfile=\"full\"" << endl;
+	strstr_ << "  xmlns='http://www.w3.org/2000/svg'" << endl;
+	strstr_ << "  xmlns:xlink='http://www.w3.org/1999/xlink'" << endl;
+	strstr_ << "  xmlns:ev='http://www.w3.org/2001/xml-events'" << endl;
+	strstr_ << "  width='" << width_ << "px'" << endl; 
+	strstr_ << "  height='" << height_ << "px'" << endl;
+	strstr_ << ">" << endl;	
+  strstr_ << "<desc>" << fileName_ << "</desc>\n";
 }
 
 void Svg::addLine(
   unsigned int x1, unsigned int y1,
   unsigned int x2, unsigned int y2,
   unsigned int thickness,
-  const string color) {
+  const string color,
+	const string dashArray,
+  const string title) {
 
   strstr_ << "<g fill='none' stroke='" << color
-         <<"' stroke-width='" << thickness << "' >\n";
+         <<"' stroke-width='" << thickness << "' ";
+	if (dashArray != SOLID_DASH_ARRAY) {
+	  strstr_ << "stroke-dasharray='" << dashArray << "'"; 
+	}
+	strstr_ << ">" << endl;
   strstr_ << "<line x1='" << x1 << "' y1='" << y1
-    << "' x2='" << x2 << "' y2='" << y2 << "' />\n";
+    << "' x2='" << x2 << "' y2='" << y2 << "'>" << endl;	
+	if (title!="") {
+		strstr_ << "    <title>" << title << "</title>" << endl;
+	}
+	strstr_ << "</line>\n";
+	
   strstr_ << "</g>\n";
 }
 
@@ -54,19 +71,50 @@ void Svg::addRectangle(unsigned int x,
 											 unsigned int width, 
 											 unsigned int height,
 											 unsigned int strokeWidth,
-											 const string & strokeColor,
-											 const string & fillColor,
+											 const string strokeColor,
+											 const string fillColor,
 											 float strokeOpacity,
-											 float fillOpacity) {
-  strstr_ << "<rect x='" << x << "' y='" << y 
-	<< "' width='" << width 
+											 float fillOpacity,
+											 string title,
+											 string id,
+											 string xlinkTo) {
+   
+  if (xlinkTo != "") {
+		strstr_ << "<a xlink:href=\"" 
+		<< fileName_ 
+		<< "#" << xlinkTo 
+		<< "\"" << ">" 
+		<< endl;
+	}
+	strstr_
+	<< "  <rect ";
+	
+	if (id!="") {
+    strstr_ << "id=" << "\"" << id << "\"" << endl;
+	}
+	
+	strstr_
+	<< "x='" << x << "' y='" << y 
+	<< "' width='" << width
 	<< "' height='" << height
 	<< "' style='fill:" << fillColor 
 	<< ";stroke:" << strokeColor 
 	<< ";stroke-width:" << strokeWidth << ";"
 	<< "fill-opacity:" << fillOpacity 
 	<< ";stroke-opacity:" << strokeOpacity << "'" 
-	<< "/>" << endl;	 
+	<< "> " << endl;
+	
+	if (title!="") {
+		strstr_ << "    <title>" << title << "</title>" << endl;
+	}
+		
+	strstr_	
+	<< "  </rect>" << endl;	 
+
+  if (xlinkTo != "") {
+		strstr_ << "</a>" << endl;
+	}
+	strstr_ << endl;
 }
 
 void Svg::addText(

@@ -51,7 +51,7 @@ string toTime_HH_MM_SS(unsigned int units) {
   
   oStrStr << setw(2) << setfill('0') << hh << ":" 
           << setw(2) << setfill('0') << mm << ":" 
-          << setw(2) << setfill('0') << ss;
+          << setw(2) << setfill('0') << (ss * (60 / UU));
   string str = oStrStr.str();
   unsigned int len = (unsigned int)str.length();
   assert(len==8);
