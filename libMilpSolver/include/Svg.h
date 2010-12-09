@@ -8,15 +8,24 @@
 #define LONG_DASH_ARRAY "8, 2, 8, 2"
 #define MIXED_DASH_ARRAY "8, 2, 2, 2"
 
+#define FONT_SIZE (8)
+#define FONT_TYPE "Verdana"
+#define DEFAULT_COLOR "black"
 class Svg {
 public:
 	Svg(const std::string & fileName,
 		unsigned int width, unsigned int height);
+
+	// As long as you call these before close, even multiple times, 
+	// it will have the wanted effect on your svg file:
+	void setWidth(unsigned int width);
+	void setHeight(unsigned int height);
+	
 	void addLine(
     unsigned int x1, unsigned int y1,
 	  unsigned int x2, unsigned int y2,
 	  unsigned int thickness = 1,
-	  const std::string color = "black",
+	  const std::string color = DEFAULT_COLOR,
 		const std::string dashArray = SOLID_DASH_ARRAY,
     const std::string title = "");
 	
@@ -24,14 +33,14 @@ public:
 	  unsigned int cx, unsigned int cy,
 	  unsigned int radius = 1,
 	  unsigned int strokeWidth = 1,
-	  const std::string strokeColor = "black",
-	  const std::string fillColor = "black");
+	  const std::string strokeColor = DEFAULT_COLOR,
+	  const std::string fillColor = DEFAULT_COLOR);
 	
 	void addRectangle(unsigned int x, unsigned int y,
 										unsigned int width, unsigned int height,
 										unsigned int strokeWidth=1,
-										const std::string strokeColor="black",
-										const std::string fillColor="black",
+										const std::string strokeColor = DEFAULT_COLOR,
+										const std::string fillColor = DEFAULT_COLOR,
 										float strokeOpacity=1.0,
 										float fillOpacity=1.0,
 										std::string title="",
@@ -40,24 +49,23 @@ public:
 	void addText(
 	  unsigned int x, unsigned int y,
 	  const std::string & text,
-	  const std::string color = "black",
-	  unsigned int fontSize = 10,
-	  const std::string fontName = "Verdana",
+	  const std::string color = DEFAULT_COLOR,
+	  unsigned int fontSize = FONT_SIZE,
+	  const std::string fontName = FONT_TYPE,
 	  unsigned int angle = 0);
   void addSvgString(const std::string & svgString);
-  std::ostringstream & getStream();
-	void close(); // also writes to disk
+	std::string getHeader() const;
+  std::ostringstream & getBodyStream();
+	std::string getBody() const;
+	std::string getFooter() const;
+	virtual void close() const; // also writes to file
 	~Svg();
 protected:
-	void addHeader();
-	void addFooter();
-private:
   std::string fileName_;
-protected:
   unsigned int width_;
   unsigned int height_;
 	private:
-  std::ostringstream strstr_;
+  std::ostringstream bodyStr_;
 };
 
 
