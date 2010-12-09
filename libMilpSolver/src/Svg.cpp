@@ -2,6 +2,9 @@
 
 #include "Svg.h"
 
+
+#define CROP_BORDER (60)
+
 using namespace std;
 
 Svg::Svg(const string & fileName,
@@ -9,6 +12,10 @@ Svg::Svg(const string & fileName,
 : fileName_(fileName)
 , width_(width)
 , height_(height)
+, minX_(width-1)
+, maxX_(0)
+, minY_(height-1)
+, maxY_(0)
 {
 }
 
@@ -78,6 +85,24 @@ void Svg::addCircle(
 	<< "'/>" << endl;
 }
 
+void Svg::adaptUsedAreaToX(unsigned int x) {
+	if (x < minX_) {
+		minX_ = x;
+	}
+	if (x > maxX_) {
+		maxX_ = x;
+	}
+}
+
+void Svg::adaptUsedAreaToY(unsigned int y) {
+	if (y < minY_) {
+		minY_ = y;
+	}
+	if (y > maxY_) {
+		maxY_ = y;
+	}
+}
+
 void Svg::addRectangle(unsigned int x,
 											 unsigned int y,
 											 unsigned int width, 
@@ -91,6 +116,11 @@ void Svg::addRectangle(unsigned int x,
 											 string id,
 											 string xlinkTo) {
    
+	adaptUsedAreaToX(x);
+	adaptUsedAreaToY(y);
+	adaptUsedAreaToX(x+width);
+	adaptUsedAreaToY(y+height);	
+	
   if (xlinkTo != "") {
 		bodyStr_ << "<a xlink:href=\"" 
 		<< fileName_ 
@@ -165,14 +195,52 @@ string Svg::getFooter() const {
 	return footerStr.str();
 }
 
+void Svg::cropToUsedArea() const {
+  unsigned int newWidth  = maxX_ - minX_ + 1;
+  unsigned int newHeight = maxY_ - minY_ + 1;
+	
+	width_  = newWidth  + 2 * CROP_BORDER;
+	height_ = newHeight + 2 * CROP_BORDER;
+}
+
+string Svg::getTranslationHeader() const {
+	stringstream strStr;
+  strStr << "<g transform='translate(" << -(minX_ - CROP_BORDER) 
+	  << "," << -(minY_-CROP_BORDER) << ")'" << ">" 
+	  << endl;
+	return strStr.str();
+}
+
+string Svg::getTranslationFooter() const {
+	stringstream strStr;
+	strStr << "</g>" << endl;
+	return strStr.str();
+}
+
+void Svg::svgWrite(ostream & ostr) const {
+	
+	//ofStr << getHeader();
+  //ofStr << bodyStr_.str();
+	//ofStr << getFooter();
+	
+  //ofStr.close();
+	
+  cropToUsedArea(); // affects width_ and height_
+  string header = getHeader();
+	string transformHeader = getTranslationHeader();
+	
+	ostr << header;
+	ostr << transformHeader;
+// no grid here
+  ostr << getBody(); // before body is written so it sits underneath body
+	ostr << getTranslationFooter();
+	ostr << getFooter();
+}
+
 void Svg::close() const {
   ofstream ofStr(fileName_.c_str());
-	
-	ofStr << getHeader();
-  ofStr << bodyStr_.str();
-	ofStr << getFooter();
-	
-  ofStr.close();
+	svgWrite(ofStr);
+  ofStr.close();	
 }
 
 Svg::~Svg() {

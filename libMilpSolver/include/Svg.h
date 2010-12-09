@@ -36,6 +36,9 @@ public:
 	  const std::string strokeColor = DEFAULT_COLOR,
 	  const std::string fillColor = DEFAULT_COLOR);
 	
+	void adaptUsedAreaToX(unsigned int x);
+	void adaptUsedAreaToY(unsigned int y);
+	
 	void addRectangle(unsigned int x, unsigned int y,
 										unsigned int width, unsigned int height,
 										unsigned int strokeWidth=1,
@@ -55,16 +58,27 @@ public:
 	  unsigned int angle = 0);
   void addSvgString(const std::string & svgString);
 	std::string getHeader() const;
+	std::string getTranslationHeader() const;
   std::ostringstream & getBodyStream();
 	std::string getBody() const;
+	std::string getTranslationFooter() const;
 	std::string getFooter() const;
+	
+	void cropToUsedArea() const;
+	void svgWrite(std::ostream & ostr) const;
 	virtual void close() const; // also writes to file
 	~Svg();
-protected:
+protected:	
   std::string fileName_;
-  unsigned int width_;
-  unsigned int height_;
-	private:
+  mutable unsigned int width_; // mutable for crop
+  mutable unsigned int height_;
+	
+	unsigned int minX_;
+	unsigned int maxX_;
+	unsigned int minY_;
+	unsigned int maxY_;
+	
+private:
   std::ostringstream bodyStr_;
 };
 

@@ -45,7 +45,7 @@ void ScheduleSvg::createGrid() const {
 		return;
 	}
 	
-	Svg dummySvg("dummy.svg", width_, height_);
+	Svg dummySvg("ScheduleSvg__createGridDummy.svg", width_, height_);
 	// is never closed, so never written to file
 	
   const unsigned int timeRowHeight = 20;
@@ -89,12 +89,19 @@ void ScheduleSvg::addHorizontalGridLineAtY(unsigned int y,
 }
 
 void ScheduleSvg::close() const {
-  ofstream ofStr(fileName_.c_str());
-	
-	ofStr << getHeader();
 	createGrid(); // at last, after final width_ and height_ are set
-	ofStr << getGrid(); // grid has to be written 
+	string grid = getGrid();
+	
+  cropToUsedArea();
+  string header = getHeader();
+	string transformHeader = getTranslationHeader();
+	
+  ofstream ofStr(fileName_.c_str());
+	ofStr << header;
+	ofStr << transformHeader;
+	ofStr << grid; // grid has to be written 
   ofStr << getBody(); // before body is written so it sits underneath body
+	ofStr << getTranslationFooter();
 	ofStr << getFooter();
 	
   ofStr.close();
