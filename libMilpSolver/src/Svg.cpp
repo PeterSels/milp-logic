@@ -1,4 +1,5 @@
 #include <fstream>
+#include <assert.h>
 
 #include "Svg.h"
 #include "StringUtilities.h"
@@ -30,11 +31,11 @@ void Svg::setHeight(unsigned int height) {
 
 string Svg::getHeader() const {
 	stringstream headerStr;
+	
   headerStr << "<?xml version='1.0' standalone='no'?>\n";
   headerStr << "<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN'\n";
   headerStr << "'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>\n";
 	
-  //headerStr << "<svg "
   headerStr << "<svg onload='centerWindow()' "
 	  << "version='1.1' baseProfile=\"full\"" << endl;
 	headerStr << "  xmlns='http://www.w3.org/2000/svg'" << endl;
@@ -42,89 +43,17 @@ string Svg::getHeader() const {
 	headerStr << "  xmlns:ev='http://www.w3.org/2001/xml-events'" << endl;
 	headerStr << "  width='" << width_ << "px'" << endl; 
 	headerStr << "  height='" << height_ << "px'" << endl;
-	//headerStr << "  title='" << fileName_ << "'" << endl;
 	headerStr << ">" << endl;	
-  headerStr << "<g><title>" << fileName_ << "</title></g>" << endl;
 	
+  headerStr << "<g><title>" << fileName_ << "</title></g>" << endl;	
 	
 	headerStr << "<script type=\"text/ecmascript\"><![CDATA[" << endl;
 	readFromWriteTo("../Scroll.js", headerStr);
-	/*
-	headerStr << "  function centerWindow() {" << endl;
-	headerStr << "    var mx = window.screen.width / 2;" << endl;
-	headerStr << "    var my = window.screen.height / 2;" << endl;
-	headerStr << "    window.scroll(mx, my)" << endl;
-	headerStr << "  }" << endl;
-	*/
 	headerStr << "]]></script>" << endl;
 
-	
-	/*
-	 headerStr <<
-	 "function include(file) {" << endl <<
-	 "  if (document.createElement && document.getElementsByTagName) {" << endl <<
-	 "    var head = document.getElementsByTagName('defs')[0];" << endl <<
-	 "    var script = document.createElement('script');" << endl <<
-	 "    script.setAttribute('type', 'text/javascript');" << endl <<
-	 "    script.setAttribute('src', file);" << endl <<	
-	 "    head.appendChild(script);" << endl <<
-	 "  } else {" << endl <<
-	 "    alert('Your old browser cannot deal with the DOM standard. Update it!');" 
-	 << endl <<
-	 "  }" << endl <<
-	 "}" << endl;
-	 
-	 headerStr << "include('../Scroll.js');" << endl;
-	 
-	 */  
-	
-	/*
-	headerStr << "  function jumpFromSrcIdToDstId(srcId, dstId) {" << endl;
-	//headerStr << "    var svgDoc = evt.target.ownerDocument;" << endl;
-	//headerStr << "    var x = svgDoc.getElementById(thatId).x;" << endl;
-	headerStr << "    var srcX = document.getElementById(srcId).x.baseVal.value;" 
-	<< endl;
-	headerStr << "    var srcY = document.getElementById(srcId).y.baseVal.value;" 
-	<< endl;
-	headerStr << "    var dstX = document.getElementById(dstId).x.baseVal.value;" 
-	<< endl;
-	headerStr << "    var dstY = document.getElementById(dstId).y.baseVal.value;" 
-	<< endl;
-	headerStr << "    var dx = dstX - srcX;" << endl;
-	headerStr << "    var dy = dstY - srcY;" << endl;
-	headerStr << "    window.zoomIndependentScrollByLogicalPixels(dx,dy);" 
-	<< endl;
-	headerStr << "  }" << endl;
-	
-	headerStr << 
-	"function getZoomFactor() {" << endl <<
-  "	var factor = 1;" << endl <<
-	"	if (document.getBoundingClientRect) {" << endl <<
-	"		// rect is only in physical pixel size in IE before version 8 " << endl <<
-	"		var rect = document.getBoundingClientRect();" << endl <<
-	"		var physicalW = rect.right - rect.left;" << endl <<
-	"		var logicalW = document.offsetWidth;" << endl <<
-	"		// the zoom level is always an integer percent value" << endl <<
-	"		factor = Math.round ((physicalW / logicalW) * 100) / 100;" << endl <<
-	"	}" << endl <<
-	"	return factor;" << endl <<
-	"}" << endl <<
-	endl <<
-	"function zoomIndependentScrollByLogicalPixels (dx, dy) {" << endl <<
-	"	var zoomFactor = getZoomFactor();" << endl <<
-	"	window.scrollBy (dx * zoomFactor, dy * zoomFactor);" << endl <<
-	"}" << endl <<
-	endl;
-	 */
-	
-	
 	headerStr << "<defs>" << endl;
-	
-	//headerStr << "<script type=\"text/ecmascript\" src=\"Scroll.js\">"
-	//<< endl << "</script>" << endl;
-	
-	
 	headerStr << "</defs>" << endl;
+	
 	return headerStr.str();
 }
 
@@ -136,7 +65,7 @@ void Svg::addLine(
   const string color,
 	const string dashArray,
   const string title) {
-
+	
   bodyStr_ << "<g fill='none' stroke='" << color
          <<"' stroke-width='" << thickness << "' ";
 	if (dashArray != SOLID_DASH_ARRAY) {
@@ -148,9 +77,9 @@ void Svg::addLine(
 	if (title!="") {
 		bodyStr_ << "    <title>" << title << "</title>" << endl;
 	}
-	bodyStr_ << "</line>\n";
+	bodyStr_ << "</line>" << endl;
 	
-  bodyStr_ << "</g>\n";
+  bodyStr_ << "</g>" << endl;
 }
 
 void Svg::addCircle(
@@ -197,14 +126,14 @@ void Svg::addRectangle(unsigned int x,
 											 string title,
 											 string id,
 											 string xlinkTo) {
-   
 	adaptUsedAreaToX(x);
 	adaptUsedAreaToY(y);
 	adaptUsedAreaToX(x+width);
-	adaptUsedAreaToY(y+height);	
+	adaptUsedAreaToY(y+height);
 	
 	const bool htmlTypeLink = false;
 	const bool javascriptTypeLink = true;
+	assert(!htmlTypeLink || !javascriptTypeLink);
 	
   if (xlinkTo != "") {
 		if (htmlTypeLink) {
@@ -213,18 +142,16 @@ void Svg::addRectangle(unsigned int x,
 			<< "#" << xlinkTo 
 			<< "\"" << ">" 
 			<< endl;
-		} else { // javascript type link
+		}
+		
+		if (javascriptTypeLink) {
 			bodyStr_ << "<a xlink:href=\"" 
-			//<< fileName_ 
-			//<< "#" << xlinkTo 
-			//<< "javascript:window.scroll(300,400)"switchTransfer
 			<< "javascript:jumpFromSrcIdToDstId('" << id << "', '" << xlinkTo << "')"
 			<< "\"" << ">" 
 			<< endl;
 		}
 	}
-	bodyStr_
-	<< "  <rect ";
+	bodyStr_ << "  <rect ";
 	
 	if (id!="") {
     bodyStr_ << "id=" << "\"" << id << "\"" << endl;
@@ -239,9 +166,7 @@ void Svg::addRectangle(unsigned int x,
 	<< ";stroke-width:" << strokeWidth << ";"
 	<< "fill-opacity:" << fillOpacity 
 	<< ";stroke-opacity:" << strokeOpacity << "'" << endl;
-	if (javascriptTypeLink) {
-		//bodyStr_ << "  onclick='javascript:window.scroll(300,400)'" << endl;
-	}
+
 	bodyStr_ << "> " << endl;
 	
 	if (title!="") {
@@ -252,12 +177,14 @@ void Svg::addRectangle(unsigned int x,
 	<< "  </rect>" << endl;	 
 
   if (xlinkTo != "") {
-		//if (htmlTypeLink) {
+		if (javascriptTypeLink) {
 		  bodyStr_ << "</a>" << endl;
-		//} else { // javascript type link
-		//}
+		}
+		if (htmlTypeLink) {
+		  bodyStr_ << "</a>" << endl;
+		}
 	}
-	bodyStr_ << endl;
+	bodyStr_ << endl;	
 }
 
 void Svg::addText(
@@ -306,8 +233,8 @@ void Svg::cropToUsedArea() const {
 
 string Svg::getTranslationHeader() const {
 	stringstream strStr;
-  strStr << "<g transform='translate(" << -(minX_ - CROP_BORDER) 
-	  << "," << -(minY_-CROP_BORDER) << ")'" << ">" 
+  strStr << "<g transform='translate(" << -((int)minX_ - CROP_BORDER) 
+	  << "," << -((int)minY_-CROP_BORDER) << ")'" << ">" 
 	  << endl;
 	return strStr.str();
 }
