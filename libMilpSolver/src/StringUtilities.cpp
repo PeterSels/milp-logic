@@ -1,8 +1,9 @@
-#include <assert.h>
 #include <sstream>
 #include <iostream>
 #include <stdlib.h>
 #include <iomanip>
+#include <fstream>
+#include <assert.h>
 
 #include "StringUtilities.h"
 #include "NUnits.h"
@@ -251,5 +252,23 @@ void parseWhiteSpaceAndOneLineCComment(istream & istr) {
 	} while (!stop);
 	// POST: can continue to read with other parsing functions, trying to recognize unknown continuation at cursor
 }
+
+void readFromWriteTo(const string & fileName, ostream & ostr) {
+	ifstream ifstr(fileName.c_str());
+	if (!ifstr) {
+		cerr << "ERROR: Cannot open file '" << fileName << "'." << endl;
+		cerr << "Quitting." << endl;
+		exit(0);
+	}
+	string line;
+	while (getline(ifstr, line)) {
+		ostr << line << endl;
+	}		
+} 
+
+
+
+
+
 
 

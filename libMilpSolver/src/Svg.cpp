@@ -1,9 +1,9 @@
 #include <fstream>
 
 #include "Svg.h"
+#include "StringUtilities.h"
 
-
-#define CROP_BORDER (60)
+#define CROP_BORDER (1000)
 
 using namespace std;
 
@@ -34,7 +34,9 @@ string Svg::getHeader() const {
   headerStr << "<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN'\n";
   headerStr << "'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>\n";
 	
-  headerStr << "<svg " << "version='1.1' baseProfile=\"full\"" << endl;
+  //headerStr << "<svg "
+  headerStr << "<svg onload='centerWindow()' "
+	  << "version='1.1' baseProfile=\"full\"" << endl;
 	headerStr << "  xmlns='http://www.w3.org/2000/svg'" << endl;
 	headerStr << "  xmlns:xlink='http://www.w3.org/1999/xlink'" << endl;
 	headerStr << "  xmlns:ev='http://www.w3.org/2001/xml-events'" << endl;
@@ -44,8 +46,88 @@ string Svg::getHeader() const {
 	headerStr << ">" << endl;	
   headerStr << "<g><title>" << fileName_ << "</title></g>" << endl;
 	
+	
+	headerStr << "<script type=\"text/ecmascript\"><![CDATA[" << endl;
+	readFromWriteTo("../Scroll.js", headerStr);
+	/*
+	headerStr << "  function centerWindow() {" << endl;
+	headerStr << "    var mx = window.screen.width / 2;" << endl;
+	headerStr << "    var my = window.screen.height / 2;" << endl;
+	headerStr << "    window.scroll(mx, my)" << endl;
+	headerStr << "  }" << endl;
+	*/
+	headerStr << "]]></script>" << endl;
+
+	
+	/*
+	 headerStr <<
+	 "function include(file) {" << endl <<
+	 "  if (document.createElement && document.getElementsByTagName) {" << endl <<
+	 "    var head = document.getElementsByTagName('defs')[0];" << endl <<
+	 "    var script = document.createElement('script');" << endl <<
+	 "    script.setAttribute('type', 'text/javascript');" << endl <<
+	 "    script.setAttribute('src', file);" << endl <<	
+	 "    head.appendChild(script);" << endl <<
+	 "  } else {" << endl <<
+	 "    alert('Your old browser cannot deal with the DOM standard. Update it!');" 
+	 << endl <<
+	 "  }" << endl <<
+	 "}" << endl;
+	 
+	 headerStr << "include('../Scroll.js');" << endl;
+	 
+	 */  
+	
+	/*
+	headerStr << "  function jumpFromSrcIdToDstId(srcId, dstId) {" << endl;
+	//headerStr << "    var svgDoc = evt.target.ownerDocument;" << endl;
+	//headerStr << "    var x = svgDoc.getElementById(thatId).x;" << endl;
+	headerStr << "    var srcX = document.getElementById(srcId).x.baseVal.value;" 
+	<< endl;
+	headerStr << "    var srcY = document.getElementById(srcId).y.baseVal.value;" 
+	<< endl;
+	headerStr << "    var dstX = document.getElementById(dstId).x.baseVal.value;" 
+	<< endl;
+	headerStr << "    var dstY = document.getElementById(dstId).y.baseVal.value;" 
+	<< endl;
+	headerStr << "    var dx = dstX - srcX;" << endl;
+	headerStr << "    var dy = dstY - srcY;" << endl;
+	headerStr << "    window.zoomIndependentScrollByLogicalPixels(dx,dy);" 
+	<< endl;
+	headerStr << "  }" << endl;
+	
+	headerStr << 
+	"function getZoomFactor() {" << endl <<
+  "	var factor = 1;" << endl <<
+	"	if (document.getBoundingClientRect) {" << endl <<
+	"		// rect is only in physical pixel size in IE before version 8 " << endl <<
+	"		var rect = document.getBoundingClientRect();" << endl <<
+	"		var physicalW = rect.right - rect.left;" << endl <<
+	"		var logicalW = document.offsetWidth;" << endl <<
+	"		// the zoom level is always an integer percent value" << endl <<
+	"		factor = Math.round ((physicalW / logicalW) * 100) / 100;" << endl <<
+	"	}" << endl <<
+	"	return factor;" << endl <<
+	"}" << endl <<
+	endl <<
+	"function zoomIndependentScrollByLogicalPixels (dx, dy) {" << endl <<
+	"	var zoomFactor = getZoomFactor();" << endl <<
+	"	window.scrollBy (dx * zoomFactor, dy * zoomFactor);" << endl <<
+	"}" << endl <<
+	endl;
+	 */
+	
+	
+	headerStr << "<defs>" << endl;
+	
+	//headerStr << "<script type=\"text/ecmascript\" src=\"Scroll.js\">"
+	//<< endl << "</script>" << endl;
+	
+	
+	headerStr << "</defs>" << endl;
 	return headerStr.str();
 }
+
 
 void Svg::addLine(
   unsigned int x1, unsigned int y1,
@@ -121,12 +203,25 @@ void Svg::addRectangle(unsigned int x,
 	adaptUsedAreaToX(x+width);
 	adaptUsedAreaToY(y+height);	
 	
+	const bool htmlTypeLink = false;
+	const bool javascriptTypeLink = true;
+	
   if (xlinkTo != "") {
-		bodyStr_ << "<a xlink:href=\"" 
-		<< fileName_ 
-		<< "#" << xlinkTo 
-		<< "\"" << ">" 
-		<< endl;
+		if (htmlTypeLink) {
+			bodyStr_ << "<a xlink:href=\"" 
+			<< fileName_ 
+			<< "#" << xlinkTo 
+			<< "\"" << ">" 
+			<< endl;
+		} else { // javascript type link
+			bodyStr_ << "<a xlink:href=\"" 
+			//<< fileName_ 
+			//<< "#" << xlinkTo 
+			//<< "javascript:window.scroll(300,400)"switchTransfer
+			<< "javascript:jumpFromSrcIdToDstId('" << id << "', '" << xlinkTo << "')"
+			<< "\"" << ">" 
+			<< endl;
+		}
 	}
 	bodyStr_
 	<< "  <rect ";
@@ -143,8 +238,11 @@ void Svg::addRectangle(unsigned int x,
 	<< ";stroke:" << strokeColor 
 	<< ";stroke-width:" << strokeWidth << ";"
 	<< "fill-opacity:" << fillOpacity 
-	<< ";stroke-opacity:" << strokeOpacity << "'" 
-	<< "> " << endl;
+	<< ";stroke-opacity:" << strokeOpacity << "'" << endl;
+	if (javascriptTypeLink) {
+		//bodyStr_ << "  onclick='javascript:window.scroll(300,400)'" << endl;
+	}
+	bodyStr_ << "> " << endl;
 	
 	if (title!="") {
 		bodyStr_ << "    <title>" << title << "</title>" << endl;
@@ -154,7 +252,10 @@ void Svg::addRectangle(unsigned int x,
 	<< "  </rect>" << endl;	 
 
   if (xlinkTo != "") {
-		bodyStr_ << "</a>" << endl;
+		//if (htmlTypeLink) {
+		  bodyStr_ << "</a>" << endl;
+		//} else { // javascript type link
+		//}
 	}
 	bodyStr_ << endl;
 }

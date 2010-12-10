@@ -97,6 +97,7 @@ void ScheduleSvg::close() const {
 	string transformHeader = getTranslationHeader();
 	
   ofstream ofStr(fileName_.c_str());
+	
 	ofStr << header;
 	ofStr << transformHeader;
 	ofStr << grid; // grid has to be written 

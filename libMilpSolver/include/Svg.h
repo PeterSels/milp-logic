@@ -21,6 +21,7 @@ public:
 	void setWidth(unsigned int width);
 	void setHeight(unsigned int height);
 	
+	
 	void addLine(
     unsigned int x1, unsigned int y1,
 	  unsigned int x2, unsigned int y2,
