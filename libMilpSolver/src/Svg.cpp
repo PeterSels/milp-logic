@@ -153,6 +153,9 @@ void Svg::addRectangle(unsigned int x,
 	}
 	bodyStr_ << "  <rect ";
 	
+	// For Firefox only:
+	bodyStr_ << "xlink:title=\"" << title << "\" " << endl;
+	
 	if (id!="") {
     bodyStr_ << "id=" << "\"" << id << "\"" << endl;
 	}
