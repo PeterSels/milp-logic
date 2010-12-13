@@ -11,6 +11,7 @@
 #define FONT_SIZE (8)
 #define FONT_TYPE "Verdana"
 #define DEFAULT_COLOR "black"
+
 class Svg {
 public:
 	Svg(const std::string & fileName,

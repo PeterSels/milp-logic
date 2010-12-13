@@ -72,7 +72,12 @@ void Svg::addLine(
 	  bodyStr_ << "stroke-dasharray='" << dashArray << "'"; 
 	}
 	bodyStr_ << ">" << endl;
-  bodyStr_ << "<line x1='" << x1 << "' y1='" << y1
+  bodyStr_ << "<line ";
+	
+	// For Firefox only:
+	bodyStr_ << "xlink:title=\"" << title << "\" " << endl;
+
+	bodyStr_ << "x1='" << x1 << "' y1='" << y1
     << "' x2='" << x2 << "' y2='" << y2 << "'>" << endl;	
 	if (title!="") {
 		bodyStr_ << "    <title>" << title << "</title>" << endl;
