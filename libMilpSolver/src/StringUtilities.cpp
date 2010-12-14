@@ -18,7 +18,8 @@ std::string toString(char ch) {
 }
 
 // for Latex
-// FIXME: For now, supposing there is only one underscore per string argument str
+// FIXME: For now, supposing there is only one underscore 
+// per string argument str
 string escapeUnderscore(const string & str) {
   string news = str;
   unsigned int npos = (unsigned int)str.length();
@@ -239,7 +240,8 @@ void parseWhiteSpaceAndOneLineCComment(istream & istr) {
 				do {
 					//istr >> ch; // skips isspace internally, while we need to catch '\n'
 					istr.get(ch); // does not skip anything and will show up with ''n'
-				} while (ch!='\n'); // supposing transparently translated to correct CR/CR+LF/LF code(s) in Win/*nix systems
+				} while (ch!='\n'); // supposing transparently translated to correct 
+				// CR/CR+LF/LF code(s) in Win/*nix systems
 			} else {
 				istr.unget(); // puts back non '/'
 				istr.unget(); // puts back first '/'
@@ -250,20 +252,24 @@ void parseWhiteSpaceAndOneLineCComment(istream & istr) {
 			stop = true;
 		}		
 	} while (!stop);
-	// POST: can continue to read with other parsing functions, trying to recognize unknown continuation at cursor
+	// POST: can continue to read with other parsing functions, 
+	// trying to recognize unknown continuation at cursor
 }
 
-void readFromWriteTo(const string & fileName, ostream & ostr) {
+bool ifCanReadFromWriteTo(const string & fileName, ostream & ostr) {
 	ifstream ifstr(fileName.c_str());
 	if (!ifstr) {
-		cerr << "ERROR: Cannot open file '" << fileName << "'." << endl;
-		cerr << "Quitting." << endl;
-		exit(0);
+		cerr << "WARNING: Cannot open file '" << fileName << "'." << endl;
+		cerr << "Skipping. OK." << endl;
+		return false;
+	} else {
+		string line;
+		while (getline(ifstr, line)) {
+			ostr << line << endl;
+		}		
+		ifstr.close();
+		return true;
 	}
-	string line;
-	while (getline(ifstr, line)) {
-		ostr << line << endl;
-	}		
 } 
 
 

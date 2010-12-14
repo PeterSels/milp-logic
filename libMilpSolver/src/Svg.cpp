@@ -17,9 +17,9 @@ Svg::Svg(const string & fileName,
 , maxX_(0)
 , minY_(height-1)
 , maxY_(0)
+, haveScrollJs_(false)
 {
 }
-
 
 void Svg::setWidth(unsigned int width) {
 	width_ = width;
@@ -36,8 +36,16 @@ string Svg::getHeader() const {
   headerStr << "<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN'\n";
   headerStr << "'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>\n";
 	
-  headerStr << "<svg onload='centerWindow()' "
-	  << "version='1.1' baseProfile=\"full\"" << endl;
+  headerStr << "<svg ";
+	
+	stringstream scrollJsStrStr;
+	haveScrollJs_ = ifCanReadFromWriteTo("../Scroll.js", scrollJsStrStr);
+	if (haveScrollJs_) {
+		headerStr << "onload='centerWindow()' ";
+	}
+	
+	headerStr << "version='1.1' baseProfile=\"full\"" << endl;
+	
 	headerStr << "  xmlns='http://www.w3.org/2000/svg'" << endl;
 	headerStr << "  xmlns:xlink='http://www.w3.org/1999/xlink'" << endl;
 	headerStr << "  xmlns:ev='http://www.w3.org/2001/xml-events'" << endl;
@@ -45,11 +53,13 @@ string Svg::getHeader() const {
 	headerStr << "  height='" << height_ << "px'" << endl;
 	headerStr << ">" << endl;	
 	
-  headerStr << "<g><title>" << fileName_ << "</title></g>" << endl;	
+  headerStr << "<g><title>" << fileName_ << "</title></g>" << endl;
 	
-	headerStr << "<script type=\"text/ecmascript\"><![CDATA[" << endl;
-	readFromWriteTo("../Scroll.js", headerStr);
-	headerStr << "]]></script>" << endl;
+	if (haveScrollJs_) {
+	  headerStr << "<script type=\"text/ecmascript\"><![CDATA[" << endl;
+	  headerStr << scrollJsStrStr.str();
+	  headerStr << "]]></script>" << endl;
+	}
 
 	headerStr << "<defs>" << endl;
 	headerStr << "</defs>" << endl;
@@ -65,6 +75,11 @@ void Svg::addLine(
   const string color,
 	const string dashArray,
   const string title) {
+	
+	adaptUsedAreaToX(x1);
+	adaptUsedAreaToX(x2);
+	adaptUsedAreaToY(y1);
+	adaptUsedAreaToY(y2);
 	
   bodyStr_ << "<g fill='none' stroke='" << color
          <<"' stroke-width='" << thickness << "' ";
@@ -94,6 +109,11 @@ void Svg::addCircle(
   const string strokeColor,
   const string fillColor) {
 
+	adaptUsedAreaToX(cx+radius);
+	adaptUsedAreaToX(cx-radius);
+	adaptUsedAreaToY(cy+radius);
+	adaptUsedAreaToY(cy-radius);
+		
   bodyStr_ << "<circle cx='" << cx << "' cy='" << cy << "' r='" 
 	<< radius << "'" << endl;
   bodyStr_ << "stroke='" << strokeColor
@@ -101,7 +121,10 @@ void Svg::addCircle(
 	<< "'/>" << endl;
 }
 
-void Svg::adaptUsedAreaToX(unsigned int x) {
+void Svg::adaptUsedAreaToX(int x) {
+	if (x < 0) {
+		x = 0;
+	}
 	if (x < minX_) {
 		minX_ = x;
 	}
@@ -110,7 +133,10 @@ void Svg::adaptUsedAreaToX(unsigned int x) {
 	}
 }
 
-void Svg::adaptUsedAreaToY(unsigned int y) {
+void Svg::adaptUsedAreaToY(int y) {
+	if (y < 0) {
+		y = 0;
+	}
 	if (y < minY_) {
 		minY_ = y;
 	}
@@ -203,6 +229,12 @@ void Svg::addText(
   const string fontName,
   unsigned int angle) {
 
+	// angle independent for now:
+	adaptUsedAreaToX(x - fontSize * text.length());
+	adaptUsedAreaToX(x + fontSize * text.length());
+	adaptUsedAreaToY(y - fontSize * text.length());
+	adaptUsedAreaToY(y + fontSize * text.length());
+	
   bodyStr_ << "<g font-size='" << fontSize << "' font-family='" 
 	<< fontName << "' >\n";
   bodyStr_ << "<text ";

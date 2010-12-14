@@ -38,8 +38,8 @@ public:
 	  const std::string strokeColor = DEFAULT_COLOR,
 	  const std::string fillColor = DEFAULT_COLOR);
 	
-	void adaptUsedAreaToX(unsigned int x);
-	void adaptUsedAreaToY(unsigned int y);
+	void adaptUsedAreaToX(int x);
+	void adaptUsedAreaToY(int y);
 	
 	void addRectangle(unsigned int x, unsigned int y,
 										unsigned int width, unsigned int height,
@@ -75,13 +75,14 @@ protected:
   mutable unsigned int width_; // mutable for crop
   mutable unsigned int height_;
 	
-	unsigned int minX_;
-	unsigned int maxX_;
-	unsigned int minY_;
-	unsigned int maxY_;
+	int minX_;
+	int maxX_;
+	int minY_;
+	int maxY_;
 	
 private:
   std::ostringstream bodyStr_;
+	mutable bool haveScrollJs_;
 };
 
 

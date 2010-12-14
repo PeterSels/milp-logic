@@ -435,11 +435,15 @@ void Solver::addSos1(
     double objCoef = 0;
     stringstream strstr;
     strstr << xName << "_bin_" << i;
-    const SolverVar iBinVar = addLpVar(0, 1, (int)objCoef, strstr.str());
+    //const SolverVar iBinVar = addLpVar(0, 1, (int)objCoef, strstr.str());
+    const SolverVar iBinVar = addBinVar((int)objCoef, strstr.str());
     sosVarVector.push_back(iBinVar);
     sosWeightVector.push_back(i);
-    // We suppose that the SolverVar x has been added with the correct coefficient
-    // for the goal function. So there is no need to add a goal function coefficient
+    // We suppose that eiher the SolverVar x or
+		// its corresponding cost SolverVar y 
+		// has been added with the correct coefficient
+    // for the goal function. 
+		// So there is no need to add a goal function coefficient
     // anymore for any of the iBinVars.
     
     sos1SumExpr             += iBinVar;

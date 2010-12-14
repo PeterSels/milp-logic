@@ -35,6 +35,6 @@ bool replace(std::string & str, char oldCh, char newCh);
 void parseWhiteSpace(std::istream & istr);
 void parseWhiteSpaceAndOneLineCComment(std::istream & istr);
 
-void readFromWriteTo(const std::string & fileName, std::ostream & ostr);
+bool ifCanReadFromWriteTo(const std::string & fileName, std::ostream & ostr);
 
 #endif // STRING_UTILITIES_H
