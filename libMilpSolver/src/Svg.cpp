@@ -39,7 +39,7 @@ string Svg::getHeader() const {
   headerStr << "<svg ";
 	
 	stringstream scrollJsStrStr;
-	haveScrollJs_ = ifCanReadFromWriteTo("../Scroll.js", scrollJsStrStr);
+	haveScrollJs_ = ifCanReadFromWriteTo("Scroll.js", scrollJsStrStr);
 	if (haveScrollJs_) {
 		headerStr << "onload='centerWindow()' ";
 	}
