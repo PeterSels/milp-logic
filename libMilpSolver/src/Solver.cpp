@@ -339,13 +339,13 @@ void Solver::addSos1(const SolverVar & x) {
   assert( 0 <= hi);
   assert(lo <= hi);
 	
-	SolverExpr sos1SumExpr
+	SolverExpr xSos1SumExpr
 #ifdef USE_CPLEX_NATIVE
 	(*global_env_)
 #endif
 	;	
 
-	SolverExpr sos1ScalarProductExpr_x
+	SolverExpr xSos1ScalarProductExpr
 #ifdef USE_CPLEX_NATIVE
 	(*global_env_)
 #endif
@@ -371,17 +371,17 @@ void Solver::addSos1(const SolverVar & x) {
     // for the goal function. So there is no need to add a goal function coefficient
     // anymore for any of the iBinVars.
     
-    sos1SumExpr             += iBinVar;
+    xSos1SumExpr             += iBinVar;
     if (i!=0) {
-      sos1ScalarProductExpr_x += (int)i * iBinVar;
+      xSos1ScalarProductExpr += (int)i * iBinVar;
     }
   }
   bool manuallyAddConstraints = MANUALLY_ADD_SOS_CONSTRAINTS;
   if (manuallyAddConstraints) {
     // according to http://lpsolve.sourceforge.net/5.0/SOS.htm
-    addConstr(sos1SumExpr,             "==", oneExpr, 
+    addConstr(xSos1SumExpr,             "==", oneExpr, 
       xName + "_sos1_sum_is_1"); // convexity row (3)
-    addConstr(sos1ScalarProductExpr_x, "==", x,             
+    addConstr(xSos1ScalarProductExpr, "==", x,             
       xName + "_sos1_scalar_prod_is_x"); // reference row (2)
   }
   bool addSolverSos = ADD_SOLVER_SOS;
@@ -395,35 +395,36 @@ void Solver::addSos1(const SolverVar & x) {
   }
 }
 
-void Solver::addSos1(
-  const SolverVar & x, const SolverVar & y, double (*fPtr)(int)) {
+void Solver::addSos1(const SolverVar & x, 
+										 const SolverVar & z, 
+										 double (*fPtr)(int)) {
   
   double loDouble = getLowerBound(x);
   int lo = (int)loDouble;
   assert(lo == loDouble);
-
+	
   double hiDouble = getUpperBound(x);
   int hi = (int)hiDouble;
   assert(hi == hiDouble);
   string xName = getName(x);
-  	
+	
   assert( 0 <= lo);
   assert( 0 <= hi);
   assert(lo <= hi);
-
-	SolverExpr sos1SumExpr
+	
+	SolverExpr xSos1SumExpr
 #ifdef USE_CPLEX_NATIVE
 	(*global_env_)
 #endif
 	;  
 	
-	SolverExpr sos1ScalarProductExpr_x
+	SolverExpr xSos1ScalarProductExpr
 #ifdef USE_CPLEX_NATIVE
 	(*global_env_)
 #endif
 	; 	
 	
-	SolverExpr sos2ScalarProductExpr_y
+	SolverExpr zSos2ScalarProductExpr
 #ifdef USE_CPLEX_NATIVE
 	(*global_env_)
 #endif
@@ -439,17 +440,17 @@ void Solver::addSos1(
     const SolverVar iBinVar = addBinVar((int)objCoef, strstr.str());
     sosVarVector.push_back(iBinVar);
     sosWeightVector.push_back(i);
-    // We suppose that eiher the SolverVar x or
+    // We suppose that either the SolverVar x or
 		// its corresponding cost SolverVar y 
 		// has been added with the correct coefficient
     // for the goal function. 
 		// So there is no need to add a goal function coefficient
     // anymore for any of the iBinVars.
     
-    sos1SumExpr             += iBinVar;
-    sos1ScalarProductExpr_x += iBinVar * (int)i;
+    xSos1SumExpr           += iBinVar;
+    xSos1ScalarProductExpr += iBinVar * (int)i;
     double coef = (*fPtr)(i);
-    sos2ScalarProductExpr_y += iBinVar * coef;
+    zSos2ScalarProductExpr += iBinVar * coef;
   }
   bool manuallyAddConstraints = MANUALLY_ADD_SOS_CONSTRAINTS;
   if (manuallyAddConstraints) {
@@ -460,12 +461,12 @@ void Solver::addSos1(
 #endif
 		;     
 		oneExpr += 1;
-    addConstr(sos1SumExpr,             "==", oneExpr, 
+    addConstr(xSos1SumExpr,             "==", oneExpr, 
               xName + "_sos1_sum_is_1"); // convexity row (3)
-    addConstr(sos1ScalarProductExpr_x, "==", x,             
+    addConstr(xSos1ScalarProductExpr, "==", x,             
               xName + "_sos1_scalar_prod_is_x"); // reference row (2)
-    addConstr(sos2ScalarProductExpr_y, "==", y,             
-              xName + "_sos1_scalar_prod_is_y"); // function row (1)
+    addConstr(zSos2ScalarProductExpr, "==", z,             
+              xName + "_sos1_scalar_prod_is_z"); // function row (1)
   }
   bool addSolverSos = ADD_SOLVER_SOS;
   if (addSolverSos) {
@@ -473,10 +474,137 @@ void Solver::addSos1(
     strstr << xName << "_sososos_" << lo << "_" << hi;
     string xSosName = strstr.str();
     addSos1SolverSpecific(xSosName, sosVarVector, sosWeightVector); 
+		// makes some of the 3 constraints above redundant, 
+		// which one(s)?...FIXME
+  }
+} // addSos1
+
+void Solver::addSumSos1(const SolverVar & x, const SolverVar & y, 
+												const SolverVar & z, 
+												double (*fPtr)(const vector<double> & parameters),
+												vector<double> & parameters) {
+	// x
+	double xLoDouble = getLowerBound(x);
+	int xLo = (int)xLoDouble;
+	assert(xLo == xLoDouble);
+	
+	double xHiDouble = getUpperBound(x);
+	int xHi = (int)xHiDouble;
+	assert(xHi == xHiDouble);
+	
+	string xName = getName(x);
+	
+	assert( 0 <= xLo);
+	assert( 0 <= xHi);
+	assert(xLo <= xHi);
+	
+	// y
+	double yLoDouble = getLowerBound(y);
+	int yLo = (int)yLoDouble;
+	assert(yLo == yLoDouble);
+	
+	double yHiDouble = getUpperBound(y);
+	int yHi = (int)yHiDouble;
+	assert(yHi == yHiDouble);
+	
+	string yName = getName(y);
+	
+	assert( 0 <= yLo);
+	assert( 0 <= yHi);
+	assert(yLo <= yHi);
+	
+	SolverExpr xySumSos1SumExpr
+#ifdef USE_CPLEX_NATIVE
+	(*global_env_)
+#endif
+	;  
+
+	SolverExpr xySumSos1ScalarProductExpr
+#ifdef USE_CPLEX_NATIVE
+	(*global_env_)
+#endif
+	;
+		
+	SolverExpr zSos2ScalarProductExpr
+#ifdef USE_CPLEX_NATIVE
+	(*global_env_)
+#endif
+	; 	
+	
+	{ // xySum = x + y
+		//vector<SolverVar> sosVarVector;
+		//vector<double> sosWeightVector;
+		
+		double xySymDummy = 0.0;
+		parameters.push_back(xySymDummy);
+		const unsigned int lastParamIndex = parameters.size()-1;
+		
+		for (unsigned int i=(unsigned int)xLo + yLo; 
+				 i<=(unsigned int)xHi + yHi; i++) {
+			double objCoef = 0;
+			stringstream strstr;
+			strstr << xName << "_bin_" << i;
+			const SolverVar iBinVar = addBinVar((int)objCoef, strstr.str());
+			//sosVarVector.push_back(iBinVar);
+			//sosWeightVector.push_back(i);
+			
+			xySumSos1SumExpr           += iBinVar;
+			xySumSos1ScalarProductExpr += iBinVar * (int)i;
+			
+			parameters[lastParamIndex] = i;
+			double coef = (*fPtr)(parameters);
+			
+			zSos2ScalarProductExpr     += iBinVar * coef;
+		}
+		parameters.pop_back();
+	}
+  bool manuallyAddConstraints = MANUALLY_ADD_SOS_CONSTRAINTS;
+  if (manuallyAddConstraints) {
+    // according to http://lpsolve.sourceforge.net/5.0/SOS.htm
+		SolverExpr oneExpr
+#ifdef USE_CPLEX_NATIVE
+		(*global_env_)
+#endif
+		;     
+		oneExpr += 1;
+		
+		SolverExpr xySumExpr
+#ifdef USE_CPLEX_NATIVE
+		(*global_env_)
+#endif
+		;     
+		xySumExpr += x;
+		xySumExpr += y;
+		
+    addConstr(xySumSos1SumExpr,           "==", oneExpr, 
+              xName + "_sos1_sum_is_1"); // convexity row (3)
+    addConstr(xySumSos1ScalarProductExpr, "==", xySumExpr,             
+              xName + "_sos1_scalar_prod_is_x"); // reference row (2)
+    addConstr(zSos2ScalarProductExpr,     "==", z,             
+              xName + "_sos1_scalar_prod_is_z"); // function row (1)
+  }
+	/*
+  bool addSolverSos = ADD_SOLVER_SOS;
+  if (addSolverSos) {
+		{
+			stringstream strstr;
+			strstr << xName << "_sososos_" << xLo << "_" << xHi;
+			string xSosName = strstr.str();
+			addSos1SolverSpecific(xSosName, sosVarVector, sosWeightVector); 
       // makes some of the 3 constraints above redundant, 
       // which one(s)?...FIXME
+		}
+		{
+			stringstream strstr;
+			strstr << yName << "_sososos_" << yLo << "_" << yHi;
+			string ySosName = strstr.str();
+			addSos1SolverSpecific(ySosName, sosVarVector, sosWeightVector); 
+		}
   }
-}
+	*/
+} // addSos1_2D
+
+
 
 // For the lp file the solver will write out.
 // from: http://lpsolve.sourceforge.net/5.5/lp-format.htm
