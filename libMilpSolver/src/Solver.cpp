@@ -535,9 +535,9 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
 		//vector<SolverVar> sosVarVector;
 		//vector<double> sosWeightVector;
 		
-		double xySymDummy = 0.0;
-		parameters.push_back(xySymDummy);
-		const unsigned int lastParamIndex = parameters.size()-1;
+		//double xySymDummy = 0.0;
+		//parameters.push_back(xySymDummy);
+		const unsigned int varParamIndex = 4; // D0 happens to be at index 4
 		
 		for (unsigned int i=(unsigned int)xLo + yLo; 
 				 i<=(unsigned int)xHi + yHi; i++) {
@@ -551,12 +551,12 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
 			xySumSos1SumExpr           += iBinVar;
 			xySumSos1ScalarProductExpr += iBinVar * (int)i;
 			
-			parameters[lastParamIndex] = i;
+			parameters[varParamIndex] = i;
 			double coef = (*fPtr)(parameters);
 			
 			zSos2ScalarProductExpr     += iBinVar * coef;
 		}
-		parameters.pop_back();
+		//parameters.pop_back();
 	}
   bool manuallyAddConstraints = MANUALLY_ADD_SOS_CONSTRAINTS;
   if (manuallyAddConstraints) {
