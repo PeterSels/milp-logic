@@ -491,6 +491,22 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
 	double xHiDouble = getUpperBound(x);
 	int xHi = (int)xHiDouble;
 	assert(xHi == xHiDouble);
+
+	cout << "      xLoDouble = " << xLoDouble << endl;
+	cout << "      xHiDouble = " << xHiDouble << endl;
+
+	if (xLoDouble < 0) {
+		cout << "xLoDouble = " << xLoDouble << endl;
+	}
+	if (xLoDouble > 30) {
+		cout << "xLoDouble = " << xLoDouble << endl;
+	}
+	if (xHiDouble < 0) {
+		cout << "xHiDouble = " << xHiDouble << endl;
+	}
+	if (xHiDouble > 30) {
+		cout << "xHiDouble = " << xHiDouble << endl;
+	}
 	
 	string xName = getName(x);
 	
@@ -553,6 +569,7 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
 			
 			parameters[varParamIndex] = i;
 			double coef = (*fPtr)(parameters);
+			//cout << "cost(" << i << ") =" << coef << endl; // to see if we have Nans! FIXME
 			
 			zSos2ScalarProductExpr     += iBinVar * coef;
 		}

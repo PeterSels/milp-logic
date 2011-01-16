@@ -15,7 +15,7 @@
 class Svg {
 public:
 	Svg(const std::string & fileName,
-		unsigned int width, unsigned int height);
+		  unsigned int width, unsigned int height);
 
 	// As long as you call these before close, even multiple times, 
 	// it will have the wanted effect on your svg file:
@@ -42,7 +42,7 @@ public:
 	void adaptUsedAreaToY(int y);
 	
 	void addRectangle(unsigned int x, unsigned int y,
-										unsigned int width, unsigned int height,
+										         int width, unsigned int height,
 										unsigned int strokeWidth=1,
 										const std::string strokeColor = DEFAULT_COLOR,
 										const std::string fillColor = DEFAULT_COLOR,
