@@ -126,8 +126,10 @@ void CplexSolver::resetModel() {
 }
 
 const SolverVar & CplexSolver::addLpVar(
-  double lo, double hi, double objCoef, const std::string & name) {
+  double lo, double hi, double objCoef, const std::string & name,
+  bool doUpdate) {
 
+	(void)doUpdate;
   IloNumVar var(*env_, lo, hi, ILOFLOAT);
   var.setName(lpConvert(name).c_str());
   varVector_.push_back(var);
@@ -137,8 +139,10 @@ const SolverVar & CplexSolver::addLpVar(
 }
 
 const SolverVar & CplexSolver::addIntVar(
-  int lo, int hi, double objCoef, const std::string & name) {
+  int lo, int hi, double objCoef, const std::string & name,
+  bool doUpdate) {
 
+	(void)doUpdate;
   IloNumVar var(*env_, lo, hi, ILOINT);
   var.setName(lpConvert(name).c_str());
   varVector_.push_back(var);
@@ -148,7 +152,9 @@ const SolverVar & CplexSolver::addIntVar(
 }
 
 const SolverVar & CplexSolver::addBinVar(
-  double objCoef, const std::string & name) {
+  double objCoef, const std::string & name, bool doUpdate) {
+	
+	(void)doUpdate;
   IloNumVar var(*env_, 0, 1, ILOBOOL);
   var.setName(lpConvert(name).c_str());
   varVector_.push_back(var);
@@ -292,7 +298,9 @@ void CplexSolver::addSos1SolverSpecific(
 #endif // USE_SOS_VECTOR
 }
 
-
+void CplexSolver::update() {
+  // nothing to do
+}
 
 void CplexSolver::exportModelAsLpFile(const string & fileNamePrefix) const {
   cout << "exportModelAsLpFile" << endl;

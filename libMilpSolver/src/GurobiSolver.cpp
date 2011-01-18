@@ -41,19 +41,23 @@ void GurobiSolver::resetModel() {
 }
 
 const SolverVar & GurobiSolver::addLpVar(
-  double lo, double hi, double objCoef, const std::string & name) {
+  double lo, double hi, double objCoef, const std::string & name,
+	bool doUpdate) {
   varVector_.push_back(model_->addVar(
     lo, hi, objCoef, GRB_CONTINUOUS, lpConvert(name).c_str()));
-  model_->update();
+	if (doUpdate) {
+    model_->update();
+	}
   return varVector_.back();
 }
 
 const SolverVar & GurobiSolver::addIntVar(
-  int lo, int hi, double objCoef, const std::string & name) {
+  int lo, int hi, double objCoef, const std::string & name, bool doUpdate) {
   varVector_.push_back(model_->addVar(
     lo, hi, objCoef, GRB_INTEGER, lpConvert(name).c_str()));
-  model_->update();
-
+	if (doUpdate) {
+    model_->update();
+	}
   /*
 	if (lo==0) {
 		unsigned int varVectorSize = varVector_.size();
@@ -76,10 +80,12 @@ const SolverVar & GurobiSolver::addIntVar(
 }
 
 const SolverVar & GurobiSolver::addBinVar(
-  double objCoef, const std::string & name) {
+  double objCoef, const std::string & name, bool doUpdate) {
   varVector_.push_back(model_->addVar(
     0, 1, objCoef, GRB_BINARY, lpConvert(name).c_str()));
-  model_->update();
+	if (doUpdate) {
+    model_->update();
+	}
   return varVector_.back();
 }
 
@@ -122,6 +128,12 @@ const SolverConstr & GurobiSolver::addConstr(
   model_->update();
   return constrVector_.back();
 }
+
+// Specifically for Gurobi really
+void GurobiSolver::update() {
+  model_->update();
+}
+
 
 // static
 char GurobiSolver::compStringToChar(

@@ -492,6 +492,7 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
 	int xHi = (int)xHiDouble;
 	assert(xHi == xHiDouble);
 
+	/*
 	cout << "      xLoDouble = " << xLoDouble << endl;
 	cout << "      xHiDouble = " << xHiDouble << endl;
 
@@ -507,6 +508,7 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
 	if (xHiDouble > 30) {
 		cout << "xHiDouble = " << xHiDouble << endl;
 	}
+  */
 	
 	string xName = getName(x);
 	
@@ -548,22 +550,30 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
 	; 	
 	
 	{ // xySum = x + y
-		//vector<SolverVar> sosVarVector;
+		vector<SolverVar> sosVarVector;
 		//vector<double> sosWeightVector;
 		
 		//double xySymDummy = 0.0;
 		//parameters.push_back(xySymDummy);
 		const unsigned int varParamIndex = 4; // D0 happens to be at index 4
-		
+
+		const bool doUpdate = false;
 		for (unsigned int i=(unsigned int)xLo + yLo; 
 				 i<=(unsigned int)xHi + yHi; i++) {
 			double objCoef = 0;
 			stringstream strstr;
 			strstr << xName << "_bin_" << i;
-			const SolverVar iBinVar = addBinVar((int)objCoef, strstr.str());
-			//sosVarVector.push_back(iBinVar);
+			const SolverVar iBinVar = addBinVar((int)objCoef, strstr.str(), doUpdate);
+			sosVarVector.push_back(iBinVar);
 			//sosWeightVector.push_back(i);
-			
+		}
+		
+		update(); // only once for whole array of variables
+		
+		unsigned int j = 0;
+		for (unsigned int i=(unsigned int)xLo + yLo; 
+				 i<=(unsigned int)xHi + yHi; i++) {
+      SolverVar & iBinVar         = sosVarVector[j++];
 			xySumSos1SumExpr           += iBinVar;
 			xySumSos1ScalarProductExpr += iBinVar * (int)i;
 			

@@ -15,11 +15,14 @@ public:
   void resetModel();
 
   const SolverVar & addLpVar(
-    double lo, double hi, double objCoef, const std::string & name);
+    double lo, double hi, double objCoef, const std::string & name,
+    bool doUpdate);
   const SolverVar & addIntVar(
-    int lo, int hi, double objCoef, const std::string & name);
+    int lo, int hi, double objCoef, const std::string & name,
+    bool doUpdate);
   const SolverVar & addBinVar(
-    double objCoef, const std::string & name);
+    double objCoef, const std::string & name,
+    bool doUpdate);
 
   const SolverExpr & addExpr(
     const SolverExpr & expr, const std::string & name);
@@ -38,6 +41,8 @@ public:
     const std::string & name,
     const std::vector<SolverVar> & vars, 
     const std::vector<double> & coeffs);
+
+	virtual void update();
 
   std::string  getName(const SolverVar & var) const;
   double getUpperBound(const SolverVar & var) const;

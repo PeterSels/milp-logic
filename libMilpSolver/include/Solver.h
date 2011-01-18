@@ -26,11 +26,14 @@ public:
 
   //// layer 1:
   virtual const SolverVar & addLpVar(
-    double lo, double hi, double objCoef, const std::string & name) = 0;
+    double lo, double hi, double objCoef, const std::string & name,
+    bool doUpdate=true) = 0;
   virtual const SolverVar & addIntVar(
-    int lo, int hi, double objCoef, const std::string & name) = 0;
+    int lo, int hi, double objCoef, const std::string & name,
+    bool doUpdate=true) = 0;
   virtual const SolverVar & addBinVar(
-    double objCoef, const std::string & name) = 0;
+    double objCoef, const std::string & name,
+    bool doUpdate=true) = 0;
 
   virtual const SolverExpr & addExpr(
     const SolverExpr & expr, const std::string & name) = 0;
@@ -45,6 +48,7 @@ public:
     const SolverExpr & lhs, const std::string & comp, const SolverExpr & rhs,
     const std::string & name) = 0;
 
+	virtual void update() = 0; // Specifically for Gurobi really
 
   //// layer 2:
   // a = (b and c)

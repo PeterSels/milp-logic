@@ -16,11 +16,14 @@ public:
   void deleteModelAndEnv();
 
   const SolverVar & addLpVar(
-    double lo, double hi, double objCoef, const std::string & name);
+    double lo, double hi, double objCoef, const std::string & name,
+    bool doUpdate=true);
   const SolverVar & addIntVar(
-    int lo, int hi, double objCoef, const std::string & name);
+    int lo, int hi, double objCoef, const std::string & name,
+    bool doUpdate=true);
   const SolverVar & addBinVar(
-    double objCoef, const std::string & name);
+    double objCoef, const std::string & name,
+    bool doUpdate=true);
 
   const SolverExpr & addExpr(
     const SolverExpr & expr, const std::string & name);
@@ -41,6 +44,8 @@ public:
     const std::vector<SolverVar> & vars, 
     const std::vector<double> & coeffs);
 
+	virtual void update(); // Specifically for Gurobi really
+	
   std::string  getName(const SolverVar & var) const;
   double getLowerBound(const SolverVar & var) const;
   double getUpperBound(const SolverVar & var) const;

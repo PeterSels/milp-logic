@@ -17,11 +17,14 @@ public:
   void deleteModelAndEnv();
 
   const SolverVar & addLpVar(
-    double lo, double hi, double objCoef, const std::string & name);
+    double lo, double hi, double objCoef, const std::string & name,
+		bool doUpdate=true);
   const SolverVar & addIntVar(
-    int lo, int hi, double objCoef, const std::string & name);
+    int lo, int hi, double objCoef, const std::string & name,
+    bool doUpdate=true);
   const SolverVar & addBinVar(
-    double objCoef, const std::string & name);
+    double objCoef, const std::string & name,
+    bool doUpdate=true);
 
   const SolverExpr & addExpr(
     const SolverExpr & expr, const std::string & name);
@@ -35,6 +38,8 @@ public:
   const SolverConstr & addConstr(
     const SolverExpr & lhs, const std::string & comp, const SolverExpr & rhs,
     const std::string & name);
+
+	virtual void update();
 
   //const SolverSos & 
   void addSos1SolverSpecific(

@@ -50,7 +50,10 @@ void XpressSolver::resetModel() {
 }
 
 const SolverVar & XpressSolver::addLpVar(
-  double lo, double hi, double objCoef, const std::string & name) {
+  double lo, double hi, double objCoef, const std::string & name,
+  bool doUpdate) {
+	
+	(void)doUpdate;
   SolverVar & var = model_->newVar(
     lpConvert(name).c_str(), XPRB_PL, lo, hi);
   varVector_.push_back(var);
@@ -61,7 +64,10 @@ const SolverVar & XpressSolver::addLpVar(
 }
 
 const SolverVar & XpressSolver::addIntVar(
-  int lo, int hi, double objCoef, const std::string & name) {
+  int lo, int hi, double objCoef, const std::string & name,
+  bool doUpdate) {
+	
+	(void)doUpdate;
   SolverVar & var = model_->newVar(
     lpConvert(name).c_str(), XPRB_UI, lo, hi);
   varVector_.push_back(var);
@@ -72,7 +78,9 @@ const SolverVar & XpressSolver::addIntVar(
 }
 
 const SolverVar & XpressSolver::addBinVar(
-  double objCoef, const std::string & name) {
+  double objCoef, const std::string & name, bool doUpdate) {
+	
+	(void)doUpdate;
   SolverVar & var = model_->newVar(
     lpConvert(name).c_str(), XPRB_BV);
   varVector_.push_back(var);
@@ -195,6 +203,9 @@ void XpressSolver::addSos1SolverSpecific(
 #endif // USE_SOS_VECTOR
 }
 
+void XpressSolver::update() {
+  // nothing to do
+}
 
 
 void XpressSolver::exportModelAsLpFile(const string & fileNamePrefix) const {
