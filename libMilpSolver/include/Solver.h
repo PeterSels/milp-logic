@@ -168,12 +168,13 @@ public:
   void addSos1   (const SolverVar & x);
   void addSos1   (const SolverVar & x, 
 									const SolverVar & z, 
-									double (*fPtr)(int));
+									double (*fPtr)(const std::vector<double> & parameters, int i),
+									std::vector<double> & parameters);
 	
   void addSumSos1(const SolverVar & x, 
 									const SolverVar & y,
 									const SolverVar & z, 
-									double (*fPtr)(const std::vector<double> & parameters),
+									double (*fPtr)(const std::vector<double> & parameters, int i),
 									std::vector<double> & parameters);
   
   virtual std::string  getName(const SolverVar & var) const = 0;

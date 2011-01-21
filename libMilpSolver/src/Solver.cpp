@@ -397,7 +397,8 @@ void Solver::addSos1(const SolverVar & x) {
 
 void Solver::addSos1(const SolverVar & x, 
 										 const SolverVar & z, 
-										 double (*fPtr)(int)) {
+										 double (*fPtr)(const vector<double> & parameters, int i),
+										 vector<double> & parameters) {
   
   double loDouble = getLowerBound(x);
   int lo = (int)loDouble;
@@ -430,26 +431,33 @@ void Solver::addSos1(const SolverVar & x,
 #endif
 	; 	
 	
+	const bool doUpdate = false;
   vector<SolverVar> sosVarVector;
-  vector<double> sosWeightVector;
+  //vector<double> sosWeightVector;
   for (unsigned int i=(unsigned int)lo; i<=(unsigned int)hi; i++) {
     double objCoef = 0;
     stringstream strstr;
     strstr << xName << "_bin_" << i;
     //const SolverVar iBinVar = addLpVar(0, 1, (int)objCoef, strstr.str());
-    const SolverVar iBinVar = addBinVar((int)objCoef, strstr.str());
+    const SolverVar iBinVar = addBinVar((int)objCoef, strstr.str(), doUpdate);
     sosVarVector.push_back(iBinVar);
-    sosWeightVector.push_back(i);
+    //sosWeightVector.push_back(i);
     // We suppose that either the SolverVar x or
 		// its corresponding cost SolverVar y 
 		// has been added with the correct coefficient
     // for the goal function. 
 		// So there is no need to add a goal function coefficient
     // anymore for any of the iBinVars.
-    
+	}
+	
+	update(); // only once for whole array of variables
+	
+	unsigned int j = 0;
+	for (unsigned int i=(unsigned int)lo; i<=(unsigned int)hi; i++) {
+		SolverVar & iBinVar     = sosVarVector[j++];	
     xSos1SumExpr           += iBinVar;
     xSos1ScalarProductExpr += iBinVar * (int)i;
-    double coef = (*fPtr)(i);
+    double coef = (*fPtr)(parameters, i);
     zSos2ScalarProductExpr += iBinVar * coef;
   }
   bool manuallyAddConstraints = MANUALLY_ADD_SOS_CONSTRAINTS;
@@ -459,7 +467,7 @@ void Solver::addSos1(const SolverVar & x,
 #ifdef USE_CPLEX_NATIVE
 		(*global_env_)
 #endif
-		;     
+		;
 		oneExpr += 1;
     addConstr(xSos1SumExpr,             "==", oneExpr, 
               xName + "_sos1_sum_is_1"); // convexity row (3)
@@ -468,6 +476,7 @@ void Solver::addSos1(const SolverVar & x,
     addConstr(zSos2ScalarProductExpr, "==", z,             
               xName + "_sos1_scalar_prod_is_z"); // function row (1)
   }
+	/*
   bool addSolverSos = ADD_SOLVER_SOS;
   if (addSolverSos) {
     stringstream strstr;
@@ -477,11 +486,12 @@ void Solver::addSos1(const SolverVar & x,
 		// makes some of the 3 constraints above redundant, 
 		// which one(s)?...FIXME
   }
+	*/
 } // addSos1
 
 void Solver::addSumSos1(const SolverVar & x, const SolverVar & y, 
 												const SolverVar & z, 
-												double (*fPtr)(const vector<double> & parameters),
+												double (*fPtr)(const vector<double> & parameters, int i),
 												vector<double> & parameters) {
 	// x
 	double xLoDouble = getLowerBound(x);
@@ -491,24 +501,6 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
 	double xHiDouble = getUpperBound(x);
 	int xHi = (int)xHiDouble;
 	assert(xHi == xHiDouble);
-
-	/*
-	cout << "      xLoDouble = " << xLoDouble << endl;
-	cout << "      xHiDouble = " << xHiDouble << endl;
-
-	if (xLoDouble < 0) {
-		cout << "xLoDouble = " << xLoDouble << endl;
-	}
-	if (xLoDouble > 30) {
-		cout << "xLoDouble = " << xLoDouble << endl;
-	}
-	if (xHiDouble < 0) {
-		cout << "xHiDouble = " << xHiDouble << endl;
-	}
-	if (xHiDouble > 30) {
-		cout << "xHiDouble = " << xHiDouble << endl;
-	}
-  */
 	
 	string xName = getName(x);
 	
@@ -551,11 +543,7 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
 	
 	{ // xySum = x + y
 		vector<SolverVar> sosVarVector;
-		//vector<double> sosWeightVector;
-		
-		//double xySymDummy = 0.0;
-		//parameters.push_back(xySymDummy);
-		const unsigned int varParamIndex = 4; // D0 happens to be at index 4
+		//vector<double> sosWeightVector;		
 
 		const bool doUpdate = false;
 		for (unsigned int i=(unsigned int)xLo + yLo; 
@@ -577,8 +565,8 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
 			xySumSos1SumExpr           += iBinVar;
 			xySumSos1ScalarProductExpr += iBinVar * (int)i;
 			
-			parameters[varParamIndex] = i;
-			double coef = (*fPtr)(parameters);
+			//parameters[varParamIndex] = i;
+			double coef = (*fPtr)(parameters, i);
 			//cout << "cost(" << i << ") =" << coef << endl; // to see if we have Nans! FIXME
 			
 			zSos2ScalarProductExpr     += iBinVar * coef;
