@@ -397,8 +397,9 @@ void Solver::addSos1(const SolverVar & x) {
 
 void Solver::addSos1(const SolverVar & x, 
 										 const SolverVar & z, 
-										 double (*fPtr)(const vector<double> & parameters, int i),
-										 vector<double> & parameters) {
+										 double (*fPtr)(const vector<double> & parameters, int ii),
+										 vector<double> & parameters,
+										 unsigned int xStep) {
   
   double loDouble = getLowerBound(x);
   int lo = (int)loDouble;
@@ -434,7 +435,7 @@ void Solver::addSos1(const SolverVar & x,
 	const bool doUpdate = false;
   vector<SolverVar> sosVarVector;
   //vector<double> sosWeightVector;
-  for (unsigned int i=(unsigned int)lo; i<=(unsigned int)hi; i++) {
+  for (unsigned int i=(unsigned int)lo; i<=(unsigned int)hi; i+=xStep) {
     double objCoef = 0;
     stringstream strstr;
     strstr << xName << "_bin_" << i;
@@ -453,7 +454,7 @@ void Solver::addSos1(const SolverVar & x,
 	update(); // only once for whole array of variables
 	
 	unsigned int j = 0;
-	for (unsigned int i=(unsigned int)lo; i<=(unsigned int)hi; i++) {
+	for (unsigned int i=(unsigned int)lo; i<=(unsigned int)hi; i+=xStep) {
 		SolverVar & iBinVar     = sosVarVector[j++];	
     xSos1SumExpr           += iBinVar;
     xSos1ScalarProductExpr += iBinVar * (int)i;
@@ -492,7 +493,8 @@ void Solver::addSos1(const SolverVar & x,
 void Solver::addSumSos1(const SolverVar & x, const SolverVar & y, 
 												const SolverVar & z, 
 												double (*fPtr)(const vector<double> & parameters, int i),
-												vector<double> & parameters) {
+												vector<double> & parameters,
+												unsigned int xPlusyStep) {
 	// x
 	double xLoDouble = getLowerBound(x);
 	int xLo = (int)xLoDouble;
@@ -547,7 +549,7 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
 
 		const bool doUpdate = false;
 		for (unsigned int i=(unsigned int)xLo + yLo; 
-				 i<=(unsigned int)xHi + yHi; i++) {
+				 i<=(unsigned int)xHi + yHi; i+=xPlusyStep) {
 			double objCoef = 0;
 			stringstream strstr;
 			strstr << xName << "_bin_" << i;
@@ -560,7 +562,7 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
 		
 		unsigned int j = 0;
 		for (unsigned int i=(unsigned int)xLo + yLo; 
-				 i<=(unsigned int)xHi + yHi; i++) {
+				 i<=(unsigned int)xHi + yHi; i+=xPlusyStep) {
       SolverVar & iBinVar         = sosVarVector[j++];
 			xySumSos1SumExpr           += iBinVar;
 			xySumSos1ScalarProductExpr += iBinVar * (int)i;

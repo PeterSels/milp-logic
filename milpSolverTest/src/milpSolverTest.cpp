@@ -1,5 +1,6 @@
 #include <iostream>
 #include <assert.h>
+#include <vector>
 
 using namespace std;
 
@@ -20,7 +21,7 @@ extern IloEnv * global_env_;
 #endif
 
 Solver * solver_;
-
+/*
 double f(int i) {
   if (i < 10) {
     return 100 - i;
@@ -28,6 +29,18 @@ double f(int i) {
     return 2 * i;
   }
 }
+*/
+
+double f(const vector<double> & parameters, int i) {
+	assert(parameters.size()==1);
+	double xMin = parameters[0];
+  if (i < xMin) {
+    return 100 - i;
+  } else {
+    return 2 * i;
+  }	
+}
+
 
 void resetModel(unsigned int maxGetLicenseSeconds, 
 								unsigned int maxSolverSeconds) {
@@ -55,7 +68,7 @@ int main(int argc, char * argv[]) {
 	resetModel(1*60, 5*60); // arguments used by cplex only
   
   if (TEST_SOS) {
-		int i=0;
+		int i=1;
     cout << "<<<<<<<<<<<<<<<<<< " << i << " >>>>>>>>>>>>>>" << endl;
     if (i==0) {
       bool min = false; // max if false
@@ -91,7 +104,7 @@ int main(int argc, char * argv[]) {
     }      
     
     if (i==1) {
-      // default is cost eqauls sum of x-variable values
+      // default is cost equals sum of x-variable values
       unsigned int wx = 1;
       unsigned int wy = 0;
       bool realCost = true; // if true: use y variables value as cost
@@ -102,8 +115,9 @@ int main(int argc, char * argv[]) {
 			
       const SolverVar x = solver_->addIntVar(0, 99, wx, "x");
       const SolverVar y = solver_->addIntVar(0, 99, wy, "y");
-			
-      solver_->addSos1(x, y, f);
+			vector<double> parameters;
+			parameters.push_back(10);			
+      solver_->addSos1(x, y, f, parameters, 1);
       
       solver_->setMinimize();
 			
@@ -121,7 +135,7 @@ int main(int argc, char * argv[]) {
       cout << "x = " << xVal << endl;
       double yVal = solver_->getValueOf(y);
       cout << "y = " << yVal << endl;
-      cout << "check:f(x)=" << f(xIntVal) << ", y=" << yVal << endl;
+      cout << "check:f(x)=" << f(parameters, xIntVal) << ", y=" << yVal << endl;
       
       assert(xVal == 10);
       assert(yVal == 20);

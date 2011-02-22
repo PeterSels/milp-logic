@@ -20,8 +20,10 @@ std::string stringToLower(std::string & str);
 void removeDotsFromString(std::string & str);
 bool removeFirstDotFromString(std::string & str);
 
-std::vector<std::string> splitStringOnFirstChar(const std::string & str, char ch);
-std::vector<std::string> splitStringOnChar(std::vector<std::string> & v, char ch);
+std::vector<std::string> splitStringOnFirstChar(const std::string & str, 
+																								char ch);
+std::vector<std::string> splitStringOnChar(std::vector<std::string> & v, 
+																					 char ch);
 std::vector<std::string> splitStringOnChar(const std::string & str, char ch);
 
 std::string readStringUpTo(std::istream & istr, char ch);

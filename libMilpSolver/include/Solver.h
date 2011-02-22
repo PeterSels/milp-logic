@@ -169,13 +169,15 @@ public:
   void addSos1   (const SolverVar & x, 
 									const SolverVar & z, 
 									double (*fPtr)(const std::vector<double> & parameters, int i),
-									std::vector<double> & parameters);
+									std::vector<double> & parameters,
+									unsigned int xStep);
 	
   void addSumSos1(const SolverVar & x, 
 									const SolverVar & y,
 									const SolverVar & z, 
 									double (*fPtr)(const std::vector<double> & parameters, int i),
-									std::vector<double> & parameters);
+									std::vector<double> & parameters,
+									unsigned int xPlusyStep);
   
   virtual std::string  getName(const SolverVar & var) const = 0;
   virtual double getLowerBound(const SolverVar & var) const = 0;
