@@ -15,12 +15,43 @@ extern IloEnv * global_env_;
 using namespace std;
 
 Solver::Solver()
-:  model_(0)
-,  solved_(false)
+: model_(0)
+, solved_(false)
+, nullExpr_(0)
+, oneExpr_(0)
 {
   varVector_.clear();
   exprVector_.clear();
   constrVector_.clear();
+}
+
+void Solver::resetModelNullOneExpressions() {
+	// delete if exists
+	if (nullExpr_!=0) {
+		delete nullExpr_;
+		nullExpr_ = 0;
+	}
+	if (oneExpr_!=0) {
+		delete oneExpr_;
+		oneExpr_ = 0;
+	}
+	
+	// recreate
+	nullExpr_ = new SolverExpr(
+#ifdef USE_CPLEX_NATIVE
+														 *global_env_
+#endif
+														 );
+	// nullExpr_ : has correct value already
+	
+	oneExpr_ = new SolverExpr(
+#ifdef USE_CPLEX_NATIVE
+														*global_env_
+#endif
+														);
+	*oneExpr_ += 1;	
+	
+	update();
 }
 
 const SolverVar Solver::addConjunctionBinVar(
@@ -325,7 +356,7 @@ void Solver::addEquivalence(
   addConstr(binVarB, "<=", binVarA, name + "_equiv_b_implies_a");
 }
 
-void Solver::addSos1(const SolverVar & x) {
+ void Solver::addSos1(const SolverVar & x) {
   double loDouble = (int)getLowerBound(x);
   double hiDouble = (int)getUpperBound(x);
   int lo = (int)loDouble;
@@ -394,6 +425,7 @@ void Solver::addSos1(const SolverVar & x) {
       // which one(s)?...FIXME
   }
 }
+/*
 
 void Solver::addSos1(const SolverVar & x, 
 										 const SolverVar & z, 
@@ -430,7 +462,7 @@ void Solver::addSos1(const SolverVar & x,
 #ifdef USE_CPLEX_NATIVE
 	(*global_env_)
 #endif
-	; 	
+	;
 	
 	const bool doUpdate = false;
   vector<SolverVar> sosVarVector;
@@ -471,23 +503,23 @@ void Solver::addSos1(const SolverVar & x,
 		;
 		oneExpr += 1;
     addConstr(xSos1SumExpr,             "==", oneExpr, 
-              xName + "_sos1_sum_is_1"); // convexity row (3)
+              xName + "_sos1_xz_sum_is_1"); // convexity row (3)
     addConstr(xSos1ScalarProductExpr, "==", x,             
-              xName + "_sos1_scalar_prod_is_x"); // reference row (2)
+              xName + "_sos1_xz_scalar_prod_is_x"); // reference row (2)
     addConstr(zSos2ScalarProductExpr, "==", z,             
-              xName + "_sos1_scalar_prod_is_z"); // function row (1)
+              xName + "_sos1_xz_scalar_prod_is_z"); // function row (1)
   }
-	/*
-  bool addSolverSos = ADD_SOLVER_SOS;
-  if (addSolverSos) {
-    stringstream strstr;
-    strstr << xName << "_sososos_" << lo << "_" << hi;
-    string xSosName = strstr.str();
-    addSos1SolverSpecific(xSosName, sosVarVector, sosWeightVector); 
-		// makes some of the 3 constraints above redundant, 
-		// which one(s)?...FIXME
-  }
-	*/
+	
+  //bool addSolverSos = ADD_SOLVER_SOS;
+  //if (addSolverSos) {
+  //  stringstream strstr;
+  //  strstr << xName << "_sososos_" << lo << "_" << hi;
+  //  string xSosName = strstr.str();
+  //  addSos1SolverSpecific(xSosName, sosVarVector, sosWeightVector); 
+	//	// makes some of the 3 constraints above redundant, 
+	//	// which one(s)?...FIXME
+  //}
+	
 } // addSos1
 
 void Solver::addSumSos1(const SolverVar & x, const SolverVar & y, 
@@ -496,34 +528,16 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
 												vector<double> & parameters,
 												unsigned int xPlusyStep) {
 	// x
-	double xLoDouble = getLowerBound(x);
-	int xLo = (int)xLoDouble;
-	assert(xLo == xLoDouble);
-	
-	double xHiDouble = getUpperBound(x);
-	int xHi = (int)xHiDouble;
-	assert(xHi == xHiDouble);
-	
-	string xName = getName(x);
-	
-	assert( 0 <= xLo);
-	assert( 0 <= xHi);
-	assert(xLo <= xHi);
+  int xLo, xHi;
+  string xName = getNameLoHi(xLo, xHi, &x);
 	
 	// y
-	double yLoDouble = getLowerBound(y);
-	int yLo = (int)yLoDouble;
-	assert(yLo == yLoDouble);
+  int yLo, yHi;
+  string yName = getNameLoHi(yLo, yHi, &y);
 	
-	double yHiDouble = getUpperBound(y);
-	int yHi = (int)yHiDouble;
-	assert(yHi == yHiDouble);
-	
-	string yName = getName(y);
-	
-	assert( 0 <= yLo);
-	assert( 0 <= yHi);
-	assert(yLo <= yHi);
+	if (xLo + yLo > 0) {
+		cerr << "strange ...: xLo + yLo = " << xLo << " + " << yLo << endl;
+	}
 	
 	SolverExpr xySumSos1SumExpr
 #ifdef USE_CPLEX_NATIVE
@@ -536,7 +550,7 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
 	(*global_env_)
 #endif
 	;
-		
+	
 	SolverExpr zSos2ScalarProductExpr
 #ifdef USE_CPLEX_NATIVE
 	(*global_env_)
@@ -561,6 +575,8 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
 		update(); // only once for whole array of variables
 		
 		unsigned int j = 0;
+		unsigned int nTerms = 0;
+		double sumCoef = 0.0;
 		for (unsigned int i=(unsigned int)xLo + yLo; 
 				 i<=(unsigned int)xHi + yHi; i+=xPlusyStep) {
       SolverVar & iBinVar         = sosVarVector[j++];
@@ -569,10 +585,29 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
 			
 			//parameters[varParamIndex] = i;
 			double coef = (*fPtr)(parameters, i);
-			//cout << "cost(" << i << ") =" << coef << endl; // to see if we have Nans! FIXME
+			//cerr << "cost(" << i << ") =" << coef << endl; // to see if we have Nans! FIXME
 			
 			zSos2ScalarProductExpr     += iBinVar * coef;
+			
+			nTerms++;
+			sumCoef += coef;
 		}
+		if (nTerms == 0) {
+			cerr << "ERROR: 0 terms shouldn't happen here" << endl;
+			cerr << "  for xName = " << xName << endl;
+			cerr << "  for yName = " << yName << endl;
+			cerr << "continuing..." << endl;
+			assert(false);
+		}
+		// can happen at fow = 0
+		//if (sumCoef == 0) {
+		//	cerr << "ERROR: sumCoef==0 shouldn't happen here" << endl;
+		//	cerr << "  for xName = " << xName << endl;
+		//	cerr << "  for yName = " << yName << endl;
+		//	cerr << "continuing..." << endl;
+		//	//assert(false);
+		}
+		
 		//parameters.pop_back();
 	}
   bool manuallyAddConstraints = MANUALLY_ADD_SOS_CONSTRAINTS;
@@ -594,22 +629,22 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
 		xySumExpr += y;
 		
     addConstr(xySumSos1SumExpr,           "==", oneExpr, 
-              xName + "_sos1_sum_is_1"); // convexity row (3)
+              xName + "_sos1_xyz_sum_is_1"); // convexity row (3)
     addConstr(xySumSos1ScalarProductExpr, "==", xySumExpr,             
-              xName + "_sos1_scalar_prod_is_x"); // reference row (2)
+              xName + "_sos1_xyz_scalar_prod_is_x"); // reference row (2)
     addConstr(zSos2ScalarProductExpr,     "==", z,             
-              xName + "_sos1_scalar_prod_is_z"); // function row (1)
+              xName + "_sos1_xyz_scalar_prod_is_z"); // function row (1)
   }
-	/*
-  bool addSolverSos = ADD_SOLVER_SOS;
-  if (addSolverSos) {
-		{
-			stringstream strstr;
-			strstr << xName << "_sososos_" << xLo << "_" << xHi;
-			string xSosName = strstr.str();
-			addSos1SolverSpecific(xSosName, sosVarVector, sosWeightVector); 
-      // makes some of the 3 constraints above redundant, 
-      // which one(s)?...FIXME
+
+  //bool addSolverSos = ADD_SOLVER_SOS;
+  //if (addSolverSos) {
+	//	{
+	//		stringstream strstr;
+	//		strstr << xName << "_sososos_" << xLo << "_" << xHi;
+	//		string xSosName = strstr.str();
+	//		addSos1SolverSpecific(xSosName, sosVarVector, sosWeightVector); 
+  //    // makes some of the 3 constraints above redundant, 
+  //    // which one(s)?...FIXME
 		}
 		{
 			stringstream strstr;
@@ -618,10 +653,10 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
 			addSos1SolverSpecific(ySosName, sosVarVector, sosWeightVector); 
 		}
   }
-	*/
-} // addSos1_2D
 
+	 } // addSos1_2D
 
+*/
 
 // For the lp file the solver will write out.
 // from: http://lpsolve.sourceforge.net/5.5/lp-format.htm
@@ -635,6 +670,241 @@ string Solver::lpConvert(const string & name) {
   string oddEvenStr = " _:_-_/_._";
   ::replaceAllOddByEven(convName, oddEvenStr);
   return convName;
+}
+
+BinVarMap &
+Solver::addBinVarsFor(const SolverVar * x, 
+											unsigned int step, 
+											bool doUpdate) {
+	setStep(x, step);
+	
+  int xLo, xHi;
+  string xName = getNameLoHi(xLo, xHi, x);
+	
+	assert( 0 <= xLo);
+	assert( 0 <= xHi);
+	assert(xLo <= xHi);
+			
+	for (int i=xLo; i<=xHi; i+=(int)step) {		
+		double objCoef = 0;
+		stringstream strstr;
+		strstr << xName << "_bin_" << i;
+		const SolverVar iBinVar = addBinVar((int)objCoef, strstr.str(), false);
+		binVarMap_[x][i] = iBinVar;
+	}
+	
+	if (doUpdate) {
+		update();
+	}	
+
+	return binVarMap_;	
+}
+
+const SolverVar & Solver::getBinVar(const SolverVar * x, 
+																		int i) const {
+	assert(binVarMap_.count(x)==1);
+  assert(binVarMap_.find(x)->second.count(i)==1);
+	return binVarMap_.find(x)->second.find(i)->second;
+}
+
+BinVarSumMap & 
+Solver::addBinSumVarsFor(const SolverVar * x, 
+												 const SolverVar * y, 
+												 unsigned int step, 
+												 bool doUpdate) {
+	assert(step == getStep(x));
+	assert(step == getStep(y));
+	
+	// x
+  int xLo, xHi;
+  string xName = getNameLoHi(xLo, xHi, x);
+	
+	// y
+  int yLo, yHi;
+  string yName = getNameLoHi(yLo, yHi, y);
+		
+	for (int i=xLo + yLo; i<=xHi + yHi; i+=(int)step) {		
+		double objCoef = 0;
+		stringstream strstr;
+		strstr << xName << "_plus_" << yName << "_bin_" << i;
+		const SolverVar iBinVar = addBinVar((int)objCoef, strstr.str(), false);
+		binVarSumMap_[x][y][i] = iBinVar;
+	}
+	
+	if (doUpdate) {
+		update();
+	}	
+	return binVarSumMap_;
+}
+
+const SolverVar & Solver::getBinSumVar(const SolverVar * x, 
+																			 const SolverVar * y, 
+																			 int i) const {
+	assert(binVarSumMap_.count(x)==1);
+  assert(binVarSumMap_.find(x)->second.count(y)==1);
+  assert(binVarSumMap_.find(x)->second.find(y)->second.count(i)==1);
+	return binVarSumMap_.find(x)->second.find(y)->second.find(i)->second;
+}
+
+void Solver::addBinConvexityAndReferenceRowsFor(const SolverVar * x) {
+	// according to http://lpsolve.sourceforge.net/5.0/SOS.htm
+	SolverExpr convexityExpr
+#ifdef USE_CPLEX_NATIVE
+	(*global_env_)
+#endif
+	;  
+	SolverExpr referenceExpr
+#ifdef USE_CPLEX_NATIVE
+	(*global_env_)
+#endif
+	;
+	
+	unsigned int step = getStep(x);
+	
+	int xLo, xHi;
+  string xName = getNameLoHi(xLo, xHi, x);
+	
+	for (int i=xLo; i<=xHi; i+=(int)step) {
+		stringstream strstr;
+		
+		const SolverVar & iBinVar = getBinVar(x, i);
+		convexityExpr += iBinVar;
+		referenceExpr += iBinVar * (int)i;	
+	}
+	addConstr(convexityExpr, "==", *oneExpr_, 
+						xName + "_bin_convexity_1"); // convexity row (3)
+	addConstr(referenceExpr, "==", *x,             
+						xName + "_bin_reference_1"); // reference row (2)	
+}
+
+void Solver::addBinConvexityAndReferenceRowsForSum(const SolverVar * x,
+																								   const SolverVar * y) {
+	// according to http://lpsolve.sourceforge.net/5.0/SOS.htm
+	SolverExpr convexityExpr
+#ifdef USE_CPLEX_NATIVE
+	(*global_env_)
+#endif
+	;  
+	SolverExpr referenceExpr
+#ifdef USE_CPLEX_NATIVE
+	(*global_env_)
+#endif
+	;
+	
+  unsigned int step = getStep(x);
+	assert(step==getStep(y));
+	
+	// x
+	int xLo, xHi;
+	string xName = getNameLoHi(xLo, xHi, x);
+	
+	// y
+	int yLo, yHi;
+	string yName = getNameLoHi(yLo, yHi, y);
+	
+	// x + y
+	for (int i=xLo+yLo; i<=xHi+yHi; i+=(int)step) {
+		const SolverVar & iBinSumVar = getBinSumVar(x, y, i);
+		convexityExpr += iBinSumVar;
+		referenceExpr += iBinSumVar * (int)i;	
+	}
+	string xPlusYName = xName + "_plus_" + yName;
+	addConstr(convexityExpr, "==", *oneExpr_, 
+						xPlusYName + "_bin_convexity_2"); // convexity row (3)
+	addConstr(referenceExpr, "==", (*x) + (*y),             
+						xPlusYName + "_bin_reference_2"); // reference row (2)	
+}
+
+
+void Solver::addSos1(const SolverVar & x, 
+										 const SolverVar & z, 
+										 double (*fPtr)(const vector<double> & parameters, int ii),
+										 vector<double> & parameters) {
+	// according to http://lpsolve.sourceforge.net/5.0/SOS.htm
+	// function row (1)	
+																										
+	SolverExpr functionExpr
+#ifdef USE_CPLEX_NATIVE
+	(*global_env_)
+#endif
+	;
+	
+	// x
+	int xLo, xHi;
+	string xName = getNameLoHi(xLo, xHi, &x);	
+  unsigned int step = getStep(&x);	
+	
+	for (int i=xLo; i<=xHi; i+=(int)step) {
+		const SolverVar & iBinVar = getBinVar(&x, i);
+		double coef = (*fPtr)(parameters, i);
+		
+		functionExpr += iBinVar * coef;
+	}
+	addConstr(functionExpr, "==", z,
+						xName + "_bin_function_1"); // function row (1)	
+	}
+
+void Solver::addSumSos1(const SolverVar & x, const SolverVar & y, 
+												const SolverVar & z, 
+												double (*fPtr)(const vector<double> & parameters, int ii),
+												vector<double> & parameters) {
+	// according to http://lpsolve.sourceforge.net/5.0/SOS.htm
+	// function row (1)
+	
+	SolverExpr functionExpr
+#ifdef USE_CPLEX_NATIVE
+	(*global_env_)
+#endif
+	;
+	
+	// x
+  int xLo, xHi;
+	string xName = getNameLoHi(xLo, xHi, &x);	
+	// y
+	int yLo, yHi;
+	string yName = getNameLoHi(yLo, yHi, &y);
+	// x + y
+	unsigned int step = getStep(&x);
+	assert(step==getStep(&y));
+	
+	for (int i=xLo+yLo; i<=xHi+yHi; i+=(int)step) {
+		const SolverVar & iBinSumVar = getBinSumVar(&x, &y, i);		
+		double coef = (*fPtr)(parameters, i);
+		
+		functionExpr += iBinSumVar * coef;
+	}
+	string xPlusYName = xName + "_plus_" + yName;
+	addConstr(functionExpr, "==", z,             
+						xPlusYName + "_bin_function_2"); // function row (1)	
+}
+
+
+string Solver::getNameLoHi(int & xLo, int & xHi, const SolverVar * x) const {
+	double xLoDouble = getLowerBound(*x);
+	xLo = (int)xLoDouble;
+	assert(xLo == xLoDouble);
+	
+	double xHiDouble = getUpperBound(*x);
+	xHi = (int)xHiDouble;
+	assert(xHi == xHiDouble);
+	
+	string xName = getName(*x);
+	
+	assert( 0 <= xLo);
+	assert( 0 <= xHi);
+	assert(xLo <= xHi);
+	
+	return xName;
+}
+
+void Solver::setStep(const SolverVar * x, unsigned int step) {
+	assert(stepMap_.count(x)==0);
+	stepMap_[x] = step;
+}
+
+unsigned int Solver::getStep(const SolverVar * x) const {
+	assert(stepMap_.count(x)==1);
+	return stepMap_.find(x)->second;
 }
 
 Solver::~Solver() {

@@ -38,6 +38,8 @@ void GurobiSolver::resetModel() {
     assert(false);
     exit(0);
   }
+	
+	resetModelNullOneExpressions();
 }
 
 const SolverVar & GurobiSolver::addLpVar(

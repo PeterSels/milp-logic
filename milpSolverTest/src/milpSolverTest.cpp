@@ -12,9 +12,9 @@ using namespace std;
 
 // User can turn on one of the below defines 
 // by setting it to true to activate the respective test.
-#define TEST_SOS (false)
-#define TEST_BIN_LE_EQS (true)
-#define TEST_BIN_EQ_EQS (false)
+#define TEST_SOS (true)
+#define TEST_BIN_LE_EQS (false)
+#define TEST_BIN_EQ_EQS (true)
 
 #ifdef USE_CPLEX_NATIVE
 extern IloEnv * global_env_;
@@ -116,8 +116,15 @@ int main(int argc, char * argv[]) {
       const SolverVar x = solver_->addIntVar(0, 99, wx, "x");
       const SolverVar y = solver_->addIntVar(0, 99, wy, "y");
 			vector<double> parameters;
-			parameters.push_back(10);			
-      solver_->addSos1(x, y, f, parameters, 1);
+			parameters.push_back(10);
+			
+			solver_->addBinVarsFor(&x, 1, true);
+			solver_->addBinConvexityAndReferenceRowsFor(&x);
+
+			solver_->addBinVarsFor(&y, 1, true);
+			solver_->addBinConvexityAndReferenceRowsFor(&y);
+			
+      solver_->addSos1(x, y, f, parameters/*, 1*/);
       
       solver_->setMinimize();
 			

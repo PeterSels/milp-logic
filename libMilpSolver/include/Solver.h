@@ -2,11 +2,20 @@
 #define SOLVER_H
 
 #include <vector>
+#include <map>
 #include <string>
 
 #include "HasSolver.h"
 
 #undef USE_SOS_VECTOR
+
+typedef std::map<const SolverVar *, std::map<int, SolverVar> > 
+  BinVarMap;
+
+typedef std::map<const SolverVar *, 
+    std::map<const SolverVar *,
+    std::map<int, SolverVar> > > 
+  BinVarSumMap;
 
 class Solver {
 protected:
@@ -17,12 +26,20 @@ protected:
 #ifdef USE_SOS_VECTOR
   std::vector<SolverSos> sosVector_;
 #endif
+	BinVarMap    binVarMap_;
+	BinVarSumMap binVarSumMap_;
+	std::map<const SolverVar *, unsigned int> stepMap_;
+	
+	SolverExpr * nullExpr_;
+	SolverExpr * oneExpr_;
+	
   bool solved_;
 public:
   Solver();
 
   // setting up model
   virtual void resetModel() = 0;
+	void resetModelNullOneExpressions();
 
   //// layer 1:
   virtual const SolverVar & addLpVar(
@@ -165,19 +182,21 @@ public:
     const std::vector<SolverVar> & vars, 
     const std::vector<double> & coeffs) = 0;
   
-  void addSos1   (const SolverVar & x);
+  void addSos1   (const SolverVar & x); // only used in milpSolverTest
   void addSos1   (const SolverVar & x, 
 									const SolverVar & z, 
-									double (*fPtr)(const std::vector<double> & parameters, int i),
-									std::vector<double> & parameters,
-									unsigned int xStep);
+									double (*fPtr)(const std::vector<double> & parameters, int ii),
+									std::vector<double> & parameters /*,
+									unsigned int xStep*/
+									);
 	
   void addSumSos1(const SolverVar & x, 
 									const SolverVar & y,
 									const SolverVar & z, 
-									double (*fPtr)(const std::vector<double> & parameters, int i),
-									std::vector<double> & parameters,
-									unsigned int xPlusyStep);
+									double (*fPtr)(const std::vector<double> & parameters, int ii),
+									std::vector<double> & parameters /*,
+									unsigned int xPlusyStep*/
+									);
   
   virtual std::string  getName(const SolverVar & var) const = 0;
   virtual double getLowerBound(const SolverVar & var) const = 0;
@@ -210,6 +229,30 @@ public:
   virtual double getInfinity() const = 0;
   
   std::string lpConvert(const std::string & name);
+
+	
+	BinVarMap &
+	addBinVarsFor(const SolverVar * x, 
+								unsigned int step, 
+								bool doUpdate);
+	const SolverVar & getBinVar(const SolverVar * x, 
+															int i) const;
+	BinVarSumMap & 
+	addBinSumVarsFor(const SolverVar * x, 
+									 const SolverVar * y, 
+									 unsigned int step, 
+									 bool doUpdate);
+	const SolverVar & getBinSumVar(const SolverVar * x, 
+																 const SolverVar * y, 
+																 int i) const;
+	
+	void addBinConvexityAndReferenceRowsFor(const SolverVar * x);
+	void addBinConvexityAndReferenceRowsForSum(const SolverVar * x,
+																					   const SolverVar * y);
+
+	std::string getNameLoHi(int & xLo, int & xHi, const SolverVar * x) const;
+	void setStep(const SolverVar * x, unsigned int step);
+	unsigned int getStep(const SolverVar * x) const;
 
   virtual ~Solver();
 };

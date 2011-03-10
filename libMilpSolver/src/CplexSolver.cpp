@@ -123,6 +123,8 @@ void CplexSolver::resetModel() {
   // Set the objective function
   // special to Cplex compared to Gurobi:
   //////////model_->add(objFunction_); 
+	
+	resetModelNullOneExpressions();
 }
 
 const SolverVar & CplexSolver::addLpVar(

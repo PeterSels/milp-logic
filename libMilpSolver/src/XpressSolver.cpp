@@ -47,6 +47,8 @@ void XpressSolver::resetModel() {
   // Set the objective function
   // special to xpress compared to Gurobi:
   model_->setObj(objFunction_); 
+
+	resetModelNullOneExpressions();
 }
 
 const SolverVar & XpressSolver::addLpVar(
