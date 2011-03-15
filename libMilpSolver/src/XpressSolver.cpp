@@ -287,6 +287,14 @@ double XpressSolver::getUpperBound(const SolverVar & var) const {
   return var.getUB();
 }
 
+void XpressSolver::setLowerBound(const SolverVar & var, double value) const {
+  var.setLB(value);
+}
+
+void XpressSolver::setUpperBound(const SolverVar & var, double value) const {
+  var.getUB(value);
+}
+
 double XpressSolver::getObjVal() const {
   return model_->getObjVal();
 }

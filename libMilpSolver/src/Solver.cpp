@@ -818,7 +818,8 @@ void Solver::addBinConvexityAndReferenceRowsForSum(const SolverVar * x,
 
 void Solver::addSos1(const SolverVar & x, 
 										 const SolverVar & z, 
-										 double (*fPtr)(const vector<double> & parameters, int ii),
+										 double (*fPtr)(const vector<double> & parameters, 
+																		int ii),
 										 vector<double> & parameters) {
 	// according to http://lpsolve.sourceforge.net/5.0/SOS.htm
 	// function row (1)	
@@ -832,7 +833,7 @@ void Solver::addSos1(const SolverVar & x,
 	// x
 	int xLo, xHi;
 	string xName = getNameLoHi(xLo, xHi, &x);	
-  unsigned int step = getStep(&x);	
+  unsigned int step = getStep(&x);
 	
 	for (int i=xLo; i<=xHi; i+=(int)step) {
 		const SolverVar & iBinVar = getBinVar(&x, i);
@@ -843,6 +844,63 @@ void Solver::addSos1(const SolverVar & x,
 	addConstr(functionExpr, "==", z,
 						xName + "_bin_function_1"); // function row (1)	
 	}
+
+
+void Solver::addConvexMax(const SolverVar & x,
+													const SolverVar & z, 
+													double (*fPtr)(const vector<double> & parameters, 
+																				 int ii),
+													vector<double> & parameters) {
+	
+	// x
+  int xLo, xHi;
+	string xName = getNameLoHi(xLo, xHi, &x);	
+	
+	// point 0
+	double z0 = (*fPtr)(parameters, 0);
+	
+	// point 1
+	double d0Min = (*fPtr)(parameters, -1);
+	double zd0Min = (*fPtr)(parameters, d0Min);
+	
+	// point 2
+	const double D1 = parameters[2];	 // [2] is not transparant!
+	double zD1 = (*fPtr)(parameters, D1);
+	
+	// on the d axis:
+  assert(0 <= d0Min);
+  assert(d0Min <= D1);
+	
+	// on the cost axis:
+  assert(zd0Min <= z0);
+  assert(zd0Min <= zD1);
+		
+	// now imagine a V shape described by these 3 points.
+	
+	assert(d0Min > 0);
+	SolverExpr dnFunctionExpr
+#ifdef USE_CPLEX_NATIVE
+	(*global_env_)
+#endif
+	;
+	dnFunctionExpr += z0 + (zd0Min - z0)/(d0Min - 0) * (x - 0);
+	addConstr(dnFunctionExpr, "<=", z,
+						xName + "_convex_max_dn_function_1"); // function row (1)	
+	
+	if (D1 > d0Min) {
+		SolverExpr upFunctionExpr
+#ifdef USE_CPLEX_NATIVE
+		(*global_env_)
+#endif
+		;	
+    upFunctionExpr += zd0Min + (zD1 - zd0Min)/(D1 - d0Min) * (x - d0Min);
+		addConstr(upFunctionExpr, "<=", z,             
+							xName + "_convex_max_up_function_1"); // function row (1)	
+	} else {
+		cerr << "D1 <= d0Min" << endl;
+	}
+}
+
 
 void Solver::addSumSos1(const SolverVar & x, const SolverVar & y, 
 												const SolverVar & z, 
@@ -879,6 +937,79 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
 }
 
 
+void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y, 
+														 const SolverVar & z, 
+														 double (*fPtr)(const vector<double> & parameters, int ii),
+														 vector<double> & parameters) {
+	
+	// x
+  int xLo, xHi;
+	string xName = getNameLoHi(xLo, xHi, &x);	
+	// y
+	int yLo, yHi;
+	string yName = getNameLoHi(yLo, yHi, &y);
+	// x + y
+	unsigned int step = getStep(&x);
+	assert(step==getStep(&y));
+
+	// point 0
+	double z0 = (*fPtr)(parameters, 0);
+	
+	// point 1
+	double d0Min = (*fPtr)(parameters, -1);
+	double zd0Min = (*fPtr)(parameters, d0Min);
+	
+	// point 2
+	const double D1 = parameters[2];	 // [2] is not transparant!
+	double zD1 = (*fPtr)(parameters, D1);
+
+	// on the d axis:
+  assert(0 <= d0Min);
+  assert(d0Min <= D1);
+
+	// on the cost axis:
+  assert(zd0Min <= z0);
+  assert(zd0Min <= zD1);
+	
+	SolverExpr xPlusYExpr
+#ifdef USE_CPLEX_NATIVE
+	(*global_env_)
+#endif
+	;
+  xPlusYExpr += x;
+  xPlusYExpr += y;
+	
+	
+	assert(d0Min > 0);
+	SolverExpr dnFunctionExpr
+#ifdef USE_CPLEX_NATIVE
+	(*global_env_)
+#endif
+	;
+	dnFunctionExpr += z0 + (zd0Min - z0)/(d0Min - 0) * (xPlusYExpr - 0);
+	
+	
+	// now imagine a V shape described by these 3 points.
+	string xPlusYName = xName + "_plus_" + yName;
+	addConstr(dnFunctionExpr, "<=", z,
+						xPlusYName + "_convex_max_dn_function_2"); // function row (1)	
+
+	if (D1 > d0Min) {
+		SolverExpr upFunctionExpr
+#ifdef USE_CPLEX_NATIVE
+		(*global_env_)
+#endif
+		;
+		upFunctionExpr += zd0Min + (zD1 - zd0Min)/(D1 - d0Min) * (xPlusYExpr - d0Min);
+		addConstr(upFunctionExpr, "<=", z,
+							xPlusYName + "_convex_max_up_function_2"); // function row (1)	
+		
+	} else {
+		cerr << "D1 <= d0Min" << endl;
+	}
+}
+
+
 string Solver::getNameLoHi(int & xLo, int & xHi, const SolverVar * x) const {
 	double xLoDouble = getLowerBound(*x);
 	xLo = (int)xLoDouble;
@@ -905,6 +1036,14 @@ void Solver::setStep(const SolverVar * x, unsigned int step) {
 unsigned int Solver::getStep(const SolverVar * x) const {
 	assert(stepMap_.count(x)==1);
 	return stepMap_.find(x)->second;
+}
+
+const SolverExpr & Solver::getNullExpr() {
+	return *nullExpr_;
+}
+
+const SolverExpr & Solver::getOneExpr() {
+	return *oneExpr_;
 }
 
 Solver::~Solver() {

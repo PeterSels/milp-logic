@@ -430,6 +430,14 @@ double CplexSolver::getUpperBound(const SolverVar & var) const {
   return var.getUB();
 }
 
+void CplexSolver::setLowerBound(SolverVar & var, double value) {
+	var.setLB(value);
+}
+
+void CplexSolver::setUpperBound(SolverVar & var, double value) {
+	var.setUB(value);
+}
+
 double CplexSolver::getObjVal() const {
   double objValue = global_cplex_->getObjValue();
   return objValue;

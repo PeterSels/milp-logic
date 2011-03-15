@@ -306,6 +306,15 @@ double GurobiSolver::getUpperBound(const SolverVar & var) const {
 }
 
 
+void GurobiSolver::setLowerBound(SolverVar & var, double value) {
+	var.set(GRB_DoubleAttr_LB, value);
+}
+
+void GurobiSolver::setUpperBound(SolverVar & var, double value) {
+	var.set(GRB_DoubleAttr_UB, value);
+}
+
+
 unsigned int GurobiSolver::getNumberOfRows() const {
   return model_->get(GRB_IntAttr_NumConstrs);
 }

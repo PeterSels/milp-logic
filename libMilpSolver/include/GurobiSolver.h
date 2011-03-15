@@ -46,10 +46,11 @@ public:
 
 	virtual void update(); // Specifically for Gurobi really
 	
-  std::string  getName(const SolverVar & var) const;
+  std::string getName(const SolverVar & var) const;
   double getLowerBound(const SolverVar & var) const;
   double getUpperBound(const SolverVar & var) const;
-
+	void setLowerBound(SolverVar & var, double value);
+	void setUpperBound(SolverVar & var, double value);
 
   // reporting/debugging
   void exportModelAsLpFile(const std::string & fileNamePrefix) const;

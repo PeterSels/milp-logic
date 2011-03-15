@@ -47,6 +47,8 @@ public:
   std::string  getName(const SolverVar & var) const;
   double getUpperBound(const SolverVar & var) const;
   double getLowerBound(const SolverVar & var) const;
+	void setLowerBound(const SolverVar & var, double value) const;
+	void setUpperBound(const SolverVar & var, double value) const;
 
   // reporting/debugging
   void exportModelAsLpFile(const std::string & fileNamePrefix) const;

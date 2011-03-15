@@ -1,8 +1,17 @@
 #ifndef N_UNITS_H
 #define N_UNITS_H
 
+// We want to use consecutive integers here, independent of the resolution.
+// So, depending on the resulotion, a single integer will stand for another time
+// unit!
+
+// These two can be changed,
+// taking care that the second should be an integer multiple of the first.
+
 #define CONSTANT_UNIT_IN_SECONDS (6)
 #define VARIABLE_UNIT_IN_SECONDS (6)
+
+// The ones below should not be changed!
 
 #define N_CONSTANT_UNITS_PER_MIN (60 / CONSTANT_UNIT_IN_SECONDS)
 #define N_VARIABLE_UNITS_PER_MIN (60 / VARIABLE_UNIT_IN_SECONDS)
@@ -44,8 +53,6 @@
               2                  30          1800          0        43199
               1                  60          2600          0        62399
 */
-
-
 
 // Only for TrajectScheduleGraph
 #define SEN (-2)

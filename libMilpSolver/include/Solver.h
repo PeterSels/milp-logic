@@ -185,22 +185,33 @@ public:
   void addSos1   (const SolverVar & x); // only used in milpSolverTest
   void addSos1   (const SolverVar & x, 
 									const SolverVar & z, 
-									double (*fPtr)(const std::vector<double> & parameters, int ii),
-									std::vector<double> & parameters /*,
-									unsigned int xStep*/
-									);
+									double (*fPtr)(const std::vector<double> & parameters, 
+																 int ii),
+									std::vector<double> & parameters);
+  void addConvexMax(const SolverVar & x, 
+										const SolverVar & z, 
+										double (*fPtr)(const std::vector<double> & parameters, 
+																	 int ii),
+										std::vector<double> & parameters);
 	
   void addSumSos1(const SolverVar & x, 
 									const SolverVar & y,
 									const SolverVar & z, 
-									double (*fPtr)(const std::vector<double> & parameters, int ii),
-									std::vector<double> & parameters /*,
-									unsigned int xPlusyStep*/
-									);
+									double (*fPtr)(const std::vector<double> & parameters, 
+																 int ii),
+									std::vector<double> & parameters);
+  void addSumConvexMax(const SolverVar & x, 
+											 const SolverVar & y,
+											 const SolverVar & z, 
+											 double (*fPtr)(const std::vector<double> & parameters, 
+																			int ii),
+											 std::vector<double> & parameters);
   
   virtual std::string  getName(const SolverVar & var) const = 0;
   virtual double getLowerBound(const SolverVar & var) const = 0;
   virtual double getUpperBound(const SolverVar & var) const = 0;
+  virtual void setLowerBound(SolverVar & var, double value) = 0;
+  virtual void setUpperBound(SolverVar & var, double value) = 0;
 
   // reporting/debugging
   virtual void exportModelAsLpFile(const std::string & fileName) const = 0;
@@ -254,7 +265,10 @@ public:
 	void setStep(const SolverVar * x, unsigned int step);
 	unsigned int getStep(const SolverVar * x) const;
 
-  virtual ~Solver();
+  const SolverExpr & getNullExpr();
+	const SolverExpr & getOneExpr();
+	
+	virtual ~Solver();
 };
 
 #endif // SOLVER_H
