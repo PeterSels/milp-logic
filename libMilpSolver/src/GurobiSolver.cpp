@@ -191,6 +191,8 @@ bool GurobiSolver::solve(double gap) {
   cout << "In GurobiSolver::solve()" << endl;
 
   // maybe set mesage level here, as in XpressSolver
+  //model_->set(GRB_DBL_PAR_MIPGAP, gap); // C
+  model_->getEnv().set(GRB_DoubleParam_MIPGap, gap); // C++
   
   solved_ = false;
   try {

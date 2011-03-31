@@ -32,6 +32,7 @@ protected:
 	
 	SolverExpr * nullExpr_;
 	SolverExpr * oneExpr_;
+	SolverExpr * minusOneExpr_;
 	
   bool solved_;
 public:
@@ -192,7 +193,8 @@ public:
 										const SolverVar & z, 
 										double (*fPtr)(const std::vector<double> & parameters, 
 																	 int ii),
-										std::vector<double> & parameters);
+										std::vector<double> & parameters,
+										bool robust);
 	
   void addSumSos1(const SolverVar & x, 
 									const SolverVar & y,
@@ -205,7 +207,8 @@ public:
 											 const SolverVar & z, 
 											 double (*fPtr)(const std::vector<double> & parameters, 
 																			int ii),
-											 std::vector<double> & parameters);
+											 std::vector<double> & parameters,
+											 bool convex);
   
   virtual std::string  getName(const SolverVar & var) const = 0;
   virtual double getLowerBound(const SolverVar & var) const = 0;
@@ -267,6 +270,7 @@ public:
 
   const SolverExpr & getNullExpr();
 	const SolverExpr & getOneExpr();
+	const SolverExpr & getMinusOneExpr();
 	
 	virtual ~Solver();
 };

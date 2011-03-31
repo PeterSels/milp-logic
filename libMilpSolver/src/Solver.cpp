@@ -19,6 +19,7 @@ Solver::Solver()
 , solved_(false)
 , nullExpr_(0)
 , oneExpr_(0)
+, minusOneExpr_(0)
 {
   varVector_.clear();
   exprVector_.clear();
@@ -35,6 +36,10 @@ void Solver::resetModelNullOneExpressions() {
 		delete oneExpr_;
 		oneExpr_ = 0;
 	}
+	if (minusOneExpr_!=0) {
+		delete minusOneExpr_;
+		minusOneExpr_ = 0;
+	}
 	
 	// recreate
 	nullExpr_ = new SolverExpr(
@@ -50,6 +55,13 @@ void Solver::resetModelNullOneExpressions() {
 #endif
 														);
 	*oneExpr_ += 1;	
+
+	minusOneExpr_ = new SolverExpr(
+#ifdef USE_CPLEX_NATIVE
+														*global_env_
+#endif
+														);
+	*minusOneExpr_ -= 1;	
 	
 	update();
 }
@@ -850,11 +862,19 @@ void Solver::addConvexMax(const SolverVar & x,
 													const SolverVar & z, 
 													double (*fPtr)(const vector<double> & parameters, 
 																				 int ii),
-													vector<double> & parameters) {
+													vector<double> & parameters,
+													bool robust) {
 	
 	// x
   int xLo, xHi;
-	string xName = getNameLoHi(xLo, xHi, &x);	
+	string xName = getNameLoHi(xLo, xHi, &x);
+	
+	if (!robust) {
+		addConstr(x, "==", z, // "<=" gives same results since z is minimized
+							// but == seems faster: eg: 40s io 45s
+							xName + "_convex_max_up_tight_1"); // function row (1)
+		return;
+	}
 	
 	// point 0
 	double z0 = (*fPtr)(parameters, 0);
@@ -864,7 +884,7 @@ void Solver::addConvexMax(const SolverVar & x,
 	double zd0Min = (*fPtr)(parameters, d0Min);
 	
 	// point 2
-	const double D1 = parameters[2];	 // [2] is not transparant!
+	const double D1 = parameters[1];	 // [1] is not transparant!
 	double zD1 = (*fPtr)(parameters, D1);
 	
 	// on the d axis:
@@ -876,35 +896,47 @@ void Solver::addConvexMax(const SolverVar & x,
   assert(zd0Min <= zD1);
 		
 	// now imagine a V shape described by these 3 points.
-	
+		
 	assert(d0Min > 0);
 	SolverExpr dnFunctionExpr
 #ifdef USE_CPLEX_NATIVE
 	(*global_env_)
 #endif
 	;
-	dnFunctionExpr += z0 + (zd0Min - z0)/(d0Min - 0) * (x - 0);
-	addConstr(dnFunctionExpr, "<=", z,
-						xName + "_convex_max_dn_function_1"); // function row (1)	
-	
+		
 	if (D1 > d0Min) {
+		if (d0Min > 0) { // only dnFunction when something left of d0Min
+			dnFunctionExpr += z0 + (zd0Min - z0)/(d0Min - 0) * (x - 0);
+			addConstr(dnFunctionExpr, "<=", z,
+								xName + "_convex_max_dn_robust_function_1"); // function row (1)	
+		}
+		
 		SolverExpr upFunctionExpr
 #ifdef USE_CPLEX_NATIVE
 		(*global_env_)
 #endif
-		;	
-    upFunctionExpr += zd0Min + (zD1 - zd0Min)/(D1 - d0Min) * (x - d0Min);
+		;
+    upFunctionExpr += 
+		  zd0Min + (zD1 - zd0Min)/(D1 - d0Min) * (x - d0Min);
 		addConstr(upFunctionExpr, "<=", z,             
-							xName + "_convex_max_up_function_1"); // function row (1)	
+							xName + "_convex_max_up_robust_function_1"); // function row (1)	
 	} else {
-		cerr << "D1 <= d0Min" << endl;
+		//cerr << D1 << " = D1 <= d0Min = " << d0Min << endl;
+		assert(D1==d0Min);
+		assert(D1!=0);
+		assert(zD1 <= z0); // dn slope
+		dnFunctionExpr += 
+		z0 + (zD1 - z0)/(D1 - 0) * (x - 0);
+		addConstr(dnFunctionExpr, "<=", z,
+							xName + "_convex_max_overtime_only_dn_robust_function_2");		
 	}
 }
 
 
 void Solver::addSumSos1(const SolverVar & x, const SolverVar & y, 
 												const SolverVar & z, 
-												double (*fPtr)(const vector<double> & parameters, int ii),
+												double (*fPtr)(const vector<double> & parameters, 
+																			 int ii),
 												vector<double> & parameters) {
 	// according to http://lpsolve.sourceforge.net/5.0/SOS.htm
 	// function row (1)
@@ -939,8 +971,10 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
 
 void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y, 
 														 const SolverVar & z, 
-														 double (*fPtr)(const vector<double> & parameters, int ii),
-														 vector<double> & parameters) {
+														 double (*fPtr)(const vector<double> & parameters, 
+																						int ii),
+														 vector<double> & parameters,
+														 bool robust) {
 	
 	// x
   int xLo, xHi;
@@ -948,9 +982,22 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
 	// y
 	int yLo, yHi;
 	string yName = getNameLoHi(yLo, yHi, &y);
-	// x + y
-	unsigned int step = getStep(&x);
-	assert(step==getStep(&y));
+	
+	SolverExpr xPlusYExpr
+#ifdef USE_CPLEX_NATIVE
+	(*global_env_)
+#endif
+	;
+  xPlusYExpr += x;
+  xPlusYExpr += y;
+	string xPlusYName = xName + "_plus_" + yName;
+	
+	if (!robust) {
+		addConstr(xPlusYExpr, "==", z, // "<=" gives same results since 
+							// z is minimized, but == seems faster: eg: 40s io 45s
+							xPlusYName + "_convex_max_up_tight_1"); // function row (1)
+		return;
+	}
 
 	// point 0
 	double z0 = (*fPtr)(parameters, 0);
@@ -971,41 +1018,45 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
   assert(zd0Min <= z0);
   assert(zd0Min <= zD1);
 	
-	SolverExpr xPlusYExpr
-#ifdef USE_CPLEX_NATIVE
-	(*global_env_)
-#endif
-	;
-  xPlusYExpr += x;
-  xPlusYExpr += y;
+	assert(d0Min >= 0);
 	
-	
-	assert(d0Min > 0);
 	SolverExpr dnFunctionExpr
 #ifdef USE_CPLEX_NATIVE
 	(*global_env_)
 #endif
 	;
-	dnFunctionExpr += z0 + (zd0Min - z0)/(d0Min - 0) * (xPlusYExpr - 0);
 	
-	
-	// now imagine a V shape described by these 3 points.
-	string xPlusYName = xName + "_plus_" + yName;
-	addConstr(dnFunctionExpr, "<=", z,
-						xPlusYName + "_convex_max_dn_function_2"); // function row (1)	
-
 	if (D1 > d0Min) {
+	
+		if (d0Min > 0) { // only dnFunction when something left of d0Min
+			dnFunctionExpr += z0 + (zd0Min - z0)/(d0Min - 0) * (xPlusYExpr - 0);
+			
+			// now imagine a V shape described by these 3 points.
+			addConstr(dnFunctionExpr, "<=", z,
+								xPlusYName + "_convex_max_dn_robust_function_2");
+			// function row (1)	
+		}
+		
 		SolverExpr upFunctionExpr
 #ifdef USE_CPLEX_NATIVE
 		(*global_env_)
 #endif
 		;
-		upFunctionExpr += zd0Min + (zD1 - zd0Min)/(D1 - d0Min) * (xPlusYExpr - d0Min);
+		upFunctionExpr += 
+		zd0Min + (zD1 - zd0Min)/(D1 - d0Min) * (xPlusYExpr - d0Min);
 		addConstr(upFunctionExpr, "<=", z,
-							xPlusYName + "_convex_max_up_function_2"); // function row (1)	
+							xPlusYName + "_convex_max_up_robust_function_2");
+		// function row (1)	
 		
 	} else {
-		cerr << "D1 <= d0Min" << endl;
+		//cerr << D1 << " = D1 <= d0Min = " << d0Min << endl;
+		assert(D1==d0Min);
+		assert(D1!=0);
+		assert(zD1 <= z0); // dn slope
+		dnFunctionExpr += 
+		z0 + (zD1 - z0)/(D1 - 0) * (xPlusYExpr - 0);
+		addConstr(dnFunctionExpr, "<=", z,
+							xPlusYName + "_convex_max_overtime_only_dn_robust_function_2");		
 	}
 }
 
@@ -1044,6 +1095,10 @@ const SolverExpr & Solver::getNullExpr() {
 
 const SolverExpr & Solver::getOneExpr() {
 	return *oneExpr_;
+}
+
+const SolverExpr & Solver::getMinusOneExpr() {
+	return *minusOneExpr_;
 }
 
 Solver::~Solver() {
