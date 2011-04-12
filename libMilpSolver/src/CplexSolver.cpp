@@ -166,7 +166,7 @@ const SolverVar & CplexSolver::addBinVar(
 }
 
 const SolverExpr & CplexSolver::addExpr(
-  const SolverExpr & expr, const std::string & name) {
+  const SolverExpr & expr, const std::string & name, bool doUpdate) {
   //exprVector_.push_back(model_->addExpr(expr, name.str());
   exprVector_.push_back(expr);
   return exprVector_.back();
@@ -174,7 +174,7 @@ const SolverExpr & CplexSolver::addExpr(
 
 const SolverConstr & CplexSolver::addConstr(
   const SolverVar & lhs, const std::string & comp, const SolverVar & rhs, 
-  const std::string & name) {
+  const std::string & name, bool doUpdate) {
   
   if (comp=="==") {
     IloRange constr(*env_, 0, lhs - rhs, 0);
@@ -203,7 +203,7 @@ const SolverConstr & CplexSolver::addConstr(
 
 const SolverConstr & CplexSolver::addConstr(
   const SolverExpr & lhs, const std::string & comp, const SolverVar & rhs, 
-  const std::string & name) {
+  const std::string & name, bool doUpdate) {
   
   if (comp=="==") {
     IloRange constr(*env_, 0, lhs - rhs, 0);
@@ -232,7 +232,7 @@ const SolverConstr & CplexSolver::addConstr(
 
 const SolverConstr & CplexSolver::addConstr(
   const SolverExpr & lhs, const std::string & comp, const SolverExpr & rhs, 
-  const std::string & name) {
+  const std::string & name, bool doUpdate) {
 
   if (comp=="==") {
     IloRange constr(*env_, 0, lhs - rhs, 0);

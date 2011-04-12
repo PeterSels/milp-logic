@@ -368,7 +368,8 @@ void Solver::addEquivalence(
   addConstr(binVarB, "<=", binVarA, name + "_equiv_b_implies_a");
 }
 
- void Solver::addSos1(const SolverVar & x) {
+ void Solver::addSos1(const SolverVar & x,
+											bool doUpdate) {
   double loDouble = (int)getLowerBound(x);
   double hiDouble = (int)getUpperBound(x);
   int lo = (int)loDouble;
@@ -423,9 +424,11 @@ void Solver::addEquivalence(
   if (manuallyAddConstraints) {
     // according to http://lpsolve.sourceforge.net/5.0/SOS.htm
     addConstr(xSos1SumExpr,             "==", oneExpr, 
-      xName + "_sos1_sum_is_1"); // convexity row (3)
+      xName + "_sos1_sum_is_1",
+							doUpdate); // convexity row (3)
     addConstr(xSos1ScalarProductExpr, "==", x,             
-      xName + "_sos1_scalar_prod_is_x"); // reference row (2)
+      xName + "_sos1_scalar_prod_is_x",
+							doUpdate); // reference row (2)
   }
   bool addSolverSos = ADD_SOLVER_SOS;
   if (addSolverSos) {
@@ -758,7 +761,8 @@ const SolverVar & Solver::getBinSumVar(const SolverVar * x,
 	return binVarSumMap_.find(x)->second.find(y)->second.find(i)->second;
 }
 
-void Solver::addBinConvexityAndReferenceRowsFor(const SolverVar * x) {
+void Solver::addBinConvexityAndReferenceRowsFor(const SolverVar * x, 
+																								bool doUpdate) {
 	// according to http://lpsolve.sourceforge.net/5.0/SOS.htm
 	SolverExpr convexityExpr
 #ifdef USE_CPLEX_NATIVE
@@ -784,13 +788,16 @@ void Solver::addBinConvexityAndReferenceRowsFor(const SolverVar * x) {
 		referenceExpr += iBinVar * (int)i;	
 	}
 	addConstr(convexityExpr, "==", *oneExpr_, 
-						xName + "_bin_convexity_1"); // convexity row (3)
+						xName + "_bin_convexity_1",
+						doUpdate); // convexity row (3)
 	addConstr(referenceExpr, "==", *x,             
-						xName + "_bin_reference_1"); // reference row (2)	
+						xName + "_bin_reference_1",
+						doUpdate); // reference row (2)	
 }
 
 void Solver::addBinConvexityAndReferenceRowsForSum(const SolverVar * x,
-																								   const SolverVar * y) {
+																								   const SolverVar * y,
+																									 bool doUpdate) {
 	// according to http://lpsolve.sourceforge.net/5.0/SOS.htm
 	SolverExpr convexityExpr
 #ifdef USE_CPLEX_NATIVE
@@ -822,9 +829,11 @@ void Solver::addBinConvexityAndReferenceRowsForSum(const SolverVar * x,
 	}
 	string xPlusYName = xName + "_plus_" + yName;
 	addConstr(convexityExpr, "==", *oneExpr_, 
-						xPlusYName + "_bin_convexity_2"); // convexity row (3)
+						xPlusYName + "_bin_convexity_2",
+						doUpdate); // convexity row (3)
 	addConstr(referenceExpr, "==", (*x) + (*y),             
-						xPlusYName + "_bin_reference_2"); // reference row (2)	
+						xPlusYName + "_bin_reference_2",
+						doUpdate); // reference row (2)	
 }
 
 
@@ -832,7 +841,8 @@ void Solver::addSos1(const SolverVar & x,
 										 const SolverVar & z, 
 										 double (*fPtr)(const vector<double> & parameters, 
 																		int ii),
-										 vector<double> & parameters) {
+										 vector<double> & parameters,
+										 bool doUpdate) {
 	// according to http://lpsolve.sourceforge.net/5.0/SOS.htm
 	// function row (1)	
 																										
@@ -854,8 +864,9 @@ void Solver::addSos1(const SolverVar & x,
 		functionExpr += iBinVar * coef;
 	}
 	addConstr(functionExpr, "==", z,
-						xName + "_bin_function_1"); // function row (1)	
-	}
+						xName + "_bin_function_1",
+						doUpdate); // function row (1)	
+}
 
 
 void Solver::addConvexMax(const SolverVar & x,
@@ -863,7 +874,8 @@ void Solver::addConvexMax(const SolverVar & x,
 													double (*fPtr)(const vector<double> & parameters, 
 																				 int ii),
 													vector<double> & parameters,
-													bool robust) {
+													bool robust,
+													bool doUpdate) {
 	
 	// x
   int xLo, xHi;
@@ -872,7 +884,8 @@ void Solver::addConvexMax(const SolverVar & x,
 	if (!robust) {
 		addConstr(x, "==", z, // "<=" gives same results since z is minimized
 							// but == seems faster: eg: 40s io 45s
-							xName + "_convex_max_up_tight_1"); // function row (1)
+							xName + "_convex_max_up_tight_1",
+							doUpdate); // function row (1)
 		return;
 	}
 	
@@ -906,9 +919,10 @@ void Solver::addConvexMax(const SolverVar & x,
 		
 	if (D1 > d0Min) {
 		if (d0Min > 0) { // only dnFunction when something left of d0Min
-			dnFunctionExpr += z0 + (zd0Min - z0)/(d0Min - 0) * (x - 0);
+			dnFunctionExpr += z0 + (zd0Min - z0)/(d0Min /*- 0*/) * (x /*- 0*/);
 			addConstr(dnFunctionExpr, "<=", z,
-								xName + "_convex_max_dn_robust_function_1"); // function row (1)	
+								xName + "_convex_max_dn_robust_function_1",
+								doUpdate); // function row (1)	
 		}
 		
 		SolverExpr upFunctionExpr
@@ -919,16 +933,18 @@ void Solver::addConvexMax(const SolverVar & x,
     upFunctionExpr += 
 		  zd0Min + (zD1 - zd0Min)/(D1 - d0Min) * (x - d0Min);
 		addConstr(upFunctionExpr, "<=", z,             
-							xName + "_convex_max_up_robust_function_1"); // function row (1)	
+							xName + "_convex_max_up_robust_function_1",
+							doUpdate); // function row (1)	
 	} else {
 		//cerr << D1 << " = D1 <= d0Min = " << d0Min << endl;
 		assert(D1==d0Min);
 		assert(D1!=0);
 		assert(zD1 <= z0); // dn slope
 		dnFunctionExpr += 
-		z0 + (zD1 - z0)/(D1 - 0) * (x - 0);
+		z0 + (zD1 - z0)/(D1 /*- 0*/) * (x /*- 0*/);
 		addConstr(dnFunctionExpr, "<=", z,
-							xName + "_convex_max_overtime_only_dn_robust_function_2");		
+							xName + "_convex_max_overtime_only_dn_robust_function_2",
+							doUpdate);		
 	}
 }
 
@@ -937,7 +953,8 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
 												const SolverVar & z, 
 												double (*fPtr)(const vector<double> & parameters, 
 																			 int ii),
-												vector<double> & parameters) {
+												vector<double> & parameters,
+												bool doUpdate) {
 	// according to http://lpsolve.sourceforge.net/5.0/SOS.htm
 	// function row (1)
 	
@@ -965,7 +982,8 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
 	}
 	string xPlusYName = xName + "_plus_" + yName;
 	addConstr(functionExpr, "==", z,             
-						xPlusYName + "_bin_function_2"); // function row (1)	
+						xPlusYName + "_bin_function_2",
+						doUpdate); // function row (1)	
 }
 
 
@@ -974,7 +992,8 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
 														 double (*fPtr)(const vector<double> & parameters, 
 																						int ii),
 														 vector<double> & parameters,
-														 bool robust) {
+														 bool robust,
+														 bool doUpdate) {
 	
 	// x
   int xLo, xHi;
@@ -995,7 +1014,8 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
 	if (!robust) {
 		addConstr(xPlusYExpr, "==", z, // "<=" gives same results since 
 							// z is minimized, but == seems faster: eg: 40s io 45s
-							xPlusYName + "_convex_max_up_tight_1"); // function row (1)
+							xPlusYName + "_convex_max_up_tight_1",
+							doUpdate); // function row (1)
 		return;
 	}
 
@@ -1033,7 +1053,8 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
 			
 			// now imagine a V shape described by these 3 points.
 			addConstr(dnFunctionExpr, "<=", z,
-								xPlusYName + "_convex_max_dn_robust_function_2");
+								xPlusYName + "_convex_max_dn_robust_function_2",
+								doUpdate);
 			// function row (1)	
 		}
 		
@@ -1045,7 +1066,8 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
 		upFunctionExpr += 
 		zd0Min + (zD1 - zd0Min)/(D1 - d0Min) * (xPlusYExpr - d0Min);
 		addConstr(upFunctionExpr, "<=", z,
-							xPlusYName + "_convex_max_up_robust_function_2");
+							xPlusYName + "_convex_max_up_robust_function_2",
+							doUpdate);
 		// function row (1)	
 		
 	} else {
@@ -1056,7 +1078,8 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
 		dnFunctionExpr += 
 		z0 + (zD1 - z0)/(D1 - 0) * (xPlusYExpr - 0);
 		addConstr(dnFunctionExpr, "<=", z,
-							xPlusYName + "_convex_max_overtime_only_dn_robust_function_2");		
+							xPlusYName + "_convex_max_overtime_only_dn_robust_function_2",
+							doUpdate);		
 	}
 }
 

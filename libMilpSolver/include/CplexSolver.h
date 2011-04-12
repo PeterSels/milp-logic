@@ -27,17 +27,17 @@ public:
     bool doUpdate=true);
 
   const SolverExpr & addExpr(
-    const SolverExpr & expr, const std::string & name);
+    const SolverExpr & expr, const std::string & name, bool doUpdate=true);
 
   const SolverConstr & addConstr(
     const SolverVar & lhs, const std::string & comp, const SolverVar & rhs,
-    const std::string & name);
+    const std::string & name, bool doUpdate=true);
   const SolverConstr & addConstr(
     const SolverExpr & lhs, const std::string & comp, const SolverVar & rhs,
-    const std::string & name);
+    const std::string & name, bool doUpdate=true);
   const SolverConstr & addConstr(
     const SolverExpr & lhs, const std::string & comp, const SolverExpr & rhs,
-    const std::string & name);
+    const std::string & name, bool doUpdate=true);
 
 	virtual void update();
 

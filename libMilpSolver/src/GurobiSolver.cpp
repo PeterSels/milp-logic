@@ -92,42 +92,50 @@ const SolverVar & GurobiSolver::addBinVar(
 }
 
 const SolverExpr & GurobiSolver::addExpr(
-  const SolverExpr & expr, const std::string & name) {
+  const SolverExpr & expr, const std::string & name, bool doUpdate) {
   exprVector_.push_back(expr);
-  model_->update();
+	if (doUpdate) {
+    model_->update();
+	}
   return exprVector_.back();
 }
 
 const SolverConstr & GurobiSolver::addConstr(
   const SolverVar & lhs, const std::string & comp, const SolverVar & rhs, 
-  const std::string & name) {
+  const std::string & name, bool doUpdate) {
   
   char ch = compStringToChar(comp,
     "addConstr(SolverVar &, const string &, SolverVar &)");
   constrVector_.push_back(model_->addConstr(lhs, ch, rhs, lpConvert(name)));
-  model_->update();
+	if (doUpdate) {
+    model_->update();
+	}
   return constrVector_.back();
 }
 
 const SolverConstr & GurobiSolver::addConstr(
   const SolverExpr & lhs, const std::string & comp, const SolverVar & rhs, 
-  const std::string & name) {
+  const std::string & name, bool doUpdate) {
   
   char ch = compStringToChar(comp,
                              "addConstr(SolverExpr &, const string &, SolverVar &)");
   constrVector_.push_back(model_->addConstr(lhs, ch, rhs, lpConvert(name)));
-  model_->update();
+	if (doUpdate) {
+    model_->update();
+	}
   return constrVector_.back();
 }
 
 const SolverConstr & GurobiSolver::addConstr(
   const SolverExpr & lhs, const std::string & comp, const SolverExpr & rhs, 
-  const std::string & name) {
+  const std::string & name, bool doUpdate) {
 
   char ch = compStringToChar(comp, 
     "addConstr(SolverExpr &, const string &, SolverExpr &)");
   constrVector_.push_back(model_->addConstr(lhs, ch, rhs, lpConvert(name)));
-  model_->update();
+	if (doUpdate) {
+    model_->update();
+	}
   return constrVector_.back();
 }
 

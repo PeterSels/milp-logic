@@ -54,17 +54,17 @@ public:
     bool doUpdate=true) = 0;
 
   virtual const SolverExpr & addExpr(
-    const SolverExpr & expr, const std::string & name) = 0;
+    const SolverExpr & expr, const std::string & name, bool doUpdate=true) = 0;
 
   virtual const SolverConstr & addConstr(
     const SolverVar & lhs, const std::string & comp, const SolverVar & rhs,
-    const std::string & name) = 0;
+    const std::string & name, bool doUpdate=true) = 0;
   virtual const SolverConstr & addConstr(
     const SolverExpr & lhs, const std::string & comp, const SolverVar & rhs, 
-    const std::string & name) = 0;
+    const std::string & name, bool doUpdate=true) = 0;
   virtual const SolverConstr & addConstr(
     const SolverExpr & lhs, const std::string & comp, const SolverExpr & rhs,
-    const std::string & name) = 0;
+    const std::string & name, bool doUpdate=true) = 0;
 
 	virtual void update() = 0; // Specifically for Gurobi really
 
@@ -183,32 +183,37 @@ public:
     const std::vector<SolverVar> & vars, 
     const std::vector<double> & coeffs) = 0;
   
-  void addSos1   (const SolverVar & x); // only used in milpSolverTest
+  void addSos1   (const SolverVar & x,
+									bool doUpdate=true); // only used in milpSolverTest
   void addSos1   (const SolverVar & x, 
 									const SolverVar & z, 
 									double (*fPtr)(const std::vector<double> & parameters, 
 																 int ii),
-									std::vector<double> & parameters);
+									std::vector<double> & parameters,
+									bool doUpdate=true);
   void addConvexMax(const SolverVar & x, 
 										const SolverVar & z, 
 										double (*fPtr)(const std::vector<double> & parameters, 
 																	 int ii),
 										std::vector<double> & parameters,
-										bool robust);
+										bool robust,
+										bool doUpdate=true);
 	
   void addSumSos1(const SolverVar & x, 
 									const SolverVar & y,
 									const SolverVar & z, 
 									double (*fPtr)(const std::vector<double> & parameters, 
 																 int ii),
-									std::vector<double> & parameters);
+									std::vector<double> & parameters,
+									bool doUpdate=true);
   void addSumConvexMax(const SolverVar & x, 
 											 const SolverVar & y,
 											 const SolverVar & z, 
 											 double (*fPtr)(const std::vector<double> & parameters, 
 																			int ii),
 											 std::vector<double> & parameters,
-											 bool convex);
+											 bool convex,
+											 bool doUpdate=true);
   
   virtual std::string  getName(const SolverVar & var) const = 0;
   virtual double getLowerBound(const SolverVar & var) const = 0;
@@ -260,9 +265,11 @@ public:
 																 const SolverVar * y, 
 																 int i) const;
 	
-	void addBinConvexityAndReferenceRowsFor(const SolverVar * x);
+	void addBinConvexityAndReferenceRowsFor(const SolverVar * x,
+																					bool doUpdate=true);
 	void addBinConvexityAndReferenceRowsForSum(const SolverVar * x,
-																					   const SolverVar * y);
+																					   const SolverVar * y,
+																						 bool doUpdate=true);
 
 	std::string getNameLoHi(int & xLo, int & xHi, const SolverVar * x) const;
 	void setStep(const SolverVar * x, unsigned int step);

@@ -93,7 +93,7 @@ const SolverVar & XpressSolver::addBinVar(
 }
 
 const SolverExpr & XpressSolver::addExpr(
-  const SolverExpr & expr, const std::string & name) {
+  const SolverExpr & expr, const std::string & name, bool doUpdate) {
   //exprVector_.push_back(model_->addExpr(expr, name.str());
   exprVector_.push_back(expr);
   return exprVector_.back();
@@ -101,7 +101,7 @@ const SolverExpr & XpressSolver::addExpr(
 
 const SolverConstr & XpressSolver::addConstr(
   const SolverVar & lhs, const std::string & comp, const SolverVar & rhs, 
-  const std::string & name) {
+  const std::string & name, bool doUpdate) {
   
   if (comp=="==") {
     constrVector_.push_back(model_->newCtr(
@@ -124,7 +124,7 @@ const SolverConstr & XpressSolver::addConstr(
 
 const SolverConstr & XpressSolver::addConstr(
   const SolverExpr & lhs, const std::string & comp, const SolverVar & rhs, 
-  const std::string & name) {
+  const std::string & name, bool doUpdate) {
   
   if (comp=="==") {
     constrVector_.push_back(model_->newCtr(
@@ -147,7 +147,7 @@ const SolverConstr & XpressSolver::addConstr(
 
 const SolverConstr & XpressSolver::addConstr(
   const SolverExpr & lhs, const std::string & comp, const SolverExpr & rhs, 
-  const std::string & name) {
+  const std::string & name, bool doUpdate) {
 
   if (comp=="==") {
     constrVector_.push_back(model_->newCtr(
