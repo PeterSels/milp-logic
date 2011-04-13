@@ -29,11 +29,11 @@ add_definitions(
   -D_DEBUG
 )
 
-#IF(APPLE)
+IF(APPLE)
    FIND_LIBRARY(COREFOUNDATION CoreFoundation)
    FIND_LIBRARY(IOKIT IOKit)
    LIST(APPEND EXTRA_LIBS ${COREFOUNDATION} ${IOKIT})
-#ENDIF(APPLE)
+ENDIF(APPLE)
 
 add_executable( milpSolverTest ${SOURCES} ${HEADERS})
 
