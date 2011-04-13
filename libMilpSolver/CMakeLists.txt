@@ -17,7 +17,7 @@ set(SOURCES
 
 include_directories(
   c:/xpressmp/include
-  /Library/$ENV{GUROBI_VERSION}/mac64/include
+  $ENV{GUROBI_HOME}/include
   include
   $ENV{CPLEX_HOME}/include
   $ENV{CONCERT_HOME}/include

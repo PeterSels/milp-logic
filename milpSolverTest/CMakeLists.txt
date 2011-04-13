@@ -11,14 +11,14 @@ set(SOURCES
 include_directories( 
   ../libMilpSolver/include
   c:/xpressmp/include
-  /Library/$ENV{GUROBI_VERSION}/mac64/include
+  $ENV{GUROBI_HOME}/include
   include
   $ENV{CPLEX_HOME}/include
   $ENV{CONCERT_HOME}/include
 )
 
 link_directories(
-  /Library/$ENV{GUROBI_VERSION}/mac64/lib
+  $ENV{GUROBI_HOME}/lib
   ${MilpSolver_SOURCE_DIR}/libMilpSolver
   $ENV{CPLEX_HOME}/lib/x86-64_darwin9_gcc4.0/static_pic
   $ENV{CONCERT_HOME}/lib/x86-64_darwin9_gcc4.0/static_pic
