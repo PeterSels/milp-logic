@@ -12,7 +12,6 @@ set(SOURCES
   src/StringUtilities.cpp
   src/GurobiSolver.cpp
   src/XpressSolver.cpp
-  src/Solver.cpp
   src/CplexSolver.cpp
 )
 
