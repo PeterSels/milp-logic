@@ -376,6 +376,80 @@ double GurobiSolver::getInfinity() const {
   return GRB_INFINITY;
 }
 
+void GurobiSolver::setDeterministic() {
+	unsigned int method = 4;
+  model_->getEnv().set(GRB_IntParam_Method, method); // C++
+}
+
+void GurobiSolver::setMipFocus(unsigned int value) {
+	assert(0 <= value);
+	assert(value <= 3);
+  model_->getEnv().set(GRB_IntParam_MIPFocus, value); // C++
+}
+
+void GurobiSolver::setSymmetryDetectionLevel(int level) {
+	assert(-1 <= level);
+	assert(level <= 2);
+  model_->getEnv().set(GRB_IntParam_Symmetry, level); // C++	
+}
+
+void GurobiSolver::improveStartGap(double gap) {
+	assert(0.0 <= gap);
+	assert(gap <= GRB_INFINITY);
+  model_->getEnv().set(GRB_DoubleParam_ImproveStartGap, gap); // C++	
+}
+
+void GurobiSolver::improveStartTime(double time) {
+	assert(0.0 <= time);
+	assert(time <= GRB_INFINITY);
+  model_->getEnv().set(GRB_DoubleParam_ImproveStartTime, time); // C++	
+}
+
+// 0.05 is default
+void GurobiSolver::setHeuristics(double level) {
+	assert(0.0 <= level);
+	assert(level <= 1.0);
+  model_->getEnv().set(GRB_DoubleParam_Heuristics, level); // C++		
+}
+
+void GurobiSolver::setVarBranch(int value) {
+	assert(-1 <= value);
+	assert(value <= 3);
+  model_->getEnv().set(GRB_IntParam_VarBranch, value); // C++		
+}
+
+////////////////// Cuts Control ///////////////
+void GurobiSolver::setCutsLevel(int level)  {
+	assert(-1 <= level);
+	assert(level <= 3);
+  model_->getEnv().set(GRB_IntParam_Cuts, level); // C++		
+}
+
+void GurobiSolver::setCliqueCutsLevel(int level) {
+	assert(-1 <= level);
+	assert(level <= 2);
+  model_->getEnv().set(GRB_IntParam_CliqueCuts, level); // C++		
+}
+
+void GurobiSolver::setCoverCutsLevel(int level) {
+	assert(-1 <= level);
+	assert(level <= 2);
+  model_->getEnv().set(GRB_IntParam_CoverCuts, level); // C++		
+}
+
+void GurobiSolver::setFlowCoverCutsLevel(int level)  {
+	assert(-1 <= level);
+	assert(level <= 2);
+  model_->getEnv().set(GRB_IntParam_FlowCoverCuts, level); // C++		
+}
+
+void GurobiSolver::setFlowPathCutsLevel(int level) {
+	assert(-1 <= level);
+	assert(level <= 2);
+  model_->getEnv().set(GRB_IntParam_FlowPathCuts, level); // C++		
+}
+////////////////// End Cuts Control ///////////////
+
 
 GurobiSolver::~GurobiSolver() {
   deleteModelAndEnv();

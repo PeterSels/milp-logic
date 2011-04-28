@@ -868,15 +868,20 @@ void Solver::addSos1(const SolverVar & x,
 						doUpdate); // function row (1)	
 }
 
-
 void Solver::addConvexMax(const SolverVar & x,
-													const SolverVar & z, 
+													const SolverVar & z,
 													double (*fPtr)(const vector<double> & parameters, 
 																				 int ii),
 													vector<double> & parameters,
 													bool robust,
 													bool doUpdate) {
 	
+  //assert(parameters.size() == N_KNOCK_ON_PARAMS); // 3
+	//assert(parameters.size()==N_SOS_1D_PARAMS);
+	assert(parameters.size()==7);
+  
+  // aExpectedDelay, flow, D1(=T)
+  
 	// x
   int xLo, xHi;
 	string xName = getNameLoHi(xLo, xHi, &x);
@@ -886,6 +891,8 @@ void Solver::addConvexMax(const SolverVar & x,
 							// but == seems faster: eg: 40s io 45s
 							xName + "_convex_max_up_tight_1",
 							doUpdate); // function row (1)
+    assert(false);
+    cerr << "ERROR: not supported for now" << endl; // FIXME
 		return;
 	}
 	
@@ -916,12 +923,12 @@ void Solver::addConvexMax(const SolverVar & x,
 	(*global_env_)
 #endif
 	;
-		
+  
 	if (D1 > d0Min) {
 		if (d0Min > 0) { // only dnFunction when something left of d0Min
 			dnFunctionExpr += z0 + (zd0Min - z0)/(d0Min /*- 0*/) * (x /*- 0*/);
 			addConstr(dnFunctionExpr, "<=", z,
-								xName + "_convex_max_dn_robust_function_1",
+								xName + "_convex_max_robust_dn_function",
 								doUpdate); // function row (1)	
 		}
 		
@@ -932,8 +939,8 @@ void Solver::addConvexMax(const SolverVar & x,
 		;
     upFunctionExpr += 
 		  zd0Min + (zD1 - zd0Min)/(D1 - d0Min) * (x - d0Min);
-		addConstr(upFunctionExpr, "<=", z,             
-							xName + "_convex_max_up_robust_function_1",
+		addConstr(upFunctionExpr, "<=", z,
+							xName + "_convex_max_robust_up_function",
 							doUpdate); // function row (1)	
 	} else {
 		//cerr << D1 << " = D1 <= d0Min = " << d0Min << endl;
@@ -943,7 +950,7 @@ void Solver::addConvexMax(const SolverVar & x,
 		dnFunctionExpr += 
 		z0 + (zD1 - z0)/(D1 /*- 0*/) * (x /*- 0*/);
 		addConstr(dnFunctionExpr, "<=", z,
-							xName + "_convex_max_overtime_only_dn_robust_function_2",
+							xName + "_convex_max_robust_dn_only_function",
 							doUpdate);		
 	}
 }
@@ -1014,8 +1021,10 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
 	if (!robust) {
 		addConstr(xPlusYExpr, "==", z, // "<=" gives same results since 
 							// z is minimized, but == seems faster: eg: 40s io 45s
-							xPlusYName + "_convex_max_up_tight_1",
+							xPlusYName + "_sum_convex_max_up_tight_1",
 							doUpdate); // function row (1)
+    assert(false);
+    cerr << "ERROR: not supported foe now" << endl; // FIXME
 		return;
 	}
 
@@ -1053,7 +1062,7 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
 			
 			// now imagine a V shape described by these 3 points.
 			addConstr(dnFunctionExpr, "<=", z,
-								xPlusYName + "_convex_max_dn_robust_function_2",
+								xPlusYName + "_sum_convex_max_robust_up_function",
 								doUpdate);
 			// function row (1)	
 		}
@@ -1066,7 +1075,7 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
 		upFunctionExpr += 
 		zd0Min + (zD1 - zd0Min)/(D1 - d0Min) * (xPlusYExpr - d0Min);
 		addConstr(upFunctionExpr, "<=", z,
-							xPlusYName + "_convex_max_up_robust_function_2",
+							xPlusYName + "_sum_convex_max_robust_dn_function",
 							doUpdate);
 		// function row (1)	
 		
@@ -1078,7 +1087,7 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
 		dnFunctionExpr += 
 		z0 + (zD1 - z0)/(D1 - 0) * (xPlusYExpr - 0);
 		addConstr(dnFunctionExpr, "<=", z,
-							xPlusYName + "_convex_max_overtime_only_dn_robust_function_2",
+							xPlusYName + "_sum_convex_max_robust_dn_only_function",
 							doUpdate);		
 	}
 }
@@ -1123,6 +1132,85 @@ const SolverExpr & Solver::getOneExpr() {
 const SolverExpr & Solver::getMinusOneExpr() {
 	return *minusOneExpr_;
 }
+
+
+void Solver::setDeterministic() {
+	assert(false); // child solver needs to implement this
+	// should become pure virtual soon
+}
+
+void Solver::setMipFocus(unsigned int value) {
+	assert(false); // child solver needs to implement this
+	// should become pure virtual soon
+}
+
+void Solver::setSymmetryDetectionLevel(int level) {
+	assert(false); // child solver needs to implement this
+	// should become pure virtual soon
+}
+
+void Solver::improveStartGap(double gap) {
+	assert(false); // child solver needs to implement this
+	// should become pure virtual soon
+}
+
+void Solver::improveStartTime(double time) {
+	assert(false); // child solver needs to implement this
+	// should become pure virtual soon
+}
+
+void Solver::setHeuristics(double level) {
+	assert(false); // child solver needs to implement this
+	// should become pure virtual soon
+}
+
+void Solver::setVarBranch(int value) {
+	assert(false); // child solver needs to implement this
+	// should become pure virtual soon
+}
+
+////////////////// Cuts Control ///////////////
+void Solver::setCutsLevel(int level)  {
+	assert(-1 <= level);
+	assert(level <= 3);
+	
+	assert(false); // child solver needs to implement this
+	// should become pure virtual soon}
+}
+
+void Solver::setCliqueCutsLevel(int level) {
+	assert(-1 <= level);
+	assert(level <= 2);
+	
+	assert(false); // child solver needs to implement this
+	// should become pure virtual soon}
+}
+
+void Solver::setCoverCutsLevel(int level) {
+	assert(-1 <= level);
+	assert(level <= 2);
+	
+	assert(false); // child solver needs to implement this
+	// should become pure virtual soon}
+}
+
+void Solver::setFlowCoverCutsLevel(int level)  {
+	assert(-1 <= level);
+	assert(level <= 2);
+	
+	assert(false); // child solver needs to implement this
+	// should become pure virtual soon}
+}
+
+void Solver::setFlowPathCutsLevel(int level) {
+	assert(-1 <= level);
+	assert(level <= 2);
+	
+	assert(false); // child solver needs to implement this
+	// should become pure virtual soon}
+}
+
+////////////////// End Cuts Control ///////////////
 
 Solver::~Solver() {
   cout << "in ~Solver()" << endl;  

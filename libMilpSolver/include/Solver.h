@@ -247,6 +247,22 @@ public:
   
   virtual double getInfinity() const = 0;
   
+	virtual void setDeterministic(); // = 0;
+	virtual void setMipFocus(unsigned int value); // = 0
+	virtual void setSymmetryDetectionLevel(int level); // 0
+	virtual	void improveStartGap(double gap); // = 0
+	virtual void improveStartTime(double time); // = 0;
+	virtual void setHeuristics(double level); // = 0
+	virtual void setVarBranch(int value); // = 0
+
+	
+	virtual void setCutsLevel(int level); // = 0
+	virtual void setCliqueCutsLevel(int level); // = 0
+	virtual void setCoverCutsLevel(int level); // = 0
+	virtual void setFlowCoverCutsLevel(int level); // = 0
+	virtual void setFlowPathCutsLevel(int level); // = 0
+	
+	
   std::string lpConvert(const std::string & name);
 
 	

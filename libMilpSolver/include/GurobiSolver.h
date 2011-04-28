@@ -83,6 +83,20 @@ public:
   
   double getInfinity() const;
   
+	void setDeterministic();
+	void setMipFocus(unsigned int value);
+	void setSymmetryDetectionLevel(int level);
+	void improveStartGap(double gap);
+	void improveStartTime(double time);
+	void setHeuristics(double level);
+  void setVarBranch(int value);
+	
+	void setCutsLevel(int level);
+	void setCliqueCutsLevel(int level);
+	void setCoverCutsLevel(int level);
+	void setFlowCoverCutsLevel(int level);
+	void setFlowPathCutsLevel(int level);
+	
 private:
   GRBEnv * env_;
 };

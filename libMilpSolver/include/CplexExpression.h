@@ -25,3 +25,4 @@ public:
 #endif // USE_CPLEX_NATIVE
 
 #endif // CPLEX_EXPRESSION_H
+

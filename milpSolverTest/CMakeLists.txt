@@ -17,11 +17,22 @@ include_directories(
   $ENV{CONCERT_HOME}/include
 )
 
+IF(APPLE)
+ set(CPLEX_ARCH_DIR x86-64_darwin9_gcc4.0)
+ set(THREAD )
+ELSEIF(WIN32)
+ set(CPLEX_ARCH_DIR DUNNO)
+ set(THREAD )
+ELSE()
+ set(CPLEX_ARCH_DIR x86_sles10_4.1)
+ set(THREAD pthread)
+ENDIF()
+
 link_directories(
   $ENV{GUROBI_HOME}/lib
   ${MilpSolver_SOURCE_DIR}/libMilpSolver
-  $ENV{CPLEX_HOME}/lib/x86-64_darwin9_gcc4.0/static_pic
-  $ENV{CONCERT_HOME}/lib/x86-64_darwin9_gcc4.0/static_pic
+  $ENV{CPLEX_HOME}/lib/${CPLEX_ARCH_DIR}/static_pic
+  $ENV{CONCERT_HOME}/lib/${CPLEX_ARCH_DIR}/static_pic
 )
 
 add_definitions( 
@@ -37,5 +48,5 @@ ENDIF(APPLE)
 
 add_executable( milpSolverTest ${SOURCES} ${HEADERS})
 
-target_link_libraries( milpSolverTest MilpSolver gurobi_c++ $ENV{GUROBI_MAIN_VERSION} ilocplex cplex concert m ${EXTRA_LIBS})
+target_link_libraries( milpSolverTest MilpSolver gurobi_c++ $ENV{GUROBI_MAIN_VERSION} ilocplex cplex concert m ${EXTRA_LIBS} ${THREAD})
 
