@@ -6,13 +6,15 @@ file(GLOB_RECURSE HEADERS "*.h")
 
 set(SOURCES 
   src/BclException.cpp
+  src/CplexSolver.cpp
+  src/GurobiSolver.cpp
+  src/LinearApproximator.cpp
+  src/MinimumCalculator.cpp
   src/ScheduleSvg.cpp
   src/Solver.cpp
-  src/Svg.cpp
   src/StringUtilities.cpp
-  src/GurobiSolver.cpp
+  src/Svg.cpp
   src/XpressSolver.cpp
-  src/CplexSolver.cpp
 )
 
 include_directories(

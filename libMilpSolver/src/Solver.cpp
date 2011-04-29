@@ -4,6 +4,7 @@
 #include "Solver.h"
 #include "StringUtilities.h"
 // for replaceAllOddByEven
+#include "MinimumCalculator.h"
 
 #define MANUALLY_ADD_SOS_CONSTRAINTS (true)
 #define ADD_SOLVER_SOS (false)
@@ -268,13 +269,14 @@ void Solver::addEqualConstr(
      name + "_eq_le" + "_eq_ge" + "_conj");	
 }
 
-const SolverVar Solver::addLessOrEqualBinVar(double objCoef,
-																						 const SolverExpr & lhsExpr,
-																						 double lhsLowerBound,  double lhsUpperBound,
-																						 const SolverExpr & rhsExpr,
-																						 double rhsLowerBound,  double rhsUpperBound,
-																						 double unit,
-																						 const std::string & name) {
+const SolverVar Solver::
+addLessOrEqualBinVar(double objCoef,
+                     const SolverExpr & lhsExpr,
+                     double lhsLowerBound,  double lhsUpperBound,
+                     const SolverExpr & rhsExpr,
+                     double rhsLowerBound,  double rhsUpperBound,
+                     double unit,
+                     const std::string & name) {
 	
   const SolverVar leBinVar = addBinVar(objCoef, name);
   addLessOrEqualConstr(leBinVar,
@@ -310,12 +312,13 @@ void Solver::addLessOrEqualConstr(const SolverVar & leBinVar,
 						">=", (Mle0 - unit) * leBinVar + unit, name + "_le_0"); //  not('lhs < rhs') is equivalent to 'lhs >= rhs + unit'
 }
 
-const SolverVar Solver::addLessOrEqualBinVar(double objCoef,
-																						 const SolverExpr & lhsExpr,
-																						 double lhsLowerBound,  double lhsUpperBound,
-																						 double rhs,
-																						 double unit,
-																						 const std::string & name) {
+const SolverVar Solver::
+addLessOrEqualBinVar(double objCoef,
+                     const SolverExpr & lhsExpr,
+                     double lhsLowerBound,  double lhsUpperBound,
+                     double rhs,
+                     double unit,
+                     const std::string & name) {
 	
   const SolverVar leBinVar = addBinVar(objCoef, name);
   addLessOrEqualConstr(leBinVar,
@@ -326,12 +329,13 @@ const SolverVar Solver::addLessOrEqualBinVar(double objCoef,
   return leBinVar;
 }
 
-void Solver::addLessOrEqualConstr(const SolverVar & leBinVar,
-																	const SolverExpr & lhsExpr,
-																	double lhsLowerBound,  double lhsUpperBound,
-																	double rhs, 
-																	double unit,
-																	const std::string & name) {
+void Solver::
+addLessOrEqualConstr(const SolverVar & leBinVar,
+                     const SolverExpr & lhsExpr,
+                     double lhsLowerBound,  double lhsUpperBound,
+                     double rhs, 
+                     double unit,
+                     const std::string & name) {
 	
 	// real constraint when leBinVar=1, says nothing new when 0
   double Mle1 = (lhsUpperBound - rhs);
@@ -445,7 +449,7 @@ void Solver::addEquivalence(
 void Solver::addSos1(const SolverVar & x, 
 										 const SolverVar & z, 
 										 double (*fPtr)(const vector<double> & parameters, int ii),
-										 vector<double> & parameters,
+										 const vector<double> & parameters,
 										 unsigned int xStep) {
   
   double loDouble = getLowerBound(x);
@@ -540,7 +544,7 @@ void Solver::addSos1(const SolverVar & x,
 void Solver::addSumSos1(const SolverVar & x, const SolverVar & y, 
 												const SolverVar & z, 
 												double (*fPtr)(const vector<double> & parameters, int i),
-												vector<double> & parameters,
+												const vector<double> & parameters,
 												unsigned int xPlusyStep) {
 	// x
   int xLo, xHi;
@@ -841,7 +845,7 @@ void Solver::addSos1(const SolverVar & x,
 										 const SolverVar & z, 
 										 double (*fPtr)(const vector<double> & parameters, 
 																		int ii),
-										 vector<double> & parameters,
+										 const vector<double> & parameters,
 										 bool doUpdate) {
 	// according to http://lpsolve.sourceforge.net/5.0/SOS.htm
 	// function row (1)	
@@ -872,15 +876,12 @@ void Solver::addConvexMax(const SolverVar & x,
 													const SolverVar & z,
 													double (*fPtr)(const vector<double> & parameters, 
 																				 int ii),
-													vector<double> & parameters,
+													const vector<double> & parameters,
+                          const LinearApproximator & convexApprox,
 													bool robust,
 													bool doUpdate) {
-	
-  //assert(parameters.size() == N_KNOCK_ON_PARAMS); // 3
-	//assert(parameters.size()==N_SOS_1D_PARAMS);
-	assert(parameters.size()==7);
-  
-  // aExpectedDelay, flow, D1(=T)
+	  
+	const double D1 = parameters[1];	 // [1] is not transparant!
   
 	// x
   int xLo, xHi;
@@ -897,36 +898,41 @@ void Solver::addConvexMax(const SolverVar & x,
 	}
 	
 	// point 0
-	double z0 = (*fPtr)(parameters, 0);
+	double z0 = convexApprox.getZ(0); //(*fPtr)(parameters, 0);
 	
 	// point 1
-	double d0Min = (*fPtr)(parameters, -1);
-	double zd0Min = (*fPtr)(parameters, d0Min);
-	
+	//double dMin = (*fPtr)(parameters, -1);
+  
+  //MinimumCalculator minCalc(fPtr, parameters, D1);
+  //double dMin = minCalc.getMinimumAbsis();
+	//double zdMin = minCalc.getMinimumValue(); //(*fPtr)(parameters, dMin);
+  
+  double dMin  = convexApprox.getD(1);
+  double zdMin = convexApprox.getZ(1);
+  
 	// point 2
-	const double D1 = parameters[1];	 // [1] is not transparant!
-	double zD1 = (*fPtr)(parameters, D1);
+	double zD1 = convexApprox.getZ(2); //(*fPtr)(parameters, D1);
 	
 	// on the d axis:
-  assert(0 <= d0Min);
-  assert(d0Min <= D1);
+  assert(0 <= dMin);
+  assert(dMin <= D1);
 	
 	// on the cost axis:
-  assert(zd0Min <= z0);
-  assert(zd0Min <= zD1);
+  assert(zdMin <= z0);
+  assert(zdMin <= zD1);
 		
 	// now imagine a V shape described by these 3 points.
 		
-	assert(d0Min > 0);
+	assert(dMin > 0);
 	SolverExpr dnFunctionExpr
 #ifdef USE_CPLEX_NATIVE
 	(*global_env_)
 #endif
 	;
   
-	if (D1 > d0Min) {
-		if (d0Min > 0) { // only dnFunction when something left of d0Min
-			dnFunctionExpr += z0 + (zd0Min - z0)/(d0Min /*- 0*/) * (x /*- 0*/);
+	if (D1 > dMin) {
+		if (dMin > 0) { // only dnFunction when something left of dMin
+			dnFunctionExpr += z0 + (zdMin - z0)/(dMin /*- 0*/) * (x /*- 0*/);
 			addConstr(dnFunctionExpr, "<=", z,
 								xName + "_convex_max_robust_dn_function",
 								doUpdate); // function row (1)	
@@ -938,13 +944,13 @@ void Solver::addConvexMax(const SolverVar & x,
 #endif
 		;
     upFunctionExpr += 
-		  zd0Min + (zD1 - zd0Min)/(D1 - d0Min) * (x - d0Min);
+		  zdMin + (zD1 - zdMin)/(D1 - dMin) * (x - dMin);
 		addConstr(upFunctionExpr, "<=", z,
 							xName + "_convex_max_robust_up_function",
 							doUpdate); // function row (1)	
 	} else {
-		//cerr << D1 << " = D1 <= d0Min = " << d0Min << endl;
-		assert(D1==d0Min);
+		//cerr << D1 << " = D1 <= dMin = " << dMin << endl;
+		assert(D1==dMin);
 		assert(D1!=0);
 		assert(zD1 <= z0); // dn slope
 		dnFunctionExpr += 
@@ -960,7 +966,7 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
 												const SolverVar & z, 
 												double (*fPtr)(const vector<double> & parameters, 
 																			 int ii),
-												vector<double> & parameters,
+												const vector<double> & parameters,
 												bool doUpdate) {
 	// according to http://lpsolve.sourceforge.net/5.0/SOS.htm
 	// function row (1)
@@ -998,11 +1004,15 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
 														 const SolverVar & z, 
 														 double (*fPtr)(const vector<double> & parameters, 
 																						int ii),
-														 vector<double> & parameters,
+														 const vector<double> & parameters,
+                             const LinearApproximator & convexApprox,
 														 bool robust,
 														 bool doUpdate) {
 	
-	// x
+
+  const double D1 = parameters[2];	 // [2] is not transparant!
+
+  // x
   int xLo, xHi;
 	string xName = getNameLoHi(xLo, xHi, &x);	
 	// y
@@ -1024,30 +1034,34 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
 							xPlusYName + "_sum_convex_max_up_tight_1",
 							doUpdate); // function row (1)
     assert(false);
-    cerr << "ERROR: not supported foe now" << endl; // FIXME
+    cerr << "ERROR: not supported for now" << endl; // FIXME
 		return;
 	}
 
 	// point 0
-	double z0 = (*fPtr)(parameters, 0);
+	double z0 = convexApprox.getZ(0); //(*fPtr)(parameters, 0);
 	
 	// point 1
-	double d0Min = (*fPtr)(parameters, -1);
-	double zd0Min = (*fPtr)(parameters, d0Min);
-	
+  
+	//double dMin = (*fPtr)(parameters, -1);
+  //MinimumCalculator minCalc(fPtr, parameters, D1);
+  //double dMin = minCalc.getMinimumAbsis();
+	//double zdMin = minCalc.getMinimumValue(); //(*fPtr)(parameters, dMin);	
+  double dMin  = convexApprox.getD(1);
+  double zdMin = convexApprox.getZ(1);
+  
 	// point 2
-	const double D1 = parameters[2];	 // [2] is not transparant!
-	double zD1 = (*fPtr)(parameters, D1);
+	double zD1 = convexApprox.getZ(2);//(*fPtr)(parameters, D1);
 
 	// on the d axis:
-  assert(0 <= d0Min);
-  assert(d0Min <= D1);
+  assert(0 <= dMin);
+  assert(dMin <= D1);
 
 	// on the cost axis:
-  assert(zd0Min <= z0);
-  assert(zd0Min <= zD1);
+  assert(zdMin <= z0);
+  assert(zdMin <= zD1);
 	
-	assert(d0Min >= 0);
+	assert(dMin >= 0);
 	
 	SolverExpr dnFunctionExpr
 #ifdef USE_CPLEX_NATIVE
@@ -1055,10 +1069,10 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
 #endif
 	;
 	
-	if (D1 > d0Min) {
+	if (D1 > dMin) {
 	
-		if (d0Min > 0) { // only dnFunction when something left of d0Min
-			dnFunctionExpr += z0 + (zd0Min - z0)/(d0Min - 0) * (xPlusYExpr - 0);
+		if (dMin > 0) { // only dnFunction when something left of dMin
+			dnFunctionExpr += z0 + (zdMin - z0)/(dMin - 0) * (xPlusYExpr - 0);
 			
 			// now imagine a V shape described by these 3 points.
 			addConstr(dnFunctionExpr, "<=", z,
@@ -1073,15 +1087,15 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
 #endif
 		;
 		upFunctionExpr += 
-		zd0Min + (zD1 - zd0Min)/(D1 - d0Min) * (xPlusYExpr - d0Min);
+		zdMin + (zD1 - zdMin)/(D1 - dMin) * (xPlusYExpr - dMin);
 		addConstr(upFunctionExpr, "<=", z,
 							xPlusYName + "_sum_convex_max_robust_dn_function",
 							doUpdate);
 		// function row (1)	
 		
 	} else {
-		//cerr << D1 << " = D1 <= d0Min = " << d0Min << endl;
-		assert(D1==d0Min);
+		//cerr << D1 << " = D1 <= dMin = " << dMin << endl;
+		assert(D1==dMin);
 		assert(D1!=0);
 		assert(zD1 <= z0); // dn slope
 		dnFunctionExpr += 

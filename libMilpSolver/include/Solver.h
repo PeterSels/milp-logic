@@ -6,6 +6,7 @@
 #include <string>
 
 #include "HasSolver.h"
+#include "LinearApproximator.h"
 
 #undef USE_SOS_VECTOR
 
@@ -189,13 +190,14 @@ public:
 									const SolverVar & z, 
 									double (*fPtr)(const std::vector<double> & parameters, 
 																 int ii),
-									std::vector<double> & parameters,
+									const std::vector<double> & parameters,
 									bool doUpdate=true);
   void addConvexMax(const SolverVar & x, 
 										const SolverVar & z, 
 										double (*fPtr)(const std::vector<double> & parameters, 
 																	 int ii),
-										std::vector<double> & parameters,
+										const std::vector<double> & parameters,
+                    const LinearApproximator & convexApprox,
 										bool robust,
 										bool doUpdate=true);
 	
@@ -204,15 +206,16 @@ public:
 									const SolverVar & z, 
 									double (*fPtr)(const std::vector<double> & parameters, 
 																 int ii),
-									std::vector<double> & parameters,
+									const std::vector<double> & parameters,
 									bool doUpdate=true);
   void addSumConvexMax(const SolverVar & x, 
 											 const SolverVar & y,
 											 const SolverVar & z, 
 											 double (*fPtr)(const std::vector<double> & parameters, 
 																			int ii),
-											 std::vector<double> & parameters,
-											 bool convex,
+											 const std::vector<double> & parameters,
+                       const LinearApproximator & convexApprox,
+											 bool robust,
 											 bool doUpdate=true);
   
   virtual std::string  getName(const SolverVar & var) const = 0;
