@@ -2,7 +2,6 @@
 #include <assert.h>
 
 #include "MinimumCalculator.h"
-#include "CostFunctions.h"
 
 using namespace std;
 
@@ -11,9 +10,7 @@ MinimumCalculator::MinimumCalculator(double (*fPtr)(const std::vector<double>
                                                       int ii),
                                      const std::vector<double> & parameters,
                                      unsigned int D1) 
-
-: //D1_((parameters.size()==N_1D_COST_PARAMS) ? parameters[1] : parameters[2])
-  D1_(D1)
+: D1_(D1)
 {
   // A more clever (faster) method could be used, but this always works.
   bool verbose = false;
