@@ -6,7 +6,7 @@
 #include <string>
 
 #include "HasSolver.h"
-#include "LinearApproximator.h"
+#include "PwlApproximator.h"
 
 #undef USE_SOS_VECTOR
 
@@ -197,7 +197,7 @@ public:
 										double (*fPtr)(const std::vector<double> & parameters, 
 																	 int ii),
 										const std::vector<double> & parameters,
-                    const LinearApproximator & convexApprox,
+                    const PwlApproximator & convexApprox,
 										bool robust,
 										bool doUpdate=true);
 	
@@ -214,7 +214,7 @@ public:
 											 double (*fPtr)(const std::vector<double> & parameters, 
 																			int ii),
 											 const std::vector<double> & parameters,
-                       const LinearApproximator & convexApprox,
+                       const PwlApproximator & convexApprox,
 											 bool robust,
 											 bool doUpdate=true);
   

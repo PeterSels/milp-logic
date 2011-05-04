@@ -8,8 +8,8 @@ set(SOURCES
   src/BclException.cpp
   src/CplexSolver.cpp
   src/GurobiSolver.cpp
-  src/LinearApproximator.cpp
   src/MinimumCalculator.cpp
+  src/PwlApproximator.cpp
   src/ScheduleSvg.cpp
   src/Solver.cpp
   src/StringUtilities.cpp

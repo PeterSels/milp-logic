@@ -1,10 +1,10 @@
 #include <assert.h>
 
-#include "LinearApproximator.h"
+#include "PwlApproximator.h"
 //#include "CostFunctions.h"
 #include "MinimumCalculator.h"
 
-LinearApproximator::LinearApproximator() {
+PwlApproximator::PwlApproximator() {
   z0_   = 0.0;
   
   D1_   = 0;
@@ -15,21 +15,21 @@ LinearApproximator::LinearApproximator() {
 }
 
 
-LinearApproximator::LinearApproximator(double (*fPtr)(const std::vector<double>
-                                                      & parameters, 
-                                                      int ii),
-                                       const std::vector<double> & parameters,
-                                       unsigned int D1) 
-  /// calc min & interpolate
+PwlApproximator::PwlApproximator(double (*fPtr)(const std::vector<double>
+                                                & parameters, 
+                                                int ii),
+                                 const std::vector<double> & parameters,
+                                 unsigned int D1) 
+/// calc min & interpolate
 
 {
   // left point
   // 0
-  z0_   = (*fPtr)(parameters,    0);
+  z0_   = (*fPtr)(parameters, 0);
 
   // right point
   D1_  = D1;
-  zD1_ = (*fPtr)(parameters,   D1_);
+  zD1_ = (*fPtr)(parameters, D1_);
 
   // middle (low, minimal) point
   MinimumCalculator minCalc(fPtr, parameters, D1);
@@ -37,7 +37,7 @@ LinearApproximator::LinearApproximator(double (*fPtr)(const std::vector<double>
   zMin_ = minCalc.getMinimumValue();
 }
 
-double LinearApproximator::eval(double d) const {
+double PwlApproximator::eval(double d) const {
   assert(0 <=d);
   assert(d <= D1_);
   
@@ -53,7 +53,7 @@ double LinearApproximator::eval(double d) const {
   return z;
 }
 
-double LinearApproximator::getD(unsigned int i) const {
+double PwlApproximator::getD(unsigned int i) const {
   assert(0<=i);
   assert(i<=2); // for now
   if (i==0) {
@@ -65,7 +65,7 @@ double LinearApproximator::getD(unsigned int i) const {
   }
 }
 
-double LinearApproximator::getZ(unsigned int i) const {
+double PwlApproximator::getZ(unsigned int i) const {
   assert(0<=i);
   assert(i<=2); // for now
   if (i==0) {
@@ -77,5 +77,5 @@ double LinearApproximator::getZ(unsigned int i) const {
   }
 }
 
-LinearApproximator::~LinearApproximator() {
+PwlApproximator::~PwlApproximator() {
 }

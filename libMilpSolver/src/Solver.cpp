@@ -877,7 +877,7 @@ void Solver::addConvexMax(const SolverVar & x,
 													double (*fPtr)(const vector<double> & parameters, 
 																				 int ii),
 													const vector<double> & parameters,
-                          const LinearApproximator & convexApprox,
+                          const PwlApproximator & convexApprox,
 													bool robust,
 													bool doUpdate) {
 	  
@@ -1005,7 +1005,7 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
 														 double (*fPtr)(const vector<double> & parameters, 
 																						int ii),
 														 const vector<double> & parameters,
-                             const LinearApproximator & convexApprox,
+                             const PwlApproximator & convexApprox,
 														 bool robust,
 														 bool doUpdate) {
 	

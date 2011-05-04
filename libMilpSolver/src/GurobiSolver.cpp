@@ -27,7 +27,8 @@ void GurobiSolver::resetModel() {
     
   } catch (...) {
     // somehow not printed
-    cerr << "ERROR: Gurobi exception catched at calling new SolverModel()" << endl;
+    cerr << "ERROR: Gurobi exception catched at calling new SolverModel()"
+    << endl;
   }
   if (model_==0) {
     // somehow not printed
