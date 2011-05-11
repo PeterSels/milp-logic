@@ -231,6 +231,9 @@ public:
   // solving
   virtual void setMinimize() = 0;
   virtual void setMaximize() = 0;
+  virtual void setStartValueOf(SolverVar & var,
+                               double startValue) const = 0;
+
   virtual bool solve(double gap) = 0;
 
   // get results

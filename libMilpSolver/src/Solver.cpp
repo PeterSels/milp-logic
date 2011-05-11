@@ -3,7 +3,7 @@
 
 #include "Solver.h"
 #include "StringUtilities.h"
-// for replaceAllOddByEven
+  // for replaceAllOddByEven
 #include "MinimumCalculator.h"
 
 //#define MANUALLY_ADD_SOS_CONSTRAINTS (true)

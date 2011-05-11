@@ -305,7 +305,6 @@ void CplexSolver::update() {
 }
 
 void CplexSolver::exportModelAsLpFile(const string & fileNamePrefix) const {
-  cout << "exportModelAsLpFile" << endl;
   // For an LP format matrix use the following:
   IloCplex cplex(*model_);
   cplex.exportModel((fileNamePrefix + ".lp").c_str()); // may not work
@@ -316,7 +315,6 @@ void CplexSolver::exportModelAsLpFile(const string & fileNamePrefix) const {
 }
 
 void CplexSolver::exportModelAsMpsFile(const string & fileNamePrefix) const {
-  cout << "exportModelAsMpsFile" << endl;
   // For an MPS format matrix use the following:
 
   IloCplex cplex(*model_);

@@ -167,14 +167,12 @@ char GurobiSolver::compStringToChar(
 }
 
 void GurobiSolver::exportModelAsLpFile(const string & fileNamePrefix) const {
-  cout << "exportModelAsLpFile" << endl;
   const_cast<SolverModel *>(model_)->
     write((fileNamePrefix + ".lp").c_str()); 
     // does not add lp extension by itself
 }
 
 void GurobiSolver::exportModelAsMpsFile(const string & fileNamePrefix) const {
-  cout << "exportModelAsMpsFile" << endl;
   const_cast<SolverModel *>(model_)->
     write((fileNamePrefix + ".mps").c_str());
   // Adds .mat extension by default,
@@ -194,6 +192,11 @@ void GurobiSolver::setMaximize() {
   //model_->set(GRB_IntAttr_ModelSense, 0); // maximize (is not default)
   model_->set(GRB_IntAttr_ModelSense, -1); // maximize (is not default)
 	model_->update();
+}
+
+void GurobiSolver::setStartValueOf(SolverVar & var, 
+                                   double startValue) const {
+  var.set(GRB_DoubleAttr_Start, startValue);
 }
 
 bool GurobiSolver::solve(double gap) {

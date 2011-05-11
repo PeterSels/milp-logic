@@ -211,14 +211,12 @@ void XpressSolver::update() {
 
 
 void XpressSolver::exportModelAsLpFile(const string & fileNamePrefix) const {
-  cout << "exportModelAsLpFile" << endl;
   // For an LP format matrix use the following:
   const_cast<SolverModel *>(model_)->
     exportProb(XPRB_LP, fileNamePrefix.c_str()); // adds lp extension by itself
 }
 
 void XpressSolver::exportModelAsMpsFile(const string & fileNamePrefix) const {
-  cout << "exportModelAsMpsFile" << endl;
   // For an MPS format matrix use the following:
   const_cast<SolverModel *>(model_)->
     exportProb(XPRB_MPS, (fileNamePrefix + ".mps").c_str());

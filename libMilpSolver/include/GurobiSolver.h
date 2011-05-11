@@ -59,6 +59,8 @@ public:
   // solving
   void setMinimize();
   void setMaximize();
+  void setStartValueOf(SolverVar & var,
+                       double startValue) const;  
   bool solve(double gap);
 
   // get results
