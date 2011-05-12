@@ -333,6 +333,13 @@ void CplexSolver::setMaximize() {
   sense_ = +1;
 }
 
+void CplexSolver::setStartValueOf(SolverVar & var, 
+                                  double startValue) const {
+  cerr << "CplexSolver::setStartValueOf(...) no timplemented yet" << endl;
+  assert(false);
+  //var.set(GRB_DoubleAttr_Start, startValue);
+}
+
 // Everything is handled here, nothing is thrown out
 bool CplexSolver::solve(double gap) {
   cout << "In CplexSolver::solve()" << endl;
@@ -441,56 +448,42 @@ double CplexSolver::getObjVal() const {
   return objValue;
 }
 
-
 unsigned int CplexSolver::getNumberOfRows() const {
   int rows;
-  /*
-  xo_prob_struct * opt_prob = model_->getXPRSprob();
-  XPRSgetintattrib(opt_prob, XPRS_ORIGINALROWS, &rows);  
-  assert(rows >= 0);
-*/
-  model_->getProperties();
-
-  rows = 0;
+  //model_->getProperties();  
+  IloCplex cplex(*model_);
+  rows = cplex.getNrows();
+  //rows = global_cplex_->getNrows(); // global_cplex_ seems to be 0!
   return (unsigned int)rows;
 }
 
 unsigned int CplexSolver::getNumberOfColumns() const {
   int cols;
-
-  //return model_->getAnyProperty(); //GRB_IntAttr_NumVars);
-  //return model_->CPXgetnumcols();
-
-  //IloCplex cplex(*model_);
   
-  //return model_->getProperty("cols");
-
-
-/*
-  ///model_->getIntAttrib(XPRS.ORIGINALCOLS);
-  xo_prob_struct * opt_prob = model_->getXPRSprob();
-  XPRSgetintattrib(opt_prob, XPRS_ORIGINALCOLS, &cols);  
+  IloCplex cplex(*model_);
+  cols = cplex.getNcols();
+  //cols = global_cplex_->getNcols();  
   assert(cols >= 0);
-  */
-  cols = 0;
   return (unsigned int)cols;
 }
 
 unsigned int CplexSolver::getNumberOfNonZeroes() const {
   int nonZeroes;
-  /*
-  xo_prob_struct * opt_prob = model_->getXPRSprob();
-  XPRSgetintattrib(opt_prob, XPRS_NZS, &nonZeroes);  
-  assert(nonZeroes >= 0);
-  */
-  nonZeroes = 0; // FIXME
+  IloCplex cplex(*model_);
+  nonZeroes = cplex.getNNZs();
+  //nonZeroes = global_cplex_->getNNZs();
+  assert(nonZeroes >= 0);  
   return (unsigned int)nonZeroes;
 }
 
-
 unsigned int CplexSolver::getNumberOfSets() const {
-  // FIXME
-  return 0;
+  int nSOSs;
+  IloCplex cplex(*model_);
+  nSOSs = cplex.getNSOSs();
+  //nSOSs = global_cplex_->getNSOSs();
+  assert(nSOSs >= 0);
+  
+  return (unsigned int)nSOSs;
 }
 
 unsigned int CplexSolver::getNumberOfSetMembers() const {
