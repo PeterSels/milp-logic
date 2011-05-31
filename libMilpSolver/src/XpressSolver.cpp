@@ -257,7 +257,7 @@ bool XpressSolver::solve(double gap) {
   model_->setMsgLevel(3);
 
   xo_prob_struct * opt_prob = model_->getXPRSprob();
-  XPRSsetdblcontrol(opt_prob, XPRS_BARGAPSTOP, gap*100);
+  XPRSsetdblcontrol(opt_prob, XPRS_MIPRELSTOP, gap);
 
   solved_ = false;
   model_->solve("g"); // Solve the problem as MIP
