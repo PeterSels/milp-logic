@@ -11,7 +11,7 @@
 using namespace std;
 
 
-std::string toString(char ch) {
+std::string characterToString(char ch) {
   string str;
   str.push_back(ch);
   return str;

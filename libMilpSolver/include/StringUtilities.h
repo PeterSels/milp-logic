@@ -5,7 +5,7 @@
 #include <vector>
 #include <iostream>
 
-std::string toString(char ch);
+std::string characterToString(char ch);
 int toInt(const std::string & str);
 double toDouble(const std::string & str);
 

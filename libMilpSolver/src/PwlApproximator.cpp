@@ -29,7 +29,7 @@ PwlApproximator::PwlApproximator(double (*fPtr)(const std::vector<double>
 
   // right point
   D1_  = D1;
-  zD1_ = (*fPtr)(parameters, D1_);
+  zD1_ = (*fPtr)(parameters, (int)D1_);
 
   // middle (low, minimal) point
   MinimumCalculator minCalc(fPtr, parameters, D1);

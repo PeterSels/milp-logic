@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:\xpressmp\include;D:\projects\MilpSolver\libMilpSolver\include;&quot;$(CPLEX_HOME)\include&quot;;&quot;$(CONCERT_HOME)\include&quot;;D:\gurobi301\win32\include"
+				AdditionalIncludeDirectories="&quot;$(XPRESS_HOME)\include&quot;;D:\projects\MilpSolver\libMilpSolver\include;&quot;$(CPLEX_HOME)\include&quot;;&quot;$(CONCERT_HOME)\include&quot;;&quot;$(GUROBI_HOME)\include&quot;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -102,7 +102,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="C:\xpressmp\include;D:\projects\MilpSolver\libMilpSolver\include;&quot;$(CPLEX_HOME)\include&quot;;&quot;$(CONCERT_HOME)\include&quot;;D:\gurobi301\win32\include"
+				AdditionalIncludeDirectories="&quot;$(XPRESS_HOME)\include&quot;;D:\projects\MilpSolver\libMilpSolver\include;&quot;$(CPLEX_HOME)\include&quot;;&quot;$(CONCERT_HOME)\include&quot;;&quot;$(GUROBI_HOME)\include&quot;"
 				RuntimeLibrary="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
@@ -162,6 +162,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\MinimumCalculator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\PwlApproximator.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Solver.cpp"
 				>
 			</File>
@@ -204,7 +212,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\MinimumCalculator.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\NUnits.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\PwlApproximator.h"
 				>
 			</File>
 			<File

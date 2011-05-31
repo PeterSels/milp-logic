@@ -16,26 +16,26 @@ public:
 
   const SolverVar & addLpVar(
     double lo, double hi, double objCoef, const std::string & name,
-    bool doUpdate);
+    bool doUpdate=true);
   const SolverVar & addIntVar(
     int lo, int hi, double objCoef, const std::string & name,
-    bool doUpdate);
+    bool doUpdate=true);
   const SolverVar & addBinVar(
     double objCoef, const std::string & name,
-    bool doUpdate);
+    bool doUpdate=true);
 
   const SolverExpr & addExpr(
-    const SolverExpr & expr, const std::string & name);
+    const SolverExpr & expr, const std::string & name, bool doUpdate=true);
 
   const SolverConstr & addConstr(
     const SolverVar & lhs, const std::string & comp, const SolverVar & rhs,
-    const std::string & name);
+    const std::string & name, bool doUpdate=true);
   const SolverConstr & addConstr(
     const SolverExpr & lhs, const std::string & comp, const SolverVar & rhs,
-    const std::string & name);
+    const std::string & name, bool doUpdate=true);
   const SolverConstr & addConstr(
     const SolverExpr & lhs, const std::string & comp, const SolverExpr & rhs,
-    const std::string & name);
+    const std::string & name, bool doUpdate=true);
 
   void addSos1SolverSpecific(
     const std::string & name,
@@ -47,8 +47,8 @@ public:
   std::string  getName(const SolverVar & var) const;
   double getUpperBound(const SolverVar & var) const;
   double getLowerBound(const SolverVar & var) const;
-	void setLowerBound(const SolverVar & var, double value) const;
-	void setUpperBound(const SolverVar & var, double value) const;
+	void setLowerBound(SolverVar & var, double value);
+	void setUpperBound(SolverVar & var, double value);
 
   // reporting/debugging
   void exportModelAsLpFile(const std::string & fileNamePrefix) const;
@@ -57,6 +57,8 @@ public:
   // solving
   void setMinimize();
   void setMaximize();
+  void setStartValueOf(SolverVar & var,
+                       double startValue) const;  
   bool solve(double gap);
 
   // get results

@@ -10,8 +10,7 @@
 
 #undef USE_SOS_VECTOR
 
-typedef std::map<const SolverVar *, std::map<int, SolverVar> > 
-  BinVarMap;
+typedef std::map<const SolverVar *, std::map<int, SolverVar> > BinVarMap;
 
 typedef std::map<const SolverVar *, 
     std::map<const SolverVar *,

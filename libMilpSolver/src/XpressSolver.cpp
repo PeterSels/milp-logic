@@ -62,7 +62,7 @@ const SolverVar & XpressSolver::addLpVar(
   // explicit store objCoef in obj function
   objFunction_ += objCoef * var;
   model_->setObj(objFunction_);
-  return var;
+  return varVector_.back();
 }
 
 const SolverVar & XpressSolver::addIntVar(
@@ -76,7 +76,7 @@ const SolverVar & XpressSolver::addIntVar(
   // explicit store objCoef in obj function
   objFunction_ += objCoef * var;
   model_->setObj(objFunction_); 
-  return var;
+  return varVector_.back();
 }
 
 const SolverVar & XpressSolver::addBinVar(
@@ -89,11 +89,12 @@ const SolverVar & XpressSolver::addBinVar(
   // explicit store objCoef in obj function
   objFunction_ += objCoef * var;
   model_->setObj(objFunction_); 
-  return var;
+  return varVector_.back();
 }
 
 const SolverExpr & XpressSolver::addExpr(
   const SolverExpr & expr, const std::string & name, bool doUpdate) {
+  (void)doUpdate;
   //exprVector_.push_back(model_->addExpr(expr, name.str());
   exprVector_.push_back(expr);
   return exprVector_.back();
@@ -103,6 +104,7 @@ const SolverConstr & XpressSolver::addConstr(
   const SolverVar & lhs, const std::string & comp, const SolverVar & rhs, 
   const std::string & name, bool doUpdate) {
   
+  (void)doUpdate;
   if (comp=="==") {
     constrVector_.push_back(model_->newCtr(
       lpConvert(name).c_str(), lhs == rhs));
@@ -126,6 +128,7 @@ const SolverConstr & XpressSolver::addConstr(
   const SolverExpr & lhs, const std::string & comp, const SolverVar & rhs, 
   const std::string & name, bool doUpdate) {
   
+  (void)doUpdate;
   if (comp=="==") {
     constrVector_.push_back(model_->newCtr(
       lpConvert(name).c_str(), lhs == rhs));
@@ -149,6 +152,7 @@ const SolverConstr & XpressSolver::addConstr(
   const SolverExpr & lhs, const std::string & comp, const SolverExpr & rhs, 
   const std::string & name, bool doUpdate) {
 
+  (void)doUpdate;
   if (comp=="==") {
     constrVector_.push_back(model_->newCtr(
       lpConvert(name).c_str(), lhs == rhs));
@@ -233,6 +237,13 @@ void XpressSolver::setMaximize() {
   model_->setSense(XPRB_MAXIM);
 }
 
+void XpressSolver::setStartValueOf(SolverVar & var, 
+                                  double startValue) const {
+  cerr << "XpressSolver::setStartValueOf(...) not implemented yet" << endl;
+  assert(false);
+  //var.set(GRB_DoubleAttr_Start, startValue);
+}
+
 bool XpressSolver::solve(double gap) {
   cout << "In XpressSolver::solve()" << endl;
 
@@ -244,6 +255,9 @@ bool XpressSolver::solve(double gap) {
   4 all messages printed.
   */  
   model_->setMsgLevel(3);
+
+  xo_prob_struct * opt_prob = model_->getXPRSprob();
+  XPRSsetdblcontrol(opt_prob, XPRS_BARGAPSTOP, gap*100);
 
   solved_ = false;
   model_->solve("g"); // Solve the problem as MIP
@@ -285,12 +299,12 @@ double XpressSolver::getUpperBound(const SolverVar & var) const {
   return var.getUB();
 }
 
-void XpressSolver::setLowerBound(const SolverVar & var, double value) const {
+void XpressSolver::setLowerBound(SolverVar & var, double value) {
   var.setLB(value);
 }
 
-void XpressSolver::setUpperBound(const SolverVar & var, double value) const {
-  var.getUB(value);
+void XpressSolver::setUpperBound(SolverVar & var, double value) {
+  var.setUB(value);
 }
 
 double XpressSolver::getObjVal() const {
