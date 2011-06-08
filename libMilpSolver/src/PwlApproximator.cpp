@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <iostream>
 
 #include "PwlApproximator.h"
 //#include "CostFunctions.h"
@@ -13,7 +14,6 @@ PwlApproximator::PwlApproximator() {
   dMin_ = 0;
   zMin_ = 0.0;
 }
-
 
 PwlApproximator::PwlApproximator(double (*fPtr)(const std::vector<double>
                                                 & parameters, 
@@ -39,16 +39,24 @@ PwlApproximator::PwlApproximator(double (*fPtr)(const std::vector<double>
 
 double PwlApproximator::eval(double d) const {
   assert(0 <=d);
-  assert(d <= D1_);
+  if (d > D1_) {
+    //std::cerr << "";
+    //assert(d <= D1_);
+  }
   
   double z;
   if (d==dMin_) {
     z = zMin_;
   } else if (d < dMin_) {
+    assert(dMin_ > 0);
     z = z0_ + (zMin_ - z0_)/(dMin_ - 0) * (d - 0); 
   } else {
-    assert(d > dMin_);
-    z = zMin_ + (zD1_ - zMin_)/(D1_ - dMin_) * (d - dMin_); 
+    assert(d >= dMin_);
+    if (D1_ > dMin_) {
+      z = zMin_ + (zD1_ - zMin_)/(D1_ - dMin_) * (d - dMin_); 
+    } else {
+      z = zMin_;
+    }
   }
   return z;
 }
