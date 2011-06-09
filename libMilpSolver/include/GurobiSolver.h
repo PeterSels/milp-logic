@@ -55,6 +55,7 @@ public:
   // reporting/debugging
   void exportModelAsLpFile(const std::string & fileNamePrefix) const;
   void exportModelAsMpsFile(const std::string & fileNamePrefix) const;
+  void exportModelAsRewFile(const std::string & fileNamePrefix) const;
 
   // solving
   void setMinimize();

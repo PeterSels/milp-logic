@@ -226,6 +226,7 @@ public:
   // reporting/debugging
   virtual void exportModelAsLpFile(const std::string & fileName) const = 0;
   virtual void exportModelAsMpsFile(const std::string & fileName) const = 0;
+  virtual void exportModelAsRewFile(const std::string & fileName) const = 0;
 
   // solving
   virtual void setMinimize() = 0;

@@ -229,6 +229,12 @@ void XpressSolver::exportModelAsMpsFile(const string & fileNamePrefix) const {
   // interprets this as Microsoft Access Table 
 }
 
+void XpressSolver::exportModelAsRewFile(const string & fileNamePrefix) const {
+  // For an MPS format matrix use the following:
+  const_cast<SolverModel *>(model_)->
+  exportProb(XPRB_MPS, (fileNamePrefix + ".rew").c_str()); // UNTESTED!!!
+}
+
 void XpressSolver::setMinimize() {
   model_->setSense(XPRB_MINIM);
 }

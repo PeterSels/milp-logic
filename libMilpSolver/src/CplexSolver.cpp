@@ -325,6 +325,13 @@ void CplexSolver::exportModelAsMpsFile(const string & fileNamePrefix) const {
   // interprets this as Microsoft Access Table 
 }
 
+void CplexSolver::exportModelAsRewFile(const string & fileNamePrefix) const {
+  // For an MPS format matrix use the following:
+  
+  IloCplex cplex(*model_);
+  cplex.exportModel((fileNamePrefix + ".rew").c_str()); // UNTESTED  !!!
+}
+
 void CplexSolver::setMinimize() {
   sense_ = -1;
 }

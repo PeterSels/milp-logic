@@ -180,6 +180,14 @@ void GurobiSolver::exportModelAsMpsFile(const string & fileNamePrefix) const {
   // interprets this as Microsoft Access Table 
 }
 
+void GurobiSolver::exportModelAsRewFile(const string & fileNamePrefix) const {
+  const_cast<SolverModel *>(model_)->
+  write((fileNamePrefix + ".rew").c_str());
+  // Adds .mat extension by default,
+  // but we avoid .mat extension 'coz Windows 
+  // interprets this as Microsoft Access Table 
+}
+
 void GurobiSolver::setMinimize() {
 	model_->set(GRB_StringAttr_ModelName, "GurobiModelMin");
   //model_->set(GRB_IntAttr_ModelSense, 1); // minimize (is in fact default)
