@@ -99,7 +99,9 @@ public:
 	void setCoverCutsLevel(int level);
 	void setFlowCoverCutsLevel(int level);
 	void setFlowPathCutsLevel(int level);
-	
+  
+	void setBranchingMethod(int method);
+
 private:
   GRBEnv * env_;
 };

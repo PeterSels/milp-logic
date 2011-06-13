@@ -460,6 +460,14 @@ void GurobiSolver::setFlowPathCutsLevel(int level) {
 	assert(level <= 2);
   model_->getEnv().set(GRB_IntParam_FlowPathCuts, level); // C++		
 }
+
+// http://www.gurobi.com/doc/40/refman/node572.html
+void GurobiSolver::setBranchingMethod(int method) {
+  assert(-1 <= method);
+  assert(method <= 3);
+  model_->getEnv().set(GRB_IntParam_VarBranch, method); // C++		 
+}
+
 ////////////////// End Cuts Control ///////////////
 
 

@@ -268,7 +268,8 @@ public:
 	virtual void setFlowCoverCutsLevel(int level); // = 0
 	virtual void setFlowPathCutsLevel(int level); // = 0
 	
-	
+	virtual void setBranchingMethod(int method); // = 0
+
   std::string lpConvert(const std::string & name);
 
 	

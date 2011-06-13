@@ -995,6 +995,14 @@ void Solver::setFlowPathCutsLevel(int level) {
 	// should become pure virtual soon}
 }
 
+void Solver::setBranchingMethod(int method) {
+	assert(-1 <= method);
+	assert(method <= 3);
+	
+	assert(false); // child solver needs to implement this
+	// should become pure virtual soon}  
+}
+
 ////////////////// End Cuts Control ///////////////
 
 Solver::~Solver() {
