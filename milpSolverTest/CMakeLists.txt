@@ -24,7 +24,7 @@ ELSEIF(WIN32)
  set(CPLEX_ARCH_DIR DUNNO)
  set(THREAD )
 ELSE()
- set(CPLEX_ARCH_DIR x86_sles10_4.1)
+ set(CPLEX_ARCH_DIR x86-64_sles10_4.1)
  set(THREAD pthread)
 ENDIF()
 
