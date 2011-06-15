@@ -56,7 +56,7 @@ const SolverVar & XpressSolver::addLpVar(
   bool doUpdate) {
 	
 	(void)doUpdate;
-  SolverVar & var = model_->newVar(
+  const SolverVar & var = model_->newVar(
     lpConvert(name).c_str(), XPRB_PL, lo, hi);
   varVector_.push_back(var);
   // explicit store objCoef in obj function
@@ -70,7 +70,7 @@ const SolverVar & XpressSolver::addIntVar(
   bool doUpdate) {
 	
 	(void)doUpdate;
-  SolverVar & var = model_->newVar(
+  const SolverVar & var = model_->newVar(
     lpConvert(name).c_str(), XPRB_UI, lo, hi);
   varVector_.push_back(var);
   // explicit store objCoef in obj function
@@ -83,7 +83,7 @@ const SolverVar & XpressSolver::addBinVar(
   double objCoef, const std::string & name, bool doUpdate) {
 	
 	(void)doUpdate;
-  SolverVar & var = model_->newVar(
+  const SolverVar & var = model_->newVar(
     lpConvert(name).c_str(), XPRB_BV);
   varVector_.push_back(var);
   // explicit store objCoef in obj function
