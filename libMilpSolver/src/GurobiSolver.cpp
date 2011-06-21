@@ -394,7 +394,13 @@ void GurobiSolver::setDeterministic() {
 }
 
 void GurobiSolver::setMipFocus(unsigned int value) {
-	assert(0 <= value);
+/*Controls the focus of the MIP solver. The default value tries to 
+   strike a balance between finding good feasible solutions and 
+   proving optimality. A value of 1 shifts the focus towards finding 
+   feasible solutions. A value of 2 shifts the focus towards proving optimality.
+   A value of 3 focuses almost entirely on moving the best objective bound.
+ */
+  assert(0 <= value);
 	assert(value <= 3);
   model_->getEnv().set(GRB_IntParam_MIPFocus, value); // C++
 }

@@ -15,6 +15,7 @@ include_directories(
   include
   $ENV{CPLEX_HOME}/include
   $ENV{CONCERT_HOME}/include
+  $ENV{XPRESS_HOME}/include
 )
 
 IF(APPLE)
@@ -33,6 +34,7 @@ link_directories(
   ${MilpSolver_SOURCE_DIR}/libMilpSolver
   $ENV{CPLEX_HOME}/lib/${CPLEX_ARCH_DIR}/static_pic
   $ENV{CONCERT_HOME}/lib/${CPLEX_ARCH_DIR}/static_pic
+  $ENV{XPRESS_HOME}/lib
 )
 
 add_definitions( 
@@ -48,5 +50,7 @@ ENDIF(APPLE)
 
 add_executable( milpSolverTest ${SOURCES} ${HEADERS})
 
-target_link_libraries( milpSolverTest MilpSolver gurobi_c++ $ENV{GUROBI_MAIN_VERSION} ilocplex cplex concert m ${EXTRA_LIBS} ${THREAD})
+target_link_libraries( milpSolverTest MilpSolver gurobi_c++ $ENV{GUROBI_MAIN_VERSION} ilocplex cplex concert 
+#xprs xprb 
+m ${EXTRA_LIBS} ${THREAD})
 

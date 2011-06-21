@@ -23,6 +23,7 @@ include_directories(
   include
   $ENV{CPLEX_HOME}/include
   $ENV{CONCERT_HOME}/include
+  $ENV{XPRESS_HOME}/include
 )
 
 add_definitions( 
