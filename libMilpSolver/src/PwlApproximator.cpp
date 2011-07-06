@@ -2,7 +2,6 @@
 #include <iostream>
 
 #include "PwlApproximator.h"
-//#include "CostFunctions.h"
 #include "MinimumCalculator.h"
 
 PwlApproximator::PwlApproximator() {

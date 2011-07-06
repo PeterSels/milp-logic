@@ -5,6 +5,7 @@
 #include "StringUtilities.h"
 
 #define CROP_BORDER (1000)
+#define HOVER_FILL_OPACITY (0.5)
 
 using namespace std;
 
@@ -51,13 +52,77 @@ string Svg::getHeader() const {
 	headerStr << "  xmlns:ev='http://www.w3.org/2001/xml-events'" << endl;
 	headerStr << "  width='" << width_ << "px'" << endl; 
 	headerStr << "  height='" << height_ << "px'" << endl;
-	headerStr << ">" << endl;	
+	headerStr << ">" << endl;
 	
   headerStr << "<g><title>" << fileName_ << "</title></g>" << endl;
 	
 	if (haveScrollJs_) {
 	  headerStr << "<script type=\"text/ecmascript\"><![CDATA[" << endl;
 	  headerStr << scrollJsStrStr.str();
+    headerStr << endl
+    << "function makeTransparent(evt) {" << endl
+    << "  evt.target.setAttributeNS(null,'opacity','" 
+    << HOVER_FILL_OPACITY << "');" << endl
+    << "}" << endl
+    << endl
+    << "function makeOpaque(evt) {" << endl
+    << "  evt.target.setAttributeNS(null,'opacity','1.0');" << endl
+    << "}" << endl
+    << "function makeInvisible(evt) {" << endl
+    << "  evt.target.setAttributeNS(null,'opacity','0.0');" << endl
+    << "}" << endl;
+    
+    headerStr
+    << "function rectangleOverAction(evt) {" << endl
+    << "  makeTransparent(evt)" << endl
+    << "  addHeaderObject(evt)" << endl
+    << "}" << endl
+    << "" << endl
+    << "function rectangleOutAction(evt) {" << endl
+    << "  makeOpaque(evt);" << endl
+    << "  removeHeaderObject(evt);" << endl
+    << "}" << endl
+    << "" << endl
+    << "function makeTransparent(evt) {" << endl
+    << "  evt.target.setAttributeNS(null,'opacity','0.5');" << endl
+    << "}" << endl
+    << "" << endl
+    << "function makeOpaque(evt) {" << endl
+    << "  evt.target.setAttributeNS(null,'opacity','1.0');" << endl
+    << "}" << endl
+    << "" << endl
+    << "function addHeaderObject(evt, name) {" << endl 
+    << "  idItem = evt.srcElement.attributes.getNamedItem('id');" << endl
+    << "  alert(idItem);" << endl
+    << "  if (idItem) {" << endl
+    << "    name = idItem.value;" << endl
+    << "    alert(name)" << endl
+    << "    //addHeaderObject(evt, evt.srcElement.name);" << endl
+    << "    var doc = window.top.document;" << endl
+    << "    var obj = doc.createElement('object', true);" << endl
+    << "    obj.setAttribute('type', 'image/svg+xml');" << endl
+    << "    obj.setAttribute('data', 'BlueCircle.svg');" << endl
+    << "    obj.setAttribute('width', '500');" << endl
+    << "    obj.setAttribute('height', '500');" << endl
+    << "    obj.setAttribute('id', 'headerObject');" << endl
+    << "    obj.addEventListener('load', function() {" << endl
+    << "      // alert('loaded!');" << endl
+    << "    }, false);" << endl
+    << "    doc.body.appendChild(obj);" << endl
+    << "  } else {" << endl
+    << "    alert('no name found');" << endl
+    << "  }" << endl
+    << "}" << endl
+    << " " << endl
+    << "function removeHeaderObject(evt) {" << endl
+    << "  var doc = window.top.document;" << endl
+    << "  var childId = doc.getElementById('headerObject');" << endl
+    << "  if (childId) {" << endl
+    << "    doc.body.removeChild(childId);" << endl
+    << "  }" << endl
+    << "}" << endl 
+    << endl;    
+    
 	  headerStr << "]]></script>" << endl;
 	}
 
@@ -214,13 +279,17 @@ void Svg::addRectangle(unsigned int xTmp,
 	<< ";stroke-width:" << strokeWidth << ";"
 	<< "fill-opacity:" << fillOpacity 
 	<< ";stroke-opacity:" << strokeOpacity << "'" << endl;
-
+	bodyStr_
+  //<< "onload='makeInvisible(evt)' " << endl
+  << "onmouseover='rectangleOverAction(evt)' "
+  << "onmouseout='rectangleOutAction(evt)'" << endl;
+  
 	bodyStr_ << "> " << endl;
 	
 	if (title!="") {
 		bodyStr_ << "    <title>" << title << "</title>" << endl;
 	}
-		
+  
 	bodyStr_	
 	<< "  </rect>" << endl;	 
 
@@ -232,7 +301,22 @@ void Svg::addRectangle(unsigned int xTmp,
 		  bodyStr_ << "</a>" << endl;
 		}
 	}
-	bodyStr_ << endl;	
+	bodyStr_ << endl;
+  
+  /*
+  bodyStr_ << "<g transform='scale(1.0)'>" << endl
+  << "<image x='" << x << "' y='" << (int)y-200
+  << "' width='200' height='200' "
+  << "id='" << id << "' "
+  //<< "id='IC_A_1_507_600_119_ANS_Ride_i_IC_A_1_507_600_120_LIEGE-GUILLEMINS__i_IC_A_1_507_600_120_LIEGE-GUILLEMINS_Dwell_o_IC_A_1_507_600_121_LIEGE-GUILLEMINS'"
+  //<< "xlink:href='Reporter_0_0_0_Optimized_2d_o_IC_A_1_507_600_119_ANS_Ride_i_IC_A_1_507_600_120_LIEGE-GUILLEMINS__i_IC_A_1_507_600_120_LIEGE-GUILLEMINS_Dwell_o_IC_A_1_507_600_121_LIEGE-GUILLEMINS_Opt.R.svg' "
+  //<< "xlink:href='Circle.svg' " << endl
+  //<< "onload='makeInvisible(evt)' " << endl
+  //<< "onmouseover='MakeTransparent(evt)' " << endl
+  //<< "onmouseout='MakeInvisible(evt)' " << endl
+  << "/>" << endl
+  << "</g>" << endl;
+*/  
 }
 
 void Svg::addText(
@@ -319,10 +403,76 @@ void Svg::svgWrite(ostream & ostr) const {
 	ostr << getFooter();
 }
 
+
+void Svg::svgHtmlWrapperWrite(ostream & ostr) const {
+  ostr << 
+  "<html>" << endl
+  << endl
+  << "<head>" << endl
+  << endl
+  << "<script>" << endl
+  << "window.onload=prepare" << endl
+  << "function prepare() {" << endl
+  << "if (document.body.clientWidth) {" << endl
+  << "w  = document.body.clientWidth" << endl
+  << "h = document.body.clientHeight" << endl
+  << "//headerH = document.getElementById('HEADER').clientHeight" << endl
+  << "} else {" << endl
+  << "w = window.innerWidth" << endl
+  << "h = window.innerHeight" << endl
+  << "//headerH = document.getElementById('HEADER').innerHeight" << endl
+  << "}" << endl
+  << "headerH = 300" << endl
+  << "footerH = 70" << endl
+  << "restH = 0;" << endl
+  << endl  
+  << "document.getElementById('CENTER').setAttribute('width', w)" << endl
+  << "document.getElementById('CENTER').setAttribute('height', headerH)" << endl
+  << "document.getElementById('CENTER').style.left = 0" << endl
+  << "document.getElementById('CENTER').style.top  = 0" << endl
+  << endl
+  << "document.getElementById('CENTER').setAttribute('width', w)" << endl
+  << "document.getElementById('CENTER').setAttribute('height', h - headerH - footerH)" << endl
+  << "document.getElementById('CENTER').style.left = 0" << endl
+  << "document.getElementById('CENTER').style.top  = headerH + restH" << endl
+  << endl  
+  << "document.getElementById('FOOTER').setAttribute('width', w)" << endl
+  << "document.getElementById('FOOTER').setAttribute('height', headerH)" << endl
+  << "document.getElementById('FOOTER').style.left = 0" << endl
+  << "document.getElementById('FOOTER').style.top  = h - footerH" << endl
+  << endl
+  << "}" << endl
+  << "</script>" << endl
+  << endl
+  << "</head>" << endl
+  << endl
+  << "<body>" << endl
+  << endl
+  << "<div id='HEADER' style='position:absolute;top:0' clientHeight=400 >" << endl
+  << "<p>Schedule Generated by RhinoCeros</p>" << endl
+  << "<hr>" << endl
+  << "</div>" << endl
+  << endl
+  << "<div>" << endl
+  << "<embed id='CENTER' src='" << fileName_ << "' " << endl
+  << "style='position:absolute; left:200;top:0'>" << endl
+  << "</div>" << endl
+  << endl
+  << "<div id='FOOTER' style='position:absolute;top:400' clientHeight=400>" << endl
+  << "<hr>" << endl
+  << "<p>sels.peter@gmail.com</p>" << endl
+  << "</div>" << endl
+  << endl  
+  << "</body>" << endl
+  << endl
+  << "</html>" << endl
+  << endl;
+}
+
 void Svg::close() const {
   ofstream ofStr(fileName_.c_str());
 	svgWrite(ofStr);
-  ofStr.close();	
+  ofStr.close();  
 }
 
 Svg::~Svg() {

@@ -68,6 +68,7 @@ public:
 	
 	void cropToUsedArea() const;
 	void svgWrite(std::ostream & ostr) const;
+  void svgHtmlWrapperWrite(std::ostream & ostr) const;
 	virtual void close() const; // also writes to file
 	~Svg();
 protected:	
