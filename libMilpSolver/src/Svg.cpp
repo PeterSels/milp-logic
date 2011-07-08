@@ -98,6 +98,10 @@ string Svg::getHeader() const {
     << "  srcEl = evt.srcElement ? evt.srcElement : evt.target;" << endl
     << "  dataFile = srcEl.attributes.getNamedItem('data-file').value;" 
     << endl
+    << "  // for window.top to work in Chrome, start it using" << endl
+    << "  // /Applications/Google Chrome.app/Contents/MacOS/Google Chrome "
+    << endl
+    << "  // --disable-web-security" << endl
     << "  var doc = window.top.document;" << endl
     << "  var obj = doc.createElement('object', true);" << endl
     << "  obj.setAttribute('type', 'image/svg+xml');" << endl

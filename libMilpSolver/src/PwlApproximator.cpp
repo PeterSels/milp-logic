@@ -2,7 +2,8 @@
 #include <iostream>
 
 #include "PwlApproximator.h"
-#include "MinimumCalculator.h"
+//#include "MinimumCalculator.h"
+#include "BreakPointCalculator.h"
 
 PwlApproximator::PwlApproximator() {
   z0_   = 0.0;
@@ -31,9 +32,9 @@ PwlApproximator::PwlApproximator(double (*fPtr)(const std::vector<double>
   zD1_ = (*fPtr)(parameters, (int)D1_);
 
   // middle (low, minimal) point
-  MinimumCalculator minCalc(fPtr, parameters, D1);
-  dMin_ = minCalc.getMinimumAbsis();
-  zMin_ = minCalc.getMinimumValue();
+  BreakPointCalculator brkCalc(fPtr, parameters, D1);
+  dMin_ = brkCalc.getBreakPointAbsis();
+  zMin_ = brkCalc.getBreakPointValue();
 }
 
 double PwlApproximator::eval(double d) const {

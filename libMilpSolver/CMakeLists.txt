@@ -6,6 +6,7 @@ file(GLOB_RECURSE HEADERS "*.h")
 
 set(SOURCES 
   src/BclException.cpp
+  src/BreakPointCalculator.cpp
   src/CplexSolver.cpp
   src/GurobiSolver.cpp
   src/MinimumCalculator.cpp
