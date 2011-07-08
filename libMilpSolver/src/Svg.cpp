@@ -4,7 +4,8 @@
 #include "Svg.h"
 #include "StringUtilities.h"
 
-#define CROP_BORDER (1000)
+//#define CROP_BORDER (1000)
+#define CROP_BORDER (10)
 #define HOVER_FILL_OPACITY (0.5)
 
 using namespace std;
@@ -75,14 +76,15 @@ string Svg::getHeader() const {
     headerStr
     << "function rectangleOverAction(evt) {" << endl
     << "  makeTransparent(evt)" << endl
-    << "  addHeaderObject(evt)" << endl
+    << "  //addHeaderObject(evt)" << endl
+    << "  replaceHeaderObject(evt)" << endl
     << "}" << endl
-    << "" << endl
+    << endl
     << "function rectangleOutAction(evt) {" << endl
     << "  makeOpaque(evt);" << endl
-    << "  removeHeaderObject(evt);" << endl
+    << "  //removeHeaderObject(evt);" << endl
     << "}" << endl
-    << "" << endl
+    << endl
     << "function makeTransparent(evt) {" << endl
     << "  evt.target.setAttributeNS(null,'opacity','0.5');" << endl
     << "}" << endl
@@ -91,36 +93,42 @@ string Svg::getHeader() const {
     << "  evt.target.setAttributeNS(null,'opacity','1.0');" << endl
     << "}" << endl
     << "" << endl
-    << "function addHeaderObject(evt, name) {" << endl 
-    << "  idItem = evt.srcElement.attributes.getNamedItem('id');" << endl
-    << "  alert(idItem);" << endl
-    << "  if (idItem) {" << endl
-    << "    name = idItem.value;" << endl
-    << "    alert(name)" << endl
-    << "    //addHeaderObject(evt, evt.srcElement.name);" << endl
-    << "    var doc = window.top.document;" << endl
-    << "    var obj = doc.createElement('object', true);" << endl
-    << "    obj.setAttribute('type', 'image/svg+xml');" << endl
-    << "    obj.setAttribute('data', 'BlueCircle.svg');" << endl
-    << "    obj.setAttribute('width', '500');" << endl
-    << "    obj.setAttribute('height', '500');" << endl
-    << "    obj.setAttribute('id', 'headerObject');" << endl
-    << "    obj.addEventListener('load', function() {" << endl
-    << "      // alert('loaded!');" << endl
-    << "    }, false);" << endl
-    << "    doc.body.appendChild(obj);" << endl
-    << "  } else {" << endl
-    << "    alert('no name found');" << endl
-    << "  }" << endl
+    << "function addHeaderObject(evt) {" << endl
+    << "  // Firefox needs .target io .srcElement" << endl
+    << "  srcEl = evt.srcElement ? evt.srcElement : evt.target;" << endl
+    << "  dataFile = srcEl.attributes.getNamedItem('data-file').value;" 
+    << endl
+    << "  var doc = window.top.document;" << endl
+    << "  var obj = doc.createElement('object', true);" << endl
+    << "  obj.setAttribute('type', 'image/svg+xml');" << endl
+    << "  obj.setAttribute('data', dataFile);" << endl
+    << "  obj.setAttribute('width', '700');" << endl
+    << "  obj.setAttribute('height', '700');" << endl
+    << "  obj.setAttribute('id', 'headerObject');" << endl
+    << "  obj.addEventListener('load', function() {" << endl
+    << "    // alert('loaded!');" << endl
+    << "  }, false);" << endl
+    << "  if (doc.body) { // in case of running svg without html wrapper" 
+    << endl
+    << "      doc.body.appendChild(obj);" << endl
+    << "    }" << endl
     << "}" << endl
-    << " " << endl
+    << endl
     << "function removeHeaderObject(evt) {" << endl
     << "  var doc = window.top.document;" << endl
     << "  var childId = doc.getElementById('headerObject');" << endl
-    << "  if (childId) {" << endl
-    << "    doc.body.removeChild(childId);" << endl
+    << "  if (childId) { // to avoid error in first time case" << endl
+    << "    if (doc.body) { // in case of running svg without html wrapper" 
+    << endl
+    << "      doc.body.removeChild(childId);" << endl
+    << "    }" << endl
     << "  }" << endl
-    << "}" << endl 
+    << "}" << endl
+    << "function replaceHeaderObject(evt) {" << endl
+    << "  removeHeaderObject(evt);" << endl
+    << "  addHeaderObject(evt);" << endl
+    << "}" << endl    
+    
     << endl;    
     
 	  headerStr << "]]></script>" << endl;
@@ -221,6 +229,7 @@ void Svg::addRectangle(unsigned int xTmp,
 											 float fillOpacity,
 											 string title,
 											 string id,
+                       string dataFile,
 											 string xlinkTo) {
 	
 	// default
@@ -276,14 +285,16 @@ void Svg::addRectangle(unsigned int xTmp,
 	<< "' height='" << height
 	<< "' style='fill:" << fillColor 
 	<< ";stroke:" << strokeColor 
-	<< ";stroke-width:" << strokeWidth << ";"
-	<< "fill-opacity:" << fillOpacity 
+	<< ";stroke-width:" << strokeWidth
+	<< ";fill-opacity:" << fillOpacity 
 	<< ";stroke-opacity:" << strokeOpacity << "'" << endl;
+  
 	bodyStr_
   //<< "onload='makeInvisible(evt)' " << endl
-  << "onmouseover='rectangleOverAction(evt)' "
-  << "onmouseout='rectangleOutAction(evt)'" << endl;
-  
+  << " onmouseover='rectangleOverAction(evt)'"
+  << " onmouseout='rectangleOutAction(evt)'" 
+  << " data-file='" << dataFile << "'" // won't xhtml validate, but ok
+  << endl;
 	bodyStr_ << "> " << endl;
 	
 	if (title!="") {
@@ -405,6 +416,9 @@ void Svg::svgWrite(ostream & ostr) const {
 
 
 void Svg::svgHtmlWrapperWrite(ostream & ostr) const {
+  
+  const bool footer = false;
+  
   ostr << 
   "<html>" << endl
   << endl
@@ -412,35 +426,43 @@ void Svg::svgHtmlWrapperWrite(ostream & ostr) const {
   << endl
   << "<script>" << endl
   << "window.onload=prepare" << endl
+  << endl
   << "function prepare() {" << endl
   << "if (document.body.clientWidth) {" << endl
   << "w  = document.body.clientWidth" << endl
   << "h = document.body.clientHeight" << endl
-  << "//headerH = document.getElementById('HEADER').clientHeight" << endl
+  //<< "headerH = document.getElementById('HEADER').clientHeight" << endl
+  //<< "footerH = document.getElementById('FOOTER').clientHeight" << endl
   << "} else {" << endl
   << "w = window.innerWidth" << endl
   << "h = window.innerHeight" << endl
-  << "//headerH = document.getElementById('HEADER').innerHeight" << endl
+  //<< "headerH = document.getElementById('HEADER').innerHeight" << endl
+  //<< "footerH = document.getElementById('FOOTER').innerHeight" << endl
   << "}" << endl
-  << "headerH = 300" << endl
+  << "headerH = 700" << endl
   << "footerH = 70" << endl
   << "restH = 0;" << endl
   << endl  
-  << "document.getElementById('CENTER').setAttribute('width', w)" << endl
-  << "document.getElementById('CENTER').setAttribute('height', headerH)" << endl
-  << "document.getElementById('CENTER').style.left = 0" << endl
-  << "document.getElementById('CENTER').style.top  = 0" << endl
+  << "document.getElementById('HEADER').setAttribute('width', w)" << endl
+  << "document.getElementById('HEADER').setAttribute('height', headerH)" << endl
+  << "document.getElementById('HEADER').style.left = 0" << endl
+  << "document.getElementById('HEADER').style.top  = 0" << endl
   << endl
   << "document.getElementById('CENTER').setAttribute('width', w)" << endl
   << "document.getElementById('CENTER').setAttribute('height', h - headerH - footerH)" << endl
   << "document.getElementById('CENTER').style.left = 0" << endl
   << "document.getElementById('CENTER').style.top  = headerH + restH" << endl
-  << endl  
-  << "document.getElementById('FOOTER').setAttribute('width', w)" << endl
-  << "document.getElementById('FOOTER').setAttribute('height', headerH)" << endl
-  << "document.getElementById('FOOTER').style.left = 0" << endl
-  << "document.getElementById('FOOTER').style.top  = h - footerH" << endl
-  << endl
+  << endl;
+  if (footer) {    
+    ostr
+    << "document.getElementById('FOOTER').setAttribute('width', w)" << endl
+    << "document.getElementById('FOOTER').setAttribute('height', footerH)" << endl
+    << "document.getElementById('FOOTER').setAttribute('height', footerW)" << endl
+    << "document.getElementById('FOOTER').style.left = 0" << endl
+    << "document.getElementById('FOOTER').style.top  = h - footerH" << endl
+    << endl;
+  }
+  ostr
   << "}" << endl
   << "</script>" << endl
   << endl
@@ -448,21 +470,25 @@ void Svg::svgHtmlWrapperWrite(ostream & ostr) const {
   << endl
   << "<body>" << endl
   << endl
-  << "<div id='HEADER' style='position:absolute;top:0' clientHeight=400 >" << endl
-  << "<p>Schedule Generated by RhinoCeros</p>" << endl
-  << "<hr>" << endl
+  << "<div id='HEADER' style='position:absolute;top:0' clientHeight=700>" << endl
+  //<< "<p>Schedule Generated by RhinoCeros</p>" << endl
+  //<< "<hr>" << endl
   << "</div>" << endl
   << endl
   << "<div>" << endl
   << "<embed id='CENTER' src='" << fileName_ << "' " << endl
-  << "style='position:absolute; left:200;top:0'>" << endl
+  << "style='position:absolute; left:0;top:800'>" << endl
   << "</div>" << endl
-  << endl
-  << "<div id='FOOTER' style='position:absolute;top:400' clientHeight=400>" << endl
-  << "<hr>" << endl
-  << "<p>sels.peter@gmail.com</p>" << endl
-  << "</div>" << endl
-  << endl  
+  << endl;
+  if (footer) {
+    ostr
+    << "<div id='FOOTER' style='position:absolute;top:1400' clientHeight=70>" << endl
+    << "<hr>" << endl
+    << "<p>sels.peter@gmail.com</p>" << endl
+    << "</div>" << endl
+    << endl;
+  }
+  ostr
   << "</body>" << endl
   << endl
   << "</html>" << endl

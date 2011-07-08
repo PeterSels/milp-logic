@@ -50,6 +50,7 @@ public:
 										float fillOpacity=1.0,
 										std::string title="",
 										std::string id="",
+                    std::string dataFile="",
 										std::string xlinkTo="");	
 	void addText(
 	  unsigned int x, unsigned int y,
