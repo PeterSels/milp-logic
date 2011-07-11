@@ -2,20 +2,23 @@
 #include <iostream>
 
 #include "PwlApproximator.h"
-//#include "MinimumCalculator.h"
+#include "MinimumCalculator.h"
 #include "BreakPointCalculator.h"
 
-PwlApproximator::PwlApproximator() {
-  z0_   = 0.0;
-  
-  D1_   = 0;
-  zD1_  = 0.0;
-  
-  dMin_ = 0;
-  zMin_ = 0.0;
+PwlApproximator::PwlApproximator(bool brkPointNotMinimum) 
+: z0_(0.0)
+, D1_(0)
+, zD1_(0.0)
+
+, dMin_(0)
+, zMin_(0.0)
+
+, brkPointNotMinimum_(brkPointNotMinimum)
+{
 }
 
-PwlApproximator::PwlApproximator(double (*fPtr)(const std::vector<double>
+PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
+                                 double (*fPtr)(const std::vector<double>
                                                 & parameters, 
                                                 int ii),
                                  const std::vector<double> & parameters,
@@ -23,6 +26,7 @@ PwlApproximator::PwlApproximator(double (*fPtr)(const std::vector<double>
 /// calc min & interpolate
 
 {
+  brkPointNotMinimum_ = brkPointNotMinimum;
   // left point
   // 0
   z0_   = (*fPtr)(parameters, 0);
@@ -32,9 +36,23 @@ PwlApproximator::PwlApproximator(double (*fPtr)(const std::vector<double>
   zD1_ = (*fPtr)(parameters, (int)D1_);
 
   // middle (low, minimal) point
-  BreakPointCalculator brkCalc(fPtr, parameters, D1);
-  dMin_ = brkCalc.getBreakPointAbsis();
-  zMin_ = brkCalc.getBreakPointValue();
+  if (brkPointNotMinimum_) {
+    BreakPointCalculator brkCalc(fPtr, parameters, D1);
+    dMin_ = brkCalc.getBreakPointAbsis();
+    zMin_ = brkCalc.getBreakPointValue();
+  } else {
+    MinimumCalculator minCalc(fPtr, parameters, D1);
+    dMin_ = minCalc.getMinimumAbsis();
+    zMin_ = minCalc.getMinimumValue();  
+  }
+}
+
+bool PwlApproximator::getBrkPointNotMinimum() const {
+  return brkPointNotMinimum_;
+}
+
+void PwlApproximator::setBrkPointNotMinimum(bool brkPointNotMinimum) {
+  brkPointNotMinimum_ = brkPointNotMinimum;
 }
 
 double PwlApproximator::eval(double d) const {

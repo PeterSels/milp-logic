@@ -690,11 +690,15 @@ void Solver::addConvexMax(const SolverVar & x,
 	
 	// on the cost axis:
   assert(zdMin <= z0);
-  assert(zdMin <= zD1);
+  //assert(zdMin <= zD1); // not true anymore since used BreakPointCalulator
+  // io MinimumCalculator
 		
 	// now imagine a V shape described by these 3 points.
 		
-	assert(dMin > 0);
+  if (dMin <0) {
+    cerr << "dMin = " << dMin << endl;
+	  assert(dMin > 0);
+  }
 	SolverExpr dnFunctionExpr
 #ifdef USE_CPLEX_NATIVE
 	(*global_env_)
