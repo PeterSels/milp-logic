@@ -4,8 +4,7 @@
 #include "Svg.h"
 #include "StringUtilities.h"
 
-//#define CROP_BORDER (1000)
-#define CROP_BORDER (10)
+#define CROP_BORDER (1000)
 #define HOVER_FILL_OPACITY (0.5)
 
 using namespace std;
