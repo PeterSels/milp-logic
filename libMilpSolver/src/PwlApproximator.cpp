@@ -26,7 +26,7 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
 /// calc min & interpolate
 
 {
-  brkPointNotMinimum_ = brkPointNotMinimum;
+  brkPointNotMinimum_ = true; // brkPointNotMinimum;
   // left point
   // 0
   z0_   = (*fPtr)(parameters, 0);
