@@ -526,6 +526,13 @@ void CplexSolver::deleteModelAndEnv() {
   global_cplex_ = 0;
 }
 
+void CplexSolver::setNThreads(unsigned int nThreads) {
+  cerr << "CplexSolver::setNThreads(unsigned int nThreads) not supported yet" 
+  << endl;
+  assert(false);
+  //model_->getEnv().set(GRB_IntParam_Threads, nThreads); // C++
+}
+
 // throws string:
 // - if license not gotten or 
 // - any other unrecoverable cplex license get problem

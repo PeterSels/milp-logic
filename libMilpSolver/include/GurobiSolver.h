@@ -86,6 +86,8 @@ public:
   
   double getInfinity() const;
   
+  void setNThreads(unsigned int nThreads);
+  
 	void setDeterministic();
 	void setMipFocus(unsigned int value);
 	void setSymmetryDetectionLevel(int level);
@@ -102,6 +104,8 @@ public:
   
 	void setBranchingMethod(int method);
 
+
+  
 private:
   GRBEnv * env_;
 };

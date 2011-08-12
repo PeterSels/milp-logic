@@ -82,6 +82,8 @@ public:
 
   double getInfinity() const;  
 
+  void setNThreads(unsigned int nThreads);
+  
   IloCplex * getLicense(int toToken);
 
   ~CplexSolver();

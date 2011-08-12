@@ -388,6 +388,10 @@ double GurobiSolver::getInfinity() const {
   return GRB_INFINITY;
 }
 
+void GurobiSolver::setNThreads(unsigned int nThreads) {
+  model_->getEnv().set(GRB_IntParam_Threads, nThreads); // C++
+}
+
 void GurobiSolver::setDeterministic() {
 	unsigned int method = 4;
   model_->getEnv().set(GRB_IntParam_Method, method); // C++
@@ -475,7 +479,6 @@ void GurobiSolver::setBranchingMethod(int method) {
 }
 
 ////////////////// End Cuts Control ///////////////
-
 
 GurobiSolver::~GurobiSolver() {
   deleteModelAndEnv();

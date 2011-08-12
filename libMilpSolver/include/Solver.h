@@ -251,6 +251,8 @@ public:
   virtual void calcAnIIS() const = 0;
   virtual void reportAnIISTo(std::ostream & ostr) const = 0;
   
+  virtual void setNThreads(unsigned int nThreads) = 0;
+  
   virtual double getInfinity() const = 0;
   
 	virtual void setDeterministic(); // = 0;

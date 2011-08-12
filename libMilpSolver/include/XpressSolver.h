@@ -79,6 +79,8 @@ public:
 
   double getInfinity() const;  
   
+  void setNThreads(unsigned int nThreads);
+
   ~XpressSolver();
 
   static char compStringToChar(
