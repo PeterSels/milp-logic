@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
-set(CMAKE_C_COMPILER "gcc-4.2")
-set(CMAKE_CXX_COMPILER "/usr/bin/g++-4.2")
+#set(CMAKE_C_COMPILER "gcc-4.2")
+#set(CMAKE_CXX_COMPILER "/usr/bin/g++-4.2")
 
 
 # The name of our project is "MilpSolver".  CMakeLists files in this project can
