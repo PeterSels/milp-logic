@@ -79,13 +79,13 @@ public:
 
   double getInfinity() const;  
   
-  void setNThreads(unsigned int nThreads);
-
   ~XpressSolver();
 
   static char compStringToChar(
     const std::string & comp, const std::string & funcName);
 private:
+  void setNThreads(int nThreads);
+  
   SolverExpr objFunction_;
 };
 

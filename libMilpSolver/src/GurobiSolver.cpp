@@ -207,12 +207,14 @@ void GurobiSolver::setStartValueOf(SolverVar & var,
   var.set(GRB_DoubleAttr_Start, startValue);
 }
 
-bool GurobiSolver::solve(double gap) {
+bool GurobiSolver::solve(double gap, int nThreads) {
   cout << "In GurobiSolver::solve()" << endl;
 
   // maybe set mesage level here, as in XpressSolver
   //model_->set(GRB_DBL_PAR_MIPGAP, gap); // C
   model_->getEnv().set(GRB_DoubleParam_MIPGap, gap); // C++
+  
+  setNThreads(nThreads);
   
   solved_ = false;
   try {
@@ -388,7 +390,7 @@ double GurobiSolver::getInfinity() const {
   return GRB_INFINITY;
 }
 
-void GurobiSolver::setNThreads(unsigned int nThreads) {
+void GurobiSolver::setNThreads(int nThreads) {
   model_->getEnv().set(GRB_IntParam_Threads, nThreads); // C++
 }
 

@@ -372,11 +372,13 @@ double XpressSolver::getInfinity() const {
   return XPRB_INFINITY;
 }
 
-void XpressSolver::setNThreads(unsigned int nThreads) {
-  cerr << "XpressSolver::setNThreads(unsigned int nThreads) not supported yet" 
-  << endl;
-  assert(false);
+void XpressSolver::setNThreads(int nThreads) {
+  //cerr << "XpressSolver::setNThreads(unsigned int nThreads) not supported yet" 
+  //<< endl;
+  //assert(false);
   //model_->getEnv().set(GRB_IntParam_Threads, nThreads); // C++
+  xo_prob_struct * opt_prob = model_->getXPRSprob();
+  XPRSsetintcontrol(opt_prob, XPRS_THREADS, nThreads);
 }
 
 

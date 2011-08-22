@@ -62,7 +62,7 @@ public:
   void setMaximize();
   void setStartValueOf(SolverVar & var,
                        double startValue) const;  
-  bool solve(double gap);
+  bool solve(double gap, int nThreads);
 
   // get results
   unsigned int getNumberOfRows() const;
@@ -85,9 +85,7 @@ public:
     const std::string & comp, const std::string & funcName);
   
   double getInfinity() const;
-  
-  void setNThreads(unsigned int nThreads);
-  
+    
 	void setDeterministic();
 	void setMipFocus(unsigned int value);
 	void setSymmetryDetectionLevel(int level);
@@ -107,6 +105,8 @@ public:
 
   
 private:
+  void setNThreads(int nThreads);
+  
   GRBEnv * env_;
 };
 

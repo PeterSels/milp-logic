@@ -63,7 +63,7 @@ public:
   void setMaximize();
   void setStartValueOf(SolverVar & var,
                        double startValue) const;
-  bool solve(double gap);
+  bool solve(double gap, int nThreads); // FIXME = 0
 
   // get results
   unsigned int getNumberOfRows() const;
@@ -81,8 +81,6 @@ public:
   void reportAnIISTo(std::ostream & ostr) const;
 
   double getInfinity() const;  
-
-  void setNThreads(unsigned int nThreads);
   
   IloCplex * getLicense(int toToken);
 
@@ -90,7 +88,11 @@ public:
 
   static char compStringToChar(
     const std::string & comp, const std::string & funcName);
+  
 private:
+  void setNThreads(int nThreads); 
+    // should only be called in (=at) solve
+
   unsigned int maxGetLicenseSeconds_;
   unsigned int maxSolveSeconds_;
   SolverExpr * objFunction_;

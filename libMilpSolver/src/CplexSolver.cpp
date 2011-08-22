@@ -348,8 +348,9 @@ void CplexSolver::setStartValueOf(SolverVar & var,
 }
 
 // Everything is handled here, nothing is thrown out
-bool CplexSolver::solve(double gap) {
+bool CplexSolver::solve(double gap, int nThreads) {
   cout << "In CplexSolver::solve()" << endl;
+  
   IloObjective obj;
   if (sense_ == -1) {
     obj = IloMinimize(*env_, *objFunction_);
@@ -367,14 +368,20 @@ bool CplexSolver::solve(double gap) {
     return false;
   }
   global_cplex_->extract(*model_);
-
+  
+  setNThreads(nThreads); // now that global_cplex_ has a propoer value (!=0)
+  
 #ifdef _WIN32
   string cplexLogFileName = "out\\cplex.out"; // hard coded Windows dir
 #else
   string cplexLogFileName = "out/cplex.out"; // hard coded *nix dir
 #endif
-  ofstream cplexLogStr(cplexLogFileName.c_str());
-	global_cplex_->setOut(cplexLogStr);
+
+  const bool redirectAllOutput = false;
+  if (redirectAllOutput) {
+    ofstream cplexLogStr(cplexLogFileName.c_str());
+	  global_cplex_->setOut(cplexLogStr);
+  }
   global_cplex_->setParam(IloCplex::TiLim, maxSolveSeconds_);
   global_cplex_->setParam(IloCplex::EpGap, gap); // was 0.05
 
@@ -513,7 +520,6 @@ double CplexSolver::getInfinity() const {
   return IloInfinity;
 }
 
-
 void CplexSolver::deleteModelAndEnv() {
   delete model_;
   model_ = 0;
@@ -526,11 +532,36 @@ void CplexSolver::deleteModelAndEnv() {
   global_cplex_ = 0;
 }
 
-void CplexSolver::setNThreads(unsigned int nThreads) {
+void CplexSolver::setNThreads(int nThreads) {
   cerr << "CplexSolver::setNThreads(unsigned int nThreads) not supported yet" 
   << endl;
-  assert(false);
-  //model_->getEnv().set(GRB_IntParam_Threads, nThreads); // C++
+  
+  assert(global_cplex_ != 0);
+  /*
+  global_cplex_ = 0;
+  try {
+    global_cplex_ = getLicense(maxGetLicenseSeconds_); 
+  } catch (string &str) { // so catch it an re-throw
+    cout << str << endl;
+    //return false;
+    assert(false);
+    exit(0);
+  }
+  */
+  
+  try {
+    IloCplex cplex(*model_);
+    cplex.setParam(IloCplex::Threads, (int)nThreads);
+    //cplex.setParam(Threads, (int)nThreads);
+    //cplex.setParam(IloCplex::SolnPoolAGap, 0); // just a test to compile things
+    //cplex.setParam(CPX_PARAM_MIPTHREADS, (int)nThreads);
+  } catch (IloCplex::Exception& ex) {
+    cerr << "Exception catched" << endl;
+    cerr << "str = " << string(ex.getMessage()) << endl;
+  } catch (string &str) { // so catch it an re-throw
+    cerr << str << endl;
+    //throw str;
+  }  //model_->getEnv().set(GRB_IntParam_Threads, nThreads); // C++
 }
 
 // throws string:

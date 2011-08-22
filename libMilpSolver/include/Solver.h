@@ -234,7 +234,7 @@ public:
   virtual void setStartValueOf(SolverVar & var,
                                double startValue) const = 0;
 
-  virtual bool solve(double gap) = 0;
+  virtual bool solve(double gap, int nThreads) = 0;
 
   // get results
   virtual unsigned int getNumberOfRows() const = 0;
@@ -250,9 +250,7 @@ public:
 
   virtual void calcAnIIS() const = 0;
   virtual void reportAnIISTo(std::ostream & ostr) const = 0;
-  
-  virtual void setNThreads(unsigned int nThreads) = 0;
-  
+    
   virtual double getInfinity() const = 0;
   
 	virtual void setDeterministic(); // = 0;
@@ -305,6 +303,10 @@ public:
 	const SolverExpr & getMinusOneExpr();
 	
 	virtual ~Solver();
+  
+private:
+  virtual void setNThreads(int nThreads) = 0;
+
 };
 
 #endif // SOLVER_H

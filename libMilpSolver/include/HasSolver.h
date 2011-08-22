@@ -16,15 +16,16 @@
 #ifdef _WIN32
 // define only one!
 //#define USE_CPLEX_NATIVE
-//#define USE_GUROBI_NATIVE
-#define USE_XPRESS_NATIVE
+#define USE_GUROBI_NATIVE
+//#define USE_XPRESS_NATIVE
 //#define USE_OSI
 //#define USE_CBC
 #else
 //#define USE_OSI
 //#define USE_CPLEX_NATIVE
 #define USE_GUROBI_NATIVE
-// Xpress does not exist for Mac nor Unix! Bad! ...
+//#define USE_XPRESS_NATIVE
+// XPRESS not available for Mac OS X
 #endif
 
 #ifdef USE_XPRESS_NATIVE
