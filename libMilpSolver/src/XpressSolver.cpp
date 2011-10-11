@@ -250,7 +250,7 @@ void XpressSolver::setStartValueOf(SolverVar & var,
   //var.set(GRB_DoubleAttr_Start, startValue);
 }
 
-bool XpressSolver::solve(double gap) {
+bool XpressSolver::solve(double gap, int nThreads) {
   cout << "In XpressSolver::solve()" << endl;
 
   /* xpress:

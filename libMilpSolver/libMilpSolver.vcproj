@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="libMilpSolver"
 	ProjectGUID="{D45C9372-EFF6-4AFB-BE29-D2889E9825F8}"
 	RootNamespace="libMilpSolver"
@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(XPRESS_HOME)\include&quot;;D:\projects\MilpSolver\libMilpSolver\include;&quot;$(CPLEX_HOME)\include&quot;;&quot;$(CONCERT_HOME)\include&quot;;&quot;$(GUROBI_HOME)\include&quot;"
+				AdditionalIncludeDirectories="include;&quot;$(XPRESS_HOME)\include&quot;;&quot;$(CPLEX_HOME)\include&quot;;&quot;$(CONCERT_HOME)\include&quot;;&quot;$(GUROBI_HOME)\include&quot;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -102,7 +102,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(XPRESS_HOME)\include&quot;;D:\projects\MilpSolver\libMilpSolver\include;&quot;$(CPLEX_HOME)\include&quot;;&quot;$(CONCERT_HOME)\include&quot;;&quot;$(GUROBI_HOME)\include&quot;"
+				AdditionalIncludeDirectories="include;&quot;$(XPRESS_HOME)\include&quot;;&quot;$(CPLEX_HOME)\include&quot;;&quot;$(CONCERT_HOME)\include&quot;;&quot;$(GUROBI_HOME)\include&quot;"
 				RuntimeLibrary="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"

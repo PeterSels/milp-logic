@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="milpSolverTest"
 	ProjectGUID="{0730113B-2182-492C-80F3-1455D2CABB74}"
 	RootNamespace="milpSolverTest"
@@ -59,7 +59,8 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="&#x0D;&#x0A;"
-				AdditionalDependencies="$(CPLEX_HOME)\lib\x86_.net2005_8.0\stat_mta\ilocplex.lib $(CPLEX_HOME)\lib\x86_.net2005_8.0\stat_mta\$(CPLEX_LIB).lib $(CONCERT_HOME)\lib\x86_.net2005_8.0\stat_mta\concert.lib $(XPRESS_HOME)\lib\xprs.lib $(XPRESS_HOME)\lib\xprb.lib $(GUROBI_HOME)\lib\gurobi_c++mtd2008.lib $(GUROBI_HOME)\lib\$(GUROBI_LIB)"
+				AdditionalDependencies="cplex122.lib ilocplex.lib concert.lib $(GUROBI_LIB).lib gurobi_c++mt2008.lib xprs.lib xprb.lib"
+				AdditionalLibraryDirectories="&quot;$(CPLEX_HOME)\lib\x86_windows_vs2008\stat_mta&quot;;&quot;$(CONCERT_HOME)\lib\x86_windows_vs2008\stat_mta&quot;;&quot;$(GUROBI_HOME)\lib&quot;;&quot;$(XPRESS_HOME)\lib&quot;"
 				IgnoreDefaultLibraryNames="MSVCRTD.lib;MSVCPRTD.lib"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
@@ -132,7 +133,8 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="false"
 				AdditionalOptions="&#x0D;&#x0A;"
-				AdditionalDependencies="$(CPLEX_HOME)\lib\x86_.net2005_8.0\stat_mta\ilocplex.lib $(CPLEX_HOME)\lib\x86_.net2005_8.0\stat_mta\$(CPLEX_LIB).lib $(CONCERT_HOME)\lib\x86_.net2005_8.0\stat_mta\concert.lib $(XPRESS_HOME)\lib\xprs.lib $(XPRESS_HOME)\lib\xprb.lib $(GUROBI_HOME)\lib\gurobi_c++mt2008.lib $(GUROBI_HOME)\lib\$(GUROBI_LIB) $(NOINHERIT)"
+				AdditionalDependencies="cplex122.lib ilocplex.lib concert.lib $(GUROBI_LIB).lib gurobi_c++mt2008.lib xprs.lib xprb.lib"
+				AdditionalLibraryDirectories="&quot;$(CPLEX_HOME)\lib\x86_windows_vs2008\stat_mta&quot;;&quot;$(CONCERT_HOME)\lib\x86_windows_vs2008\stat_mta&quot;;&quot;$(GUROBI_HOME)\lib&quot;;&quot;$(XPRESS_HOME)\lib&quot;"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames="MSVCRT.lib;MSVCPRT.lib"
 				GenerateDebugInformation="true"

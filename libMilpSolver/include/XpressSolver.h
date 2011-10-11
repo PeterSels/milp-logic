@@ -60,7 +60,7 @@ public:
   void setMaximize();
   void setStartValueOf(SolverVar & var,
                        double startValue) const;  
-  bool solve(double gap);
+  bool solve(double gap, int nThreads=0);
 
   // get results
   unsigned int getNumberOfRows() const;
