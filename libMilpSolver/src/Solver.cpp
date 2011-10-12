@@ -930,8 +930,9 @@ void Solver::setDeterministic() {
 }
 
 void Solver::setMipFocus(unsigned int value) {
-	assert(false); // child solver needs to implement this
-	// should become pure virtual soon
+	//assert(false); // FIXME
+  cerr << "setMipFocus: child solver needs to implement this" << endl;
+	cerr << "should become pure virtual soon" << endl;
 }
 
 void Solver::setSymmetryDetectionLevel(int level) {
