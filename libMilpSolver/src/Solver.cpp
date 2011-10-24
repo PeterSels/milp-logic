@@ -689,7 +689,7 @@ void Solver::addConvexMax(const SolverVar & x,
   assert(dMin <= D1);
 	
 	// on the cost axis:
-  assert(zdMin <= z0);
+  //assert(zdMin <= z0); // DISABLED because of SINK increasing cost func
   //assert(zdMin <= zD1); // not true anymore since used BreakPointCalulator
   // io MinimumCalculator
 		
@@ -833,7 +833,7 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
   assert(dMin <= D1);
 
 	// on the cost axis:
-  assert(zdMin <= z0);
+  ////assert(zdMin <= z0); // DISABLED, since we also have increasing functions now (for dwell and sink edges)
   //assert(zdMin <= zD1); // not true anymore since used BreakPointCalulator
   // io MinimumCalculator
 	

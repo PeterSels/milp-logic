@@ -5,6 +5,8 @@
 #include "MinimumCalculator.h"
 #include "BreakPointCalculator.h"
 
+using namespace std;
+
 PwlApproximator::PwlApproximator(bool brkPointNotMinimum) 
 : z0_(0.0)
 , D1_(0)
@@ -27,6 +29,30 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
 
 {
   brkPointNotMinimum_ = brkPointNotMinimum; // true
+  
+  double zPrev;
+  
+  bool fNotIncreasing = true;
+  zPrev = (*fPtr)(parameters, 0);
+  for (unsigned int d=0; (d<=D1) && fNotIncreasing; d++) {
+    double z = (*fPtr)(parameters, d);
+    if (z > zPrev) {
+      fNotIncreasing = false;
+    }
+    zPrev = z;
+  }
+  
+  bool fNotDecreasing = true;
+  zPrev = (*fPtr)(parameters, 0);
+  for (unsigned int d=0; (d<=D1) && fNotDecreasing; d++) {
+    double z = (*fPtr)(parameters, d);
+    if (z < zPrev) {
+      fNotDecreasing = false;
+    }
+    zPrev = z;
+  }
+  
+      
   // left point
   // 0
   z0_   = (*fPtr)(parameters, 0);
@@ -37,7 +63,7 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
 
   // middle (low, minimal) point
   if (brkPointNotMinimum_) {
-    BreakPointCalculator brkCalc(fPtr, parameters, D1);
+    BreakPointCalculator brkCalc(fPtr, parameters, D1, fNotIncreasing);
     dMin_ = brkCalc.getBreakPointAbsis();
     zMin_ = brkCalc.getBreakPointValue();
   } else {

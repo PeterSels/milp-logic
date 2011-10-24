@@ -9,7 +9,7 @@ MinimumCalculator::MinimumCalculator(double (*fPtr)(const std::vector<double>
                                                       & parameters, 
                                                       int ii),
                                      const std::vector<double> & parameters,
-                                     unsigned int D1) 
+                                     unsigned int D1)
 : D1_(D1)
 {
   // A more clever (faster) method could be used, but this always works.

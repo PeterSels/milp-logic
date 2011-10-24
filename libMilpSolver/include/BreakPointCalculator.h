@@ -6,10 +6,11 @@
 class BreakPointCalculator {
 public:
   BreakPointCalculator(double (*fPtr)(const std::vector<double>
-                                    & parameters, 
-                                    int ii),
-                    const std::vector<double> & parameters,
-                    unsigned int D1);
+                                      & parameters, 
+                                      int ii),
+                       const std::vector<double> & parameters,
+                       unsigned int D1,
+                       bool fDecreasing);
   double getBreakPointAbsis() const;
   double getBreakPointValue() const;
   ~BreakPointCalculator();
