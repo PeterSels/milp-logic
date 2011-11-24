@@ -214,6 +214,9 @@ bool GurobiSolver::solve(double gap, int nThreads) {
   // maybe set mesage level here, as in XpressSolver
   //model_->set(GRB_DBL_PAR_MIPGAP, gap); // C
   model_->getEnv().set(GRB_DoubleParam_MIPGap, gap); // C++
+
+  // set mem for node storage to this value. BEyond, swapping to disk happens.
+  model_->getEnv().set(GRB_DoubleParam_NodefileStart, 4.0); // C++
   
   setNThreads(nThreads);
   
