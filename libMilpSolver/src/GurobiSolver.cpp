@@ -48,7 +48,8 @@ const SolverVar & GurobiSolver::addLpVar(
   double lo, double hi, double objCoef, const std::string & name,
 	bool doUpdate) {
   varVector_.push_back(model_->addVar(
-    lo, hi, objCoef, GRB_CONTINUOUS, lpConvert(name).c_str()));
+    lo, hi, objCoef, GRB_CONTINUOUS, lpConvert(name).
+                                     substr(0, STR_MAX_LEN).c_str()));
 	if (doUpdate) {
     model_->update();
 	}
@@ -58,7 +59,8 @@ const SolverVar & GurobiSolver::addLpVar(
 const SolverVar & GurobiSolver::addIntVar(
   int lo, int hi, double objCoef, const std::string & name, bool doUpdate) {
   varVector_.push_back(model_->addVar(
-    lo, hi, objCoef, GRB_INTEGER, lpConvert(name).c_str()));
+    lo, hi, objCoef, GRB_INTEGER, lpConvert(name).
+                                  substr(0, STR_MAX_LEN).c_str()));
 	if (doUpdate) {
     model_->update();
 	}
@@ -86,7 +88,8 @@ const SolverVar & GurobiSolver::addIntVar(
 const SolverVar & GurobiSolver::addBinVar(
   double objCoef, const std::string & name, bool doUpdate) {
   varVector_.push_back(model_->addVar(
-    0, 1, objCoef, GRB_BINARY, lpConvert(name).c_str()));
+    0, 1, objCoef, GRB_BINARY, lpConvert(name).
+                               substr(0, STR_MAX_LEN).c_str()));
 	if (doUpdate) {
     model_->update();
 	}
@@ -108,7 +111,9 @@ const SolverConstr & GurobiSolver::addConstr(
   
   char ch = compStringToChar(comp,
     "addConstr(SolverVar &, const string &, SolverVar &)");
-  constrVector_.push_back(model_->addConstr(lhs, ch, rhs, lpConvert(name)));
+  constrVector_.push_back(model_->addConstr(lhs, ch, rhs, 
+                                            lpConvert(name).
+                                            substr(0, STR_MAX_LEN)));
 	if (doUpdate) {
     model_->update();
 	}
@@ -121,7 +126,9 @@ const SolverConstr & GurobiSolver::addConstr(
   
   char ch = compStringToChar(comp,
                              "addConstr(SolverExpr &, const string &, SolverVar &)");
-  constrVector_.push_back(model_->addConstr(lhs, ch, rhs, lpConvert(name)));
+  constrVector_.push_back(model_->addConstr(lhs, ch, rhs, 
+                                            lpConvert(name).
+                                            substr(0, STR_MAX_LEN)));
 	if (doUpdate) {
     model_->update();
 	}
@@ -134,7 +141,9 @@ const SolverConstr & GurobiSolver::addConstr(
 
   char ch = compStringToChar(comp, 
     "addConstr(SolverExpr &, const string &, SolverExpr &)");
-  constrVector_.push_back(model_->addConstr(lhs, ch, rhs, lpConvert(name)));
+  constrVector_.push_back(model_->addConstr(lhs, ch, rhs, 
+                                            lpConvert(name).
+                                            substr(0, STR_MAX_LEN)));
 	if (doUpdate) {
     model_->update();
 	}

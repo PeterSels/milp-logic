@@ -13,8 +13,6 @@
 extern IloEnv * global_env_;
 #endif
 
-#define STR_MAX_LEN 255
-
 using namespace std;
 
 Solver::Solver()
@@ -75,7 +73,8 @@ const SolverVar Solver::addConjunctionBinVar(
   const SolverVar & conjunctionBinVarC,
   const std::string & name) {
   
-  const SolverVar conjunctionBinVarA = addBinVar(objCoef, name);
+  const SolverVar conjunctionBinVarA = addBinVar(objCoef, 
+                                                 name.substr(0, STR_MAX_LEN));
   addConjunctionConstr(
     conjunctionBinVarA, conjunctionBinVarB, conjunctionBinVarC, name);
   return conjunctionBinVarA;
@@ -173,7 +172,8 @@ const SolverVar Solver::addEqualBinVar(
   double unit,
   const std::string & name) {
 
-  const SolverVar eqBinVar = addBinVar(objCoef, name);
+  const SolverVar eqBinVar = addBinVar(objCoef, 
+                                       name.substr(0, STR_MAX_LEN));
   addEqualConstr(eqBinVar,
 								 lhsExpr, lhsLowerBound, lhsUpperBound, 
 								 rhsExpr, rhsLowerBound, rhsUpperBound,
@@ -247,7 +247,7 @@ const SolverVar Solver::addEqualBinVar(
   double unit,
   const std::string & name) {
 
-  const SolverVar eqBinVar = addBinVar(objCoef, name);
+  const SolverVar eqBinVar = addBinVar(objCoef, name.substr(0, STR_MAX_LEN));
   addEqualConstr(eqBinVar,
 								 lhsExpr-rhs, lhsLowerBound-rhs, lhsUpperBound-rhs, 
 								 0,
@@ -290,7 +290,8 @@ addLessOrEqualBinVar(double objCoef,
                      double unit,
                      const std::string & name) {
 	
-  const SolverVar leBinVar = addBinVar(objCoef, name);
+  const SolverVar leBinVar = addBinVar(objCoef, 
+                                       name.substr(0, STR_MAX_LEN));
   addLessOrEqualConstr(leBinVar,
                        lhsExpr, lhsLowerBound, lhsUpperBound, 
                        rhsExpr, rhsLowerBound, rhsUpperBound,
@@ -333,7 +334,8 @@ addLessOrEqualBinVar(double objCoef,
                      double unit,
                      const std::string & name) {
 	
-  const SolverVar leBinVar = addBinVar(objCoef, name);
+  const SolverVar leBinVar = addBinVar(objCoef, 
+                                       name.substr(0, STR_MAX_LEN));
   addLessOrEqualConstr(leBinVar,
                        lhsExpr, lhsLowerBound, lhsUpperBound, 
                        rhs,
@@ -906,7 +908,7 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
 		dnFunctionExpr += 
 		z0 + (zD1 - z0)/(D1 - 0) * (xPlusYExpr - 0);
 		addConstr(dnFunctionExpr, "<=", z,
-							xPlusYName.substr(0, STR_MAX_LEN-36)
+							xPlusYName.substr(0, STR_MAX_LEN-39)
               + "_sum_convex_max_robust_dn_only_function",
 							doUpdate);		
 	}

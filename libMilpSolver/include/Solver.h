@@ -10,6 +10,9 @@
 
 #undef USE_SOS_VECTOR
 
+#define STR_MAX_LEN 255
+// fir Gurobi >= 4.6.0 really, but now spread over all solvers
+
 typedef std::map<const SolverVar *, std::map<int, SolverVar> > BinVarMap;
 
 typedef std::map<const SolverVar *, 
