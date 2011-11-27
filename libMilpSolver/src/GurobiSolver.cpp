@@ -495,6 +495,11 @@ void GurobiSolver::setBranchingMethod(int method) {
 
 ////////////////// End Cuts Control ///////////////
 
+
+void GurobiSolver::setIntFeasTol(double value) {
+  model_->getEnv().set(GRB_DoubleParam_IntFeasTol, value); // C++		     
+}
+
 GurobiSolver::~GurobiSolver() {
   deleteModelAndEnv();
 }

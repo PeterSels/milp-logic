@@ -273,6 +273,8 @@ public:
 	
 	virtual void setBranchingMethod(int method); // = 0
 
+  virtual void setIntFeasTol(double value); // = 0
+
   std::string lpConvert(const std::string & name);
 
 	

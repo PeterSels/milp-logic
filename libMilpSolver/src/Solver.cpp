@@ -1041,6 +1041,12 @@ void Solver::setBranchingMethod(int method) {
 	// should become pure virtual soon}  
 }
 
+
+void Solver::setIntFeasTol(double value) {
+	assert(false); // child solver needs to implement this
+	// should become pure virtual soon}  
+}
+
 ////////////////// End Cuts Control ///////////////
 
 Solver::~Solver() {

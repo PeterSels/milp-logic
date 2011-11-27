@@ -102,7 +102,7 @@ public:
   
 	void setBranchingMethod(int method);
 
-
+  void setIntFeasTol(double value);
   
 private:
   void setNThreads(int nThreads);
