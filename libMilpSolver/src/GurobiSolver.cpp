@@ -228,6 +228,9 @@ bool GurobiSolver::solve(double gap, int nThreads) {
   model_->getEnv().set(GRB_DoubleParam_NodefileStart, 4.0); // C++
   // not sure about the above
   
+  //model_->getEnv().set(GRB_IntParam_Presolve, 2.0); // C++
+  // 2.0=Aggressive constraint aggregation
+  // Hoping this reduces the number or/and range of d integer params.
   
   setNThreads(nThreads);
   
