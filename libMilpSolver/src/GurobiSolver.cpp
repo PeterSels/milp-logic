@@ -224,14 +224,26 @@ bool GurobiSolver::solve(double gap, int nThreads) {
   //model_->set(GRB_DBL_PAR_MIPGAP, gap); // C
   model_->getEnv().set(GRB_DoubleParam_MIPGap, gap); // C++
 
+  // FIXME: The settings below should be moved to the Solver level
+  // so that other solvers, like: CPLEX and XPRESS act the same
+  
   // set mem for node storage to this value. Beyond, swapping to disk happens.
   model_->getEnv().set(GRB_DoubleParam_NodefileStart, 4.0); // C++
   // not sure about the above
   
-  //model_->getEnv().set(GRB_IntParam_Presolve, 2.0); // C++
+  model_->getEnv().set(GRB_IntParam_Presolve, 2.0); // C++
   // 2.0=Aggressive constraint aggregation
   // Hoping this reduces the number or/and range of d integer params.
+
+  // Greg Glockners suggestion
+  //setMipFocus(1);
+  model_->getEnv().set(GRB_DoubleParam_Heuristics, 0.1); // C++
   
+  //model_->getEnv().set(GRB_IntParam_PumpPasses, 50); // C++
+  //model_->getEnv().set(GRB_IntParam_MinRelNodes, 500); // C++
+  //model_->getEnv().set(GRB_IntParam_ZeroObjNodes, 500); // C++ 
+  // GRB_IntParam_ZeroObjNodes present from gurobi 4.6.0 onwards
+    
   setNThreads(nThreads);
   
   solved_ = false;
