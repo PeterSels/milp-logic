@@ -237,7 +237,7 @@ bool GurobiSolver::solve(double gap, int nThreads) {
 
   // Greg Glockners suggestion
   //setMipFocus(1);
-  //model_->getEnv().set(GRB_DoubleParam_Heuristics, 0.1); // C++
+  model_->getEnv().set(GRB_DoubleParam_Heuristics, 0.1); // C++
   
   //model_->getEnv().set(GRB_IntParam_PumpPasses, 50); // C++
   //model_->getEnv().set(GRB_IntParam_MinRelNodes, 500); // C++
