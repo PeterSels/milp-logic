@@ -21,15 +21,15 @@ void GurobiSolver::resetModel() {
   try {
     env_ = new GRBEnv();
     model_ = new SolverModel(*env_);
-
   } catch (GRBException e) {
     cout << "Error code = " << e.getErrorCode() << endl;
     cout << e.getMessage() << endl;
-    
+    exit(0);    
   } catch (...) {
     // somehow not printed
     cerr << "ERROR: Gurobi exception catched at calling new SolverModel()"
     << endl;
+    exit(0);
   }
   if (model_==0) {
     // somehow not printed
@@ -237,7 +237,7 @@ bool GurobiSolver::solve(double gap, int nThreads) {
 
   // Greg Glockners suggestion
   //setMipFocus(1);
-  model_->getEnv().set(GRB_DoubleParam_Heuristics, 0.1); // C++
+  model_->getEnv().set(GRB_DoubleParam_Heuristics, 0.10); // C++
   
   //model_->getEnv().set(GRB_IntParam_PumpPasses, 50); // C++
   //model_->getEnv().set(GRB_IntParam_MinRelNodes, 500); // C++

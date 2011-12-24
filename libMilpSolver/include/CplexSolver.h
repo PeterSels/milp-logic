@@ -84,6 +84,9 @@ public:
   
   IloCplex * getLicense(int toToken);
 
+  void setBranchingMethod(int method);  
+  void setIntFeasTol(double value);
+  
   ~CplexSolver();
 
   static char compStringToChar(

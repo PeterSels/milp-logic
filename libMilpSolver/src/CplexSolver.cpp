@@ -635,6 +635,36 @@ IloCplex * CplexSolver::getLicense(int maxLicenseGetSeconds) {
   return cplex; // 0 if bad
 }
 
+
+void CplexSolver::setBranchingMethod(int method) {
+  /* Gurobi version:
+  assert(-1 <= method);
+  assert(method <= 3);
+  model_->getEnv().set(GRB_IntParam_VarBranch, method); // C++		 
+  */
+  cerr << "WARNING: CplexSolver::setBranchingMethod not implemented yet" 
+  << endl;
+  cerr << "  So leaving all branching settings to default values." << endl;
+}
+
+////////////////// End Cuts Control ///////////////
+
+
+void CplexSolver::setIntFeasTol(double value) {
+  try {
+    IloCplex cplex(*model_);
+    cplex.setParam(IloCplex::EpInt, (int)value);
+  } catch (IloCplex::Exception& ex) {
+    cerr << "Exception catched" << endl;
+    cerr << "str = " << string(ex.getMessage()) << endl;
+    exit(0);
+  } catch (string &str) {
+    cerr << str << endl;
+    // throw str;
+    exit(0);
+  }
+}
+
 CplexSolver::~CplexSolver() {
   deleteModelAndEnv();
 }
