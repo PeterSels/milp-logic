@@ -12,6 +12,10 @@ public:
                                  int ii),
                   const std::vector<double> & parameters,
                   unsigned int D1);
+  
+  void crossingLinesIntersect(double & x, double & y,
+                              double absis0, double slope0,
+                              double absis1, double slope1);
   bool getBrkPointNotMinimum() const;
   void setBrkPointNotMinimum(bool brkPointNotMinimum);
   double eval(double d) const;

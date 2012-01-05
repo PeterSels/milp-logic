@@ -2,6 +2,7 @@
 #include <assert.h>
 
 #include "BreakPointCalculator.h"
+#include "Step.h"
 
 using namespace std;
 
@@ -18,7 +19,7 @@ BreakPointCalculator::BreakPointCalculator(double (*fPtr)(const std::vector<doub
   bool enoughLowered = true;  
   
   if (fDecreasing) {
-    int d = 0;
+    double d = 0;
     dBrk_ = d;
     zBrk_ = (*fPtr)(parameters, d);
     //const double SLOPE_DOWN_THRESHOLD = -0.1; // absolute, not so useful
@@ -42,12 +43,12 @@ BreakPointCalculator::BreakPointCalculator(double (*fPtr)(const std::vector<doub
         }
         cout << endl;
       }
-      d++;
+      d+=STEP;
       prevZ = z;
     } while (d <= D1_); // <= because
     // we want D1_ to be the BreakPoint when function is decreasing
   } else {
-    int d = D1;
+    double d = D1;
     dBrk_ = d;
     zBrk_ = (*fPtr)(parameters, d);
     //const double SLOPE_DOWN_THRESHOLD = -0.1; // absolute, not so useful
@@ -57,7 +58,7 @@ BreakPointCalculator::BreakPointCalculator(double (*fPtr)(const std::vector<doub
     do {
       double z = (*fPtr)(parameters, d);
       //if (z <= zBrk_) {
-      if ((d==(int)D1) || ((z - prevZ < SLOPE_DOWN_THRESHOLD))) {
+      if (((int)d==(int)D1) || ((z - prevZ < SLOPE_DOWN_THRESHOLD))) {
         zBrk_ = z;
         dBrk_ = d;
         enoughLowered = true;
@@ -71,7 +72,7 @@ BreakPointCalculator::BreakPointCalculator(double (*fPtr)(const std::vector<doub
         }
         cout << endl;
       }
-      d--;
+      d-=STEP;
       prevZ = z;
     } while (d >= 0); // <= because
     // we want 0 to be the BreakPoint when function is increasing    

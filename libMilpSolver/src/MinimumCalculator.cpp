@@ -2,6 +2,7 @@
 #include <assert.h>
 
 #include "MinimumCalculator.h"
+#include "Step.h"
 
 using namespace std;
 
@@ -15,7 +16,7 @@ MinimumCalculator::MinimumCalculator(double (*fPtr)(const std::vector<double>
   // A more clever (faster) method could be used, but this always works.
   bool verbose = false;
   
-  unsigned int d = 0;
+  double d = 0.0;
   dMin_ = d;
   zMin_ = (*fPtr)(parameters, d);
   bool lowered = true;
@@ -35,7 +36,7 @@ MinimumCalculator::MinimumCalculator(double (*fPtr)(const std::vector<double>
       }
       cout << endl;
     }
-    d++;
+    d+=STEP;
   } while (d <= D1_); // <= because
   // we want D1_ to be the minimum when function is decreasing
   if (verbose) {
