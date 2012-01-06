@@ -8,7 +8,7 @@ using namespace std;
 
 MinimumCalculator::MinimumCalculator(double (*fPtr)(const std::vector<double>
                                                       & parameters, 
-                                                      int ii),
+                                                      double d),
                                      const std::vector<double> & parameters,
                                      unsigned int D1)
 : D1_(D1)

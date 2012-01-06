@@ -3,13 +3,17 @@
 
 #include "BreakPointCalculator.h"
 #include "Step.h"
+#include "libAnalyticsDefinitions.h"
+  // for TOLERANCE
 
 using namespace std;
 
-BreakPointCalculator::BreakPointCalculator(double (*fPtr)(const std::vector<double>
-                                                          & parameters, 
-                                                          int ii),
-                                           const std::vector<double> & parameters,
+BreakPointCalculator::BreakPointCalculator(double (*fPtr)
+                                           (const std::vector<double>
+                                            & parameters, 
+                                            double d),
+                                           const std::vector<double> & 
+                                           parameters,
                                            unsigned int D1,
                                            bool fDecreasing) 
 : D1_(D1)
@@ -18,12 +22,15 @@ BreakPointCalculator::BreakPointCalculator(double (*fPtr)(const std::vector<doub
   bool verbose = false;
   bool enoughLowered = true;  
   
+  //const double SLOPE_DOWN_THRESHOLD = 0;
+  const double SLOPE_DOWN_THRESHOLD = -1.0 * STEP; // relative is better
+
   if (fDecreasing) {
     double d = 0;
     dBrk_ = d;
     zBrk_ = (*fPtr)(parameters, d);
     //const double SLOPE_DOWN_THRESHOLD = -0.1; // absolute, not so useful
-    const double SLOPE_DOWN_THRESHOLD = -0.001 * zBrk_; // relative is better
+    //const double SLOPE_DOWN_THRESHOLD = -0.001 * zBrk_ * STEP; // relative is better
     
     double prevZ = zBrk_; // initial value not used anyway
     do {
@@ -52,7 +59,7 @@ BreakPointCalculator::BreakPointCalculator(double (*fPtr)(const std::vector<doub
     dBrk_ = d;
     zBrk_ = (*fPtr)(parameters, d);
     //const double SLOPE_DOWN_THRESHOLD = -0.1; // absolute, not so useful
-    const double SLOPE_DOWN_THRESHOLD = -0.001 * zBrk_; // relative is better
+    //const double SLOPE_DOWN_THRESHOLD = -0.001 * zBrk_ * STEP; // relative is better
     
     double prevZ = zBrk_; // initial value not used anyway
     do {
@@ -84,6 +91,12 @@ BreakPointCalculator::BreakPointCalculator(double (*fPtr)(const std::vector<doub
     cerr << endl;
   }
   //assert(zBrk_ == (*fPtr)(parameters, dBrk_));
+  
+  if (zBrk_ < 0) {
+    assert(zBrk_ > -TOLERANCE);
+    cerr << "WARNING: Changing zBrk_ from " << zBrk_ << " to " << 0.0 << endl;
+    zBrk_ = 0;
+  }
 }
 
 double BreakPointCalculator::getBreakPointAbsis() const {

@@ -9,7 +9,7 @@ public:
   PwlApproximator(bool brkPointNotMinimum,
                   double (*fPtr)(const std::vector<double>
                                  & parameters, 
-                                 int ii),
+                                 double d),
                   const std::vector<double> & parameters,
                   unsigned int D1);
   
