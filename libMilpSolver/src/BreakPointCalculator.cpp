@@ -24,7 +24,10 @@ BreakPointCalculator::BreakPointCalculator(double (*fPtr)
   
   //const double SLOPE_DOWN_THRESHOLD = 0;
   const double SLOPE_DOWN_THRESHOLD = -1.0 * STEP; // relative is better
-
+  // This corresponds to 45 degrees down point.
+  // This may not look like it in the graphics, when x and y axis are on a
+  // different scale though.
+  
   if (fDecreasing) {
     double d = 0;
     dBrk_ = d;
