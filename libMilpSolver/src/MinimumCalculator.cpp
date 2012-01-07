@@ -44,6 +44,10 @@ MinimumCalculator::MinimumCalculator(double (*fPtr)(const std::vector<double>
     cerr << endl;
   }
   //assert(zMin_ == (*fPtr)(parameters, dMin_));
+  assert(dMin_ <= D1_);
+  assert(0 <= dMin_);
+  
+  assert(zMin_ >= 0);
 }
 
 double MinimumCalculator::getMinimumAbsis() const {

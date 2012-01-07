@@ -66,6 +66,7 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
   D1_  = D1;
   //zD1_ = (*fPtr)(parameters, (int)D1_);
   zD1_ = (*fPtr)(parameters, D1_);
+  assert(zD1_ >= 0);
   
   // middle (low, minimal) point
   if (brkPointNotMinimum_) {
@@ -83,17 +84,18 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
   
   const bool linearRegression = true;
   if (linearRegression) {
-    const unsigned int MIN_POINTS_FOR_REGRESSION = 4;
+    const unsigned int MIN_POINTS_FOR_REGRESSION = 2;
     
     double slopeLeft;
     double absisLeft;
-    {
+    //{
       //cerr << "dMin_ = " << dMin_ << endl;
-      unsigned int nPoints = (dMin_ - 0.0)/STEP + 1;
+    vector<double> xLeft;
+    vector<double> yLeft;
+    
+      unsigned int nPointsLeft = (dMin_ - 0.0)/STEP + 1;
       //if (dMin_>0.0) {
-      if (nPoints >= MIN_POINTS_FOR_REGRESSION) {
-        vector<double> xLeft;
-        vector<double> yLeft;
+      if (nPointsLeft >= MIN_POINTS_FOR_REGRESSION) {
         for (double d=0; d<=dMin_; d+=STEP) {
           double z = (*fPtr)(parameters, d);
           xLeft.push_back(d);
@@ -108,15 +110,15 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
         slopeLeft = 0.0;
         absisLeft = zMin_;
       }
-    }
+    //}
     
     double slopeRight;
     double absisRight;
-    {
+    //{
       vector<double> xRight;
       vector<double> yRight;
-      unsigned int nPoints = (D1_ - dMin_)/STEP + 1;
-      if (nPoints >= MIN_POINTS_FOR_REGRESSION) {
+      unsigned int nPointsRight = (D1_ - dMin_)/STEP + 1;
+      if (nPointsRight >= MIN_POINTS_FOR_REGRESSION) {
         for (double d=dMin_/*+STEP*/; d<=D1_; d+=STEP) {
           double z = (*fPtr)(parameters, d);
           xRight.push_back(d);
@@ -131,15 +133,31 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
         slopeRight = 0.0;
         absisRight = zMin_;      
       }
-    }
+    //}
     // (Slightly) adapt (0, z0_), (D1_, zD1_) and then,
     // their intersection: (dMin_, zMin_):
 
     // 0 remains 0 of course
     z0_ = absisLeft + (0 * slopeLeft);
+    assert(z0_ >= 0);
     
     // D1_ remains D1_ of course
     zD1_ = absisRight + (D1_ * slopeRight); // DEBUG, FIXME
+    if (zD1_ < 0) {
+      const bool verbose = false;
+      if (verbose) {
+        cerr << "NOTE: Allowing LinReg caused: zD1_=" << zD1_ << "<0" << endl;
+      }
+      /*
+      cerr << "WARNING: Correcting zD1_ from " << zD1_ 
+      << " to " << 0 << endl;
+      zD1_ = 0;
+      assert(false);
+      */
+    }
+    if (!linearRegression) {
+      assert(zD1_ >= 0);
+    }
     
     if (slopeLeft == slopeRight) { // all flatliners
       assert(slopeLeft==0);
@@ -148,17 +166,30 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
       dMin_ = 0;
       zMin_ = 0;
     } else {
+      //cerr << "dMin_ = " << dMin_ << " zMin_ = " << zMin_ << endl;
       crossingLinesIntersect(dMin_, zMin_, 
                              absisLeft, slopeLeft, 
                              absisRight, slopeRight);
+      if (dMin_ < 0) { // for a SOURCE edge
+        cerr << "WARNING: Correcting dMin_ from " << dMin_ 
+        << " to " << 0 << endl;
+        dMin_ = 0;
+        assert(0 <= dMin_);
+        assert(false);
+      }
       if (dMin_ > D1_) {
         cerr << "WARNING: Correcting dMin_ from " << dMin_ 
         << " to " << D1_ << endl;
         dMin_ = D1;
+        assert(false);
       }
+      assert(dMin_ <= D1_);
     }
   } // end of linearRegression
   
+  if (dMin_ < 0) {
+    assert(0 <= dMin_);
+  }
   assert(0 <= dMin_);
   assert(dMin_ <= D1_);
 }

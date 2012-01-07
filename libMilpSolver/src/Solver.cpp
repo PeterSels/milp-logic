@@ -865,9 +865,7 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
   ////assert(zdMin <= z0); // DISABLED, since we also have increasing functions now (for dwell and sink edges)
   //assert(zdMin <= zD1); // not true anymore since used BreakPointCalulator
   // io MinimumCalculator
-	
-	assert(dMin >= 0);
-	
+		
 	SolverExpr dnFunctionExpr
 #ifdef USE_CPLEX_NATIVE
 	(*global_env_)
