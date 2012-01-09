@@ -30,6 +30,7 @@ BreakPointCalculator::BreakPointCalculator(double (*fPtr)
   // different scale though.
   
   if (fDecreasing) {
+    /*
     double d = 0;
     dBrk_ = d;
     zBrk_ = (*fPtr)(parameters, d);
@@ -37,6 +38,7 @@ BreakPointCalculator::BreakPointCalculator(double (*fPtr)
     //if (zBrk_==0) {
     //  cerr << "NOTE: zBrk_ = 0" << endl;
     //}
+    
     
     
     const double SLOPE_DOWN_THRESHOLD = -0.02; // absolute, not so useful
@@ -49,7 +51,8 @@ BreakPointCalculator::BreakPointCalculator(double (*fPtr)
     do {
       double z = (*fPtr)(parameters, d);
       //if (z <= zBrk_) {
-      if (/*(d==0) ||*/ ((z - prevZ > SLOPE_DOWN_THRESHOLD * prevZ))) {
+      if (//(d==0) || 
+    ((z - prevZ > SLOPE_DOWN_THRESHOLD * prevZ))) {
         zBrk_ = z;
         dBrk_ = d;
         enoughLowered = true;
@@ -76,7 +79,14 @@ BreakPointCalculator::BreakPointCalculator(double (*fPtr)
       zBrk_ = (*fPtr)(parameters, D1_);      
     }
     // we want D1_ to be the BreakPoint when function is decreasing
-  } else {
+    */
+  
+    dBrk_ = (D1 - 0) * 0.2;
+    zBrk_ = (*fPtr)(parameters, dBrk_);    
+    
+  } else { // !fDecreasing
+    
+    /*
     double d = D1;
     dBrk_ = d;
     zBrk_ = (*fPtr)(parameters, d);
@@ -93,7 +103,8 @@ BreakPointCalculator::BreakPointCalculator(double (*fPtr)
     do {
       double z = (*fPtr)(parameters, d);
       //if (z <= zBrk_) {
-      if (/*((int)d==(int)D1) || */ ((z - prevZ > SLOPE_DOWN_THRESHOLD * prevZ))) {
+      if (//((int)d==(int)D1) || 
+    ((z - prevZ > SLOPE_DOWN_THRESHOLD * prevZ))) {
         zBrk_ = z;
         dBrk_ = d;
         enoughLowered = true;
@@ -120,6 +131,9 @@ BreakPointCalculator::BreakPointCalculator(double (*fPtr)
       zBrk_ = (*fPtr)(parameters, 0);     
     }
     // we want 0 to be the BreakPoint when function is increasing    
+     */
+    dBrk_ = (D1 - 0) * 0.8;
+    zBrk_ = (*fPtr)(parameters, dBrk_);    
   }
   
   if (verbose) {
