@@ -84,56 +84,56 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
   
   const bool linearRegression = true;
   if (linearRegression) {
-    const unsigned int MIN_POINTS_FOR_REGRESSION = 2;
+    const unsigned int MIN_POINTS_FOR_REGRESSION = 4;
     
     double slopeLeft;
     double absisLeft;
-    //{
-      //cerr << "dMin_ = " << dMin_ << endl;
     vector<double> xLeft;
     vector<double> yLeft;
     
-      unsigned int nPointsLeft = (dMin_ - 0.0)/STEP + 1;
-      //if (dMin_>0.0) {
-      if (nPointsLeft >= MIN_POINTS_FOR_REGRESSION) {
-        for (double d=0; d<=dMin_; d+=STEP) {
-          double z = (*fPtr)(parameters, d);
-          xLeft.push_back(d);
-          yLeft.push_back(z);
-        }
-        DataVectorCorrelator dvcLeft(xLeft, yLeft);
-        slopeLeft = dvcLeft.getSlope();
-        absisLeft = dvcLeft.getAbsis();
-      } else { // not enough data for regression
-        //cerr << "dMin_ = " << dMin_ << endl;
-        assert(dMin_>=0);
-        slopeLeft = 0.0;
-        absisLeft = zMin_;
+    const double SMALLER_STEP = STEP/4;
+    // should work better than STEP for dwell costs, 
+    // where there are few samples in STEP case,
+    // what does it do for transfer costs? // FIXME
+    
+    unsigned int nPointsLeft = (dMin_ - 0.0)/SMALLER_STEP + 1;
+    if (nPointsLeft >= MIN_POINTS_FOR_REGRESSION) { 
+      for (double d=0; d<=dMin_; d+=SMALLER_STEP) {
+        double z = (*fPtr)(parameters, d);
+        xLeft.push_back(d);
+        yLeft.push_back(z);
       }
-    //}
+      DataVectorCorrelator dvcLeft(xLeft, yLeft);
+      slopeLeft = dvcLeft.getSlope();
+      absisLeft = dvcLeft.getAbsis();
+    } else { // not enough data for regression
+      assert(dMin_>=0);
+      slopeLeft = 0.0;
+      absisLeft = zMin_;
+    }
+
     
     double slopeRight;
     double absisRight;
-    //{
-      vector<double> xRight;
-      vector<double> yRight;
-      unsigned int nPointsRight = (D1_ - dMin_)/STEP + 1;
-      if (nPointsRight >= MIN_POINTS_FOR_REGRESSION) {
-        for (double d=dMin_/*+STEP*/; d<=D1_; d+=STEP) {
-          double z = (*fPtr)(parameters, d);
-          xRight.push_back(d);
-          yRight.push_back(z);
-        }
-        DataVectorCorrelator dvcRight(xRight, yRight);
-        slopeRight = dvcRight.getSlope();
-        absisRight = dvcRight.getAbsis();
-      } else { // not enough data for regression
-        assert(dMin_>=D1_*(1-TOLERANCE));
-        assert(dMin_<=D1_*(1+TOLERANCE));
-        slopeRight = 0.0;
-        absisRight = zMin_;      
+    vector<double> xRight;
+    vector<double> yRight;
+    unsigned int nPointsRight = (D1_ - dMin_)/STEP + 1;
+    if (nPointsRight >= MIN_POINTS_FOR_REGRESSION) {
+      for (double d=dMin_/*+STEP*/; d<=D1_; d+=STEP) {
+        double z = (*fPtr)(parameters, d);
+        xRight.push_back(d);
+        yRight.push_back(z);
       }
-    //}
+      DataVectorCorrelator dvcRight(xRight, yRight);
+      slopeRight = dvcRight.getSlope();
+      absisRight = dvcRight.getAbsis();
+    } else { // not enough data for regression
+      assert(dMin_>=D1_*(1-TOLERANCE));
+      assert(dMin_<=D1_*(1+TOLERANCE));
+      slopeRight = 0.0;
+      absisRight = zMin_;      
+    }
+    
     // (Slightly) adapt (0, z0_), (D1_, zD1_) and then,
     // their intersection: (dMin_, zMin_):
 

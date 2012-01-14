@@ -81,7 +81,7 @@ BreakPointCalculator::BreakPointCalculator(double (*fPtr)
     // we want D1_ to be the BreakPoint when function is decreasing
     */
   
-    dBrk_ = (D1 - 0) * 0.2;
+    dBrk_ = (D1 - 0) * 0.03; // was 0.2 // gives better sample, where it matters for src cost, at low values
     zBrk_ = (*fPtr)(parameters, dBrk_);    
     
   } else { // !fDecreasing
