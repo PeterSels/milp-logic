@@ -10,7 +10,7 @@ function centerWindow() {
     var winW = window.innerWidth;
     var winH = window.innerHeight;
 
-    var mx = (docW - winW) / 2;
+    var mx = (docW - winW) / 24 * 7; // Where trains begin
     var my = (docH - winH) / 2;
     window.scroll(mx, my); // sets this doc point as top left corner in win
 }
