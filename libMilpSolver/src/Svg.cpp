@@ -483,9 +483,7 @@ void Svg::svgHtmlWrapperWrite(ostream & ostr) const {
     ostr << "footerH = 0" << endl;
   }
   ostr << "restH = 0;" << endl;
-  
-
-  
+    
   ostr
   << "document.getElementById('CENTER').setAttribute('width', w)" << endl
   << "document.getElementById('CENTER')"
