@@ -15,7 +15,8 @@ BreakPointCalculator::BreakPointCalculator(double (*fPtr)
                                            const std::vector<double> & 
                                            parameters,
                                            unsigned int D1,
-                                           bool fDecreasing) 
+                                           bool fDecreasing,
+                                           unsigned int dBrk)
 : D1_(D1)
 {
   // A more clever (faster) method could be used, but this always works.
@@ -81,7 +82,8 @@ BreakPointCalculator::BreakPointCalculator(double (*fPtr)
     // we want D1_ to be the BreakPoint when function is decreasing
     */
   
-    dBrk_ = (D1 - 0) * 0.03; // was 0.2 // gives better sample, where it matters for src cost, at low values
+    dBrk_ = dBrk; // covers decreasing source and knock-on cost curves
+    //dBrk_ = (D1 - 0) * 0.03; // was 0.2 // gives better sample, where it matters for src cost, at low values
     zBrk_ = (*fPtr)(parameters, dBrk_);    
     
   } else { // !fDecreasing
@@ -132,7 +134,7 @@ BreakPointCalculator::BreakPointCalculator(double (*fPtr)
     }
     // we want 0 to be the BreakPoint when function is increasing    
      */
-    dBrk_ = (D1 - 0) * 0.8;
+    dBrk_ = dBrk; //1 * UU; // (D1 - 0) * 0.8; // for sink
     zBrk_ = (*fPtr)(parameters, dBrk_);    
   }
   

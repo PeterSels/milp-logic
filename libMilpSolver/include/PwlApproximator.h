@@ -11,7 +11,8 @@ public:
                                  & parameters, 
                                  double d),
                   const std::vector<double> & parameters,
-                  unsigned int D1);
+                  unsigned int D1,
+                  unsigned int dBrk);
   
   void crossingLinesIntersect(double & x, double & y,
                               double absis0, double slope0,

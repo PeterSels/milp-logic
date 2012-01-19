@@ -10,7 +10,8 @@ public:
                                       double d),
                        const std::vector<double> & parameters,
                        unsigned int D1,
-                       bool fDecreasing);
+                       bool fDecreasing,
+                       unsigned int dBrk);
   double getBreakPointAbsis() const;
   double getBreakPointValue() const;
   ~BreakPointCalculator();

@@ -28,7 +28,8 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
                                                 & parameters, 
                                                 double d),
                                  const std::vector<double> & parameters,
-                                 unsigned int D1) 
+                                 unsigned int D1,
+                                 unsigned int dBrk) 
 /// calc min & interpolate
 
 {
@@ -70,7 +71,7 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
   
   // middle (low, minimal) point
   if (brkPointNotMinimum_) {
-    BreakPointCalculator brkCalc(fPtr, parameters, D1, fNotIncreasing);
+    BreakPointCalculator brkCalc(fPtr, parameters, D1, fNotIncreasing, dBrk);
     dMin_ = brkCalc.getBreakPointAbsis();
     zMin_ = brkCalc.getBreakPointValue();
   } else {
