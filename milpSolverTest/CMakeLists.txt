@@ -9,6 +9,7 @@ set(SOURCES
 )
 
 include_directories( 
+  ../libAnalytics/include
   ../libMilpSolver/include
   c:/xpressmp/include
   $ENV{GUROBI_HOME}/include
@@ -50,7 +51,7 @@ ENDIF(APPLE)
 
 add_executable( milpSolverTest ${SOURCES} ${HEADERS})
 
-target_link_libraries( milpSolverTest MilpSolver gurobi_c++ $ENV{GUROBI_MAIN_VERSION} ilocplex cplex concert 
+target_link_libraries( milpSolverTest MilpSolver Analytics gurobi_c++ $ENV{GUROBI_MAIN_VERSION} ilocplex cplex concert 
 #xprs xprb 
 m ${EXTRA_LIBS} ${THREAD})
 

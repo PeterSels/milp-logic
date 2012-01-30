@@ -22,6 +22,7 @@ include_directories(
   c:/xpressmp/include
   $ENV{GUROBI_HOME}/include
   include
+  ../libAnalytics/include
   $ENV{CPLEX_HOME}/include
   $ENV{CONCERT_HOME}/include
   $ENV{XPRESS_HOME}/include

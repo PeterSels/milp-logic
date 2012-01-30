@@ -31,7 +31,7 @@ double f(int i) {
 }
 */
 
-double f(const vector<double> & parameters, int i) {
+double f(const vector<double> & parameters, double i) {
 	assert(parameters.size()==1);
 	double xMin = parameters[0];
   if (i < xMin) {

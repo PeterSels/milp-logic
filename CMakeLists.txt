@@ -13,6 +13,8 @@ project(MilpSolver)
 # cause another cmake executable to run.  The same process will walk through
 # the project's entire directory structure.
 
+add_subdirectory(libAnalytics)
+add_subdirectory(libAnalyticsTest)
 add_subdirectory(libMilpSolver)
 add_subdirectory(milpSolverTest)
 
