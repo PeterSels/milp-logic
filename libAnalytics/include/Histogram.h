@@ -9,6 +9,7 @@ class Histogram : public std::map<int, double> {
 public:
   Histogram(unsigned int storeBucketSize=1);
   Histogram(const std::vector<int> & values, unsigned int storeBucketSize=1);
+  //Histogram(const DataMap & dataMap);
   void setStoreBucketSize(unsigned int storeBucketSize);
   void incrementOccurrenceOfX(int x);
   void incrementOccurrenceOfXByY(int x, double y);
@@ -22,6 +23,7 @@ public:
   int calcXMax() const;
   // calcYMin would always give 0 in a general histogram
   double calcYMax() const; // depends on unsigned int xResolution
+  double getYForX(int x) const;
   
   double calcTotal() const;
   double calcAverage() const;

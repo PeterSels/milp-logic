@@ -6,10 +6,8 @@
 #include <assert.h>
 
 #include "StringUtilities.h"
-#include "NUnits.h"
 
 using namespace std;
-
 
 std::string characterToString(char ch) {
   string str;
@@ -28,36 +26,6 @@ string escapeUnderscore(const string & str) {
     news.insert(pos, "\\");
   }
   return news;
-}
-
-string toTime_HH_MM(unsigned int units) {
-  string str = toTime_HH_MM_SS(units);
-  str = str.substr(0, 5);
-  return str;
-}
-
-string toTime_HH_MM_SS(unsigned int units) {
-  ostringstream oStrStr;
-  unsigned int rest = units;
-  
-  unsigned int hh = rest / UU_PER_HR;
-  rest -= hh * UU_PER_HR;
-  
-  unsigned int mm = rest / UU;
-  rest -= mm * UU;
-  
-  unsigned int ss = rest / 1;
-  rest -= ss * 1;
-  
-  assert(rest == 0);
-  
-  oStrStr << setw(2) << setfill('0') << hh << ":" 
-          << setw(2) << setfill('0') << mm << ":" 
-          << setw(2) << setfill('0') << (ss * (60 / UU));
-  string str = oStrStr.str();
-  unsigned int len = (unsigned int)str.length();
-  assert(len==8);
-  return str;
 }
 
 string toString(double f,

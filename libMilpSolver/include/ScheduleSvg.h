@@ -7,6 +7,9 @@
 #include "Svg.h"
 #include "NUnits.h"
 
+std::string toTime_HH_MM   (unsigned int units);
+std::string toTime_HH_MM_SS(unsigned int units);
+
 class ScheduleSvg : public Svg {
 public:
 	ScheduleSvg(const std::string & fileName,

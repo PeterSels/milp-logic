@@ -10,8 +10,7 @@ int toInt(const std::string & str);
 double toDouble(const std::string & str);
 
 std::string escapeUnderscore(const std::string & str);
-std::string toTime_HH_MM   (unsigned int units);
-std::string toTime_HH_MM_SS(unsigned int units);
+
 std::string toString(double f,
                      unsigned int fracDigits, 
                      unsigned int width);

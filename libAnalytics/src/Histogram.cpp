@@ -5,6 +5,7 @@
 #include <limits>
 
 #include "Histogram.h"
+//#include "DataMap.h"
 
 using namespace std;
 
@@ -16,6 +17,30 @@ Histogram::Histogram(unsigned int storeBucketSize)
 void Histogram::setStoreBucketSize(unsigned int storeBucketSize) {
   storeBucketSize_ = storeBucketSize;
 }
+
+/*
+Histogram::Histogram(const DataMap & dataMap) 
+  //: DataMap(dataMap.getResolution())
+{
+  
+  cerr << "ERROR: still to convert datamap to Histogram or to discard Histogram" << endl;
+  assert(false);
+  exit(0);
+
+  
+	unsigned int dataYMin = 0; // dataMap.calcYMin() = 1 'coz 0s not stored
+	unsigned int dataYMax = dataMap.calcYMax();
+	cout << "[dataYMin, dataYMax] = [" << dataYMin << ", " << dataYMax << "]" << endl;
+	unsigned int dataXMin = dataMap.getXMin();
+	unsigned int dataXMax = dataMap.getXMax();
+	//unsigned int resolution = dataMap.getResolution();
+  for (unsigned int dataX=dataXMin; dataX<=dataXMax; dataX+=resolution_) {
+		unsigned int dataY = dataMap.getYForX(dataX);
+		unsigned int x = dataY;
+		add(x, 1);
+	}
+}
+*/
 
 Histogram::Histogram(const std::vector<int> & values, 
                      unsigned int storeBucketSize) 
@@ -202,10 +227,17 @@ double Histogram::calcYMax() const {
     yMax = max<double>(yMax, y);
   }
 
-
-  
   return yMax;
 }
+
+double Histogram::getYForX(int x) const {
+  if (count(x)==0) {
+    return 0.0;
+  } else {
+    return this->find(x)->second;
+  }
+}
+
 
 string Histogram::toString() const {
   ostringstream strstr;

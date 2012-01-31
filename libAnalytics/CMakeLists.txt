@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 2.6)
 
 project( libAnalytics )
 
-file(GLOB_RECURSE HEADERS "*.h")
+CMAKE_POLICY(SET CMP0009 OLD)
+file(GLOB_RECURSE HEADERS "*.h" "./include/*.h")
 
 set(SOURCES 
   src/BiExponentialConvolution.cpp

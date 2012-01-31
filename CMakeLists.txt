@@ -15,6 +15,9 @@ project(MilpSolver)
 
 add_subdirectory(libAnalytics)
 add_subdirectory(libAnalyticsTest)
+
+add_subdirectory(libStringUtilities)
+
 add_subdirectory(libMilpSolver)
 add_subdirectory(milpSolverTest)
 

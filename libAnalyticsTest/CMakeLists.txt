@@ -20,8 +20,6 @@ add_definitions(
   -D_DEBUG
 )
 
-#add_subdirectory(libAnalytics)
-
 add_executable( libAnalyticsTest WIN32 ${SOURCES} )
 
 target_link_libraries( libAnalyticsTest Analytics)
