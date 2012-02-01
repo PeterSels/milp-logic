@@ -1,3 +1,38 @@
+var c=0;
+var t;
+var timer_is_on=0;
+var DX=0;
+var DY=0;
+
+function timedCount() {
+  //document.getElementById('txt').value=c;
+  c=c+1;
+  if (c<10) {
+    window.scrollBy(DX/2, DY/2)
+    DX = DX/2;
+    DY = DY/2;
+    t = setTimeout("timedCount()",100);
+  } else {
+    DX = 0
+    DY = 0
+    c = 0
+    stopCount();
+  }
+}
+
+function doTimer(dx, dy) {
+  if (!timer_is_on) {
+    timer_is_on=1;
+    DX = dx;
+    DY = dy;
+    timedCount();
+  }
+}
+
+function stopCount() {
+  clearTimeout(t);
+  timer_is_on=0;
+}
 
 function centerWindow() {
     setZoomLevelToOne();
@@ -48,6 +83,7 @@ function getZoomFactor() {
 
 function zoomIndependentScrollByLogicalPixels (dx, dy) {
     var zoomFactor = getZoomFactor();
-    window.scrollBy (dx * zoomFactor, dy * zoomFactor);
+    //window.scrollBy (dx * zoomFactor, dy * zoomFactor);
+    doTimer (dx * zoomFactor, dy * zoomFactor);
 }
 
