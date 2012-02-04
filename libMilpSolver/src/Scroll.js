@@ -1,17 +1,18 @@
-var c=0;
+var c = 0;
 var t;
-var timer_is_on=0;
-var DX=0;
-var DY=0;
+var timer_is_on = 0;
+var DX = 0;
+var DY = 0;
+var nSteps = 20;
+var scrollMilliseconds = nSteps * 50;
 
 function timedCount() {
-  //document.getElementById('txt').value=c;
-  c=c+1;
-  if (c<10) {
+  if (c < nSteps) {
     window.scrollBy(DX/2, DY/2)
     DX = DX/2;
     DY = DY/2;
-    t = setTimeout("timedCount()",100);
+    c = c + 1
+    t = setTimeout("timedCount()", scrollMilliseconds/nSteps);
   } else {
     DX = 0
     DY = 0
@@ -22,16 +23,18 @@ function timedCount() {
 
 function doTimer(dx, dy) {
   if (!timer_is_on) {
-    timer_is_on=1;
+    timer_is_on = 1;
     DX = dx;
     DY = dy;
+    c = 0;
     timedCount();
   }
 }
 
 function stopCount() {
   clearTimeout(t);
-  timer_is_on=0;
+  timer_is_on = 0;
+  c = 0;
 }
 
 function centerWindow() {
@@ -84,6 +87,6 @@ function getZoomFactor() {
 function zoomIndependentScrollByLogicalPixels (dx, dy) {
     var zoomFactor = getZoomFactor();
     //window.scrollBy (dx * zoomFactor, dy * zoomFactor);
-    doTimer (dx * zoomFactor, dy * zoomFactor);
+    doTimer(dx * zoomFactor, dy * zoomFactor);
 }
 

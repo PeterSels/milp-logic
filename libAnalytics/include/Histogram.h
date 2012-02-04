@@ -29,16 +29,17 @@ public:
   double calcAverage() const;
   int calcMedian() const;
   std::string toString() const;
-  std::string toRString(std::string fileName, 
-                        std::string xLabel, 
-                        std::string yLabel,
-                        std::string title,
-                        bool isTopLevel,
-                        int xMin,
-                        int xMax,
-                        int xStep,
-                        double yMax,
-                        std::string language) const;
+  std::string toRStringHeader(std::string fileName,
+                              bool isTopLevel) const;
+  std::string toRStringRest(std::string fileName, 
+                            std::string xLabel, 
+                            std::string yLabel,
+                            std::string title,
+                            int xMin,
+                            int xMax,
+                            int xStep,
+                            double yMax,
+                            std::string language) const;
   ~Histogram();
 
 private:

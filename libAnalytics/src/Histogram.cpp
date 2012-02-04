@@ -252,17 +252,9 @@ string Histogram::toString() const {
   return strstr.str();
 }
 
-string Histogram::toRString(string fileName, 
-                            string xLabel, 
-                            string yLabel,
-                            string title,
-                            bool isTopLevel,
-                            int xMin,
-                            int xMax,
-                            int xStep,
-                            double yMax,
-                            string language) const {
-  bool first = true;
+
+string Histogram::toRStringHeader(string fileName,
+                                  bool isTopLevel) const {
   ostringstream strstr;
   
   if (isTopLevel) {
@@ -278,7 +270,21 @@ string Histogram::toRString(string fileName,
     << "pdf(file='" << pdfFileName 
     << "', height=" << nRows << "*8, width=" << nCols << "*8, onefile=TRUE)" 
     << endl << endl;  
-  }
+  }  
+  return strstr.str();
+}
+
+string Histogram::toRStringRest(string fileName, 
+                                string xLabel, 
+                                string yLabel,
+                                string title,
+                                int xMin,
+                                int xMax,
+                                int xStep,
+                                double yMax,
+                                string language) const {
+  bool first = true;
+  ostringstream strstr;
   
   strstr << xLabel << " <- c(";
   for (Histogram::const_iterator it=begin(); it!=end(); it++) {
