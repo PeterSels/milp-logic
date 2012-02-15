@@ -56,43 +56,33 @@ typedef GRBSOS SolverSos;
 
 #ifdef USE_CPLEX_NATIVE
 #define ILOUSESTL
-
 using namespace std;
 #include <ilcplex/ilocplex.h>
-
 #include "CplexExpression.h"
-
 typedef IloModel SolverModel;
 typedef IloNumVar SolverVar;
 ////typedef IloExpr SolverExpr; // general?
 typedef IloNumExpr SolverExpr; // linear!
-
 //#define SolverExpr() (SolverExpr(global_env_))
 //#define SolverExpr(expr) (SolverExpr(global_env_, expr))
 //#define SolverExpr(env, expr) (SolverExpr expr(env))
-
 //typedef CplexExpression SolverExpr; // linear!
 ////typedef IloLinearNumExpr SolverExpr; // linear!
 typedef IloConstraint SolverConstr;
 typedef IloException SolverException;
 typedef IloSOS1 SolverSos;
 typedef IloEnv SolverEnv;
-/*
-#include "BclException.h"
-*/
+//#include "BclException.h"
 #endif
 
 #ifdef USE_CBC
 #include "OsiSolverInterface.hpp"
-
 #include "OsiCbcSolverInterface.hpp"
 //#include "OsiSymSolverInterface.hpp"
 //#include "OsiVolSolverInterface.hpp"
 //#include "OsiDylpSolverInterface.hpp"
 //#include "OsiClpSolverInterface.hpp"
-
 #include "CbcModel.hpp"
-
 typedef CBCModel SolverModel;
 typedef CBCVar SolverVar;
 typedef CBCLinExpr SolverExpr;

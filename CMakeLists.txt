@@ -9,6 +9,16 @@ cmake_minimum_required(VERSION 2.6)
 # to the root binary directory of the project as ${MilpSolver_BINARY_DIR}.
 project(MilpSolver)
 
+if(DEFINED ENV{DO_OPEN_MP})
+  message("DO_OPEN_MP is defined")
+  SET(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION com.apple.compilers.llvmgcc42 CACHE STRING "" FORCE)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp")
+else()
+  message("DO_OPEN_MP is NOT defined")
+endif()
+
+
 # Recurse into the "libMilpSolver" etc. subdirectories.  This does not actually
 # cause another cmake executable to run.  The same process will walk through
 # the project's entire directory structure.

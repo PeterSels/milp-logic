@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 2.6)
 
 project( milpSolverTest )
 
+if(DEFINED ENV{DO_OPEN_MP})
+  SET(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION com.apple.compilers.llvmgcc42 CACHE STRING "" FORCE)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp")
+endif()
+
 file(GLOB_RECURSE HEADERS "*.h")
 
 set(SOURCES 
@@ -52,6 +58,10 @@ IF(APPLE)
 ENDIF(APPLE)
 
 add_executable( milpSolverTest ${SOURCES} ${HEADERS})
+
+if(DEFINED ENV{DO_OPEN_MP})
+  SET_TARGET_PROPERTIES( milpSolverTest PROPERTIES COMPILE_FLAGS "-fopenmp" LINK_FLAGS "-fopenmp")
+endif()
 
 target_link_libraries( milpSolverTest MilpSolver Analytics StringUtilities gurobi_c++ $ENV{GUROBI_MAIN_VERSION} ilocplex cplex concert 
 #xprs xprb 

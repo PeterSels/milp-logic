@@ -7,6 +7,12 @@
 #include "DataVectorCorrelator.h"
 #include "Step.h"
 
+#include "DoOpenMP.h"
+#ifdef DO_OPEN_MP
+#include <omp.h>
+#endif
+#include "MaxThreads.h"
+
 #define TOLERANCE (1E-2)
 
 using namespace std;
@@ -33,6 +39,13 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
 /// calc min & interpolate
 
 {
+  
+  
+#pragma omp parallel for num_threads(MAX_N_THREADS)
+  for (int d=0; d<(int)D1; d++) {
+    
+  }
+  
   brkPointNotMinimum_ = brkPointNotMinimum; // true
  
   double zPrev;
@@ -92,7 +105,7 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
     vector<double> xLeft;
     vector<double> yLeft;
     
-    const double SMALLER_STEP = STEP/4;
+    const double SMALLER_STEP = STEP/1; // changed from 4 to 1, CHECKMEEEEEEEEEEEEEEEEE
     // should work better than STEP for dwell costs, 
     // where there are few samples in STEP case,
     // what does it do for transfer costs? // FIXME
