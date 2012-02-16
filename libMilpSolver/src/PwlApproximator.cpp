@@ -1,11 +1,13 @@
 #include <assert.h>
 #include <iostream>
+#include <math.h>
 
 #include "PwlApproximator.h"
 #include "MinimumCalculator.h"
 #include "BreakPointCalculator.h"
 #include "DataVectorCorrelator.h"
 #include "Step.h"
+#include "NewtonRaphsonsMethod.h"
 
 #include "DoOpenMP.h"
 #ifdef DO_OPEN_MP
@@ -28,6 +30,179 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum)
 , brkPointNotMinimum_(brkPointNotMinimum)
 {
 }
+/*
+double (*function)(double x, double lo, double hi) {
+  return x;
+};
+
+double (*derivative)(double x, double lo, double hi) {
+  return x;
+};
+*/
+
+/*
+unsigned int PwlApproximator::findMinimumIndex(unsigned int iGuess, 
+                                               unsigned int iLo, 
+                                               unsigned int iHi,
+                                               double * yValues) const {
+  //NewtonRaphsonsMethod nrm;
+  assert(iLo <= iGuess);
+  assert(iGuess <= iHi);
+  
+  const unsigned int MAX_N_STEPS = 80;
+  
+  cout << "findMinimumIndex" << endl;
+  
+  double x  = iGuess;
+  double xAbsTolerance = 1.0;
+  double error;
+  unsigned int nSteps = 0;
+  double prevX = numeric_limits<double>::max();
+  do {
+    //double fx = function(x, a, b);
+    int intx = (int)(x+0.5); // rounding
+    assert(intx >= 0);
+    double fx = yValues[intx];    
+    //double dfx = derivative(x, a, b);
+    double dfx;
+    double fwd_dfx;
+    double ddfx;
+    if (intx+1 <= iHi) { // fwd derivative
+      dfx = (yValues[intx+1] - yValues[intx]); // divided by 1 (for 1 i increment)
+      if (intx+2 <= iHi)  {
+        fwd_dfx = (yValues[intx+2] - yValues[intx+1]); // divided by 1 (for 1 i increment)
+      } else {
+        fwd_dfx = dfx; // assume fwd aextrapolation
+      }
+      ddfx = fwd_dfx - dfx;
+    } else { // bwd derivative
+      assert(intx+1 > iHi);
+      if (intx <= iHi) {
+        assert(iLo <= intx-1);
+        double bwd_dfx = (yValues[intx] - yValues[intx-1]); // divided by 1 (for 1 i increment)
+        dfx = bwd_dfx; // ssume bwd extrapolation
+        assert(iLo <= intx-1-1);
+        double bwd_bwd_dfx = (yValues[intx-1] - yValues[intx-2]); // divided by 1 (for 1 i increment)
+        ddfx = (bwd_dfx - bwd_bwd_dfx);
+      } else {
+        assert(false);
+      }
+    }
+
+    cout << "  " << nSteps << ": x=" << x << ", fx=" << fx << ", dfx=" << dfx 
+      << ", ddfx=" << ddfx << endl;
+    
+    if (dfx==0) { // done
+      return intx;
+    } else {
+      //x -= fx/dfx;
+      cout << "decrement (dfx/ddfx) = " << (dfx/ddfx) << endl;
+      x -= dfx/ddfx;
+      cout << "    x=" << x << endl;
+      // since we can assume a convex function,
+      // leaving the interval once will never bring us back
+      if (x < iLo) {
+        return iLo;
+      } else if (x > iHi) {
+        return iHi;
+      }      
+      nSteps++;
+      //error = fabs(fx-0);
+      error = ::fabs(x-prevX);
+      prevX = x;
+    }
+    //} while (error > NEWTON_TOLERANCE);
+  } while ((error > xAbsTolerance) && 
+           (nSteps < MAX_N_STEPS)); // avoid infinite loop
+  
+  assert(error < 1); // otherwise, takes too many steps somehow
+  
+  cout << "nSteps = " << nSteps;
+  return x;
+}
+*/
+
+// Regula Falsi
+unsigned int PwlApproximator::findMinimumIndex(unsigned int iGuess, 
+                                               unsigned int iLo, 
+                                               unsigned int iHi,
+                                               double * yValues) const {
+  assert(iLo <= iGuess);
+  assert(iGuess <= iHi);
+  
+  const unsigned int MAX_N_STEPS = 80;
+  
+  cout << "findMinimumIndex" << endl;
+  
+  double x  = iGuess;
+  double xAbsTolerance = 1.0;
+  double error;
+  unsigned int nSteps = 0;
+  double prevX = numeric_limits<double>::max();
+  do {
+    //double fx = function(x, a, b);
+    int intx = (int)(x+0.5); // rounding
+    assert(intx >= 0);
+    double fx = yValues[intx];    
+    //double dfx = derivative(x, a, b);
+    double dfx;
+    double fwd_dfx;
+    double ddfx;
+    if (intx+1 <= iHi) { // fwd derivative
+      dfx = (yValues[intx+1] - yValues[intx]); // divided by 1 (for 1 i increment)
+      if (intx+2 <= iHi)  {
+        fwd_dfx = (yValues[intx+2] - yValues[intx+1]); // divided by 1 (for 1 i increment)
+      } else {
+        fwd_dfx = dfx; // assume fwd aextrapolation
+      }
+      ddfx = fwd_dfx - dfx;
+    } else { // bwd derivative
+      assert(intx+1 > iHi);
+      if (intx <= iHi) {
+        assert(iLo <= intx-1);
+        double bwd_dfx = (yValues[intx] - yValues[intx-1]); // divided by 1 (for 1 i increment)
+        dfx = bwd_dfx; // ssume bwd extrapolation
+        assert(iLo <= intx-1-1);
+        double bwd_bwd_dfx = (yValues[intx-1] - yValues[intx-2]); // divided by 1 (for 1 i increment)
+        ddfx = (bwd_dfx - bwd_bwd_dfx);
+      } else {
+        assert(false);
+      }
+    }
+    
+    cout << "  " << nSteps << ": x=" << x << ", fx=" << fx << ", dfx=" << dfx 
+    << ", ddfx=" << ddfx << endl;
+    
+    if (dfx==0) { // done
+      return intx;
+    } else {
+      //x -= fx/dfx;
+      cout << "decrement (dfx/ddfx) = " << (dfx/ddfx) << endl;
+      x -= dfx/ddfx;
+      cout << "    x=" << x << endl;
+      // since we can assume a convex function,
+      // leaving the interval once will never bring us back
+      if (x < iLo) {
+        return iLo;
+      } else if (x > iHi) {
+        return iHi;
+      }      
+      nSteps++;
+      //error = fabs(fx-0);
+      error = ::fabs(x-prevX);
+      prevX = x;
+    }
+    //} while (error > NEWTON_TOLERANCE);
+  } while ((error > xAbsTolerance) && 
+           (nSteps < MAX_N_STEPS)); // avoid infinite loop
+  
+  assert(error < 1); // otherwise, takes too many steps somehow
+  
+  cout << "nSteps = " << nSteps;
+  return x;
+}
+
+
 
 PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
                                  double (*fPtr)(const std::vector<double>
@@ -39,8 +214,11 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
 /// calc min & interpolate
 
 {
+  brkPointNotMinimum_ = brkPointNotMinimum;
+  
   const int SIZE = (int)(D1 / STEP) + 1;
   double curve[SIZE];
+  double fwdDerivativeCurve[SIZE]; // first derivative
   int iMin = 0;
   double zMin = numeric_limits<double>::max();
 //#pragma omp parallel for num_threads(MAX_N_THREADS)
@@ -51,19 +229,48 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
     // While you are at it, can calculate real minimum
     // only to be overwritten in case of breakPoint io minPoint needed.
     // See below: BreakPointCalculator.
-    if (z <= zMin) { 
-      zMin  = z;
-      iMin = i;
+    
+    if (!brkPointNotMinimum_) {
+      if (z < zMin) {
+        zMin  = z;
+        iMin = i;
+        cout << "new zMin = " << zMin << " for iMin = " << iMin << endl;
+      }
     }
   }
-  assert(iMin >= 0);
-  assert(iMin < SIZE);
-  assert(zMin >=0);
+
+  if (!brkPointNotMinimum_) {
+    //#pragma omp parallel for num_threads(MAX_N_THREADS)
+    for (int i=0; i<SIZE-1; i++) {
+      fwdDerivativeCurve[i] = curve[i+1] - curve[i];
+    }    
+    assert(SIZE >= 2);
+    fwdDerivativeCurve[SIZE-1] = fwdDerivativeCurve[SIZE-2];
+  }
+  
+  if (!brkPointNotMinimum_) {
+    assert(iMin >= 0);
+    assert(iMin < SIZE);
+    assert(zMin >=0);
+  }
   
   int dMinTemp = iMin * STEP;
   double zMinTemp = zMin;
   
-  brkPointNotMinimum_ = brkPointNotMinimum;
+  
+  if (!brkPointNotMinimum_) {
+    // try to replace this minimum calculation with faster Newton Raphson
+   // But NR is unstable for non convex functions. For transfers, 
+   // on the left side, we have a slight inconvexity due to convolution.
+    unsigned int iGuess = (int)(dBrk / STEP);
+    cout << "iGuess = " << iGuess << endl;
+    const unsigned int iLo = 0;
+    const unsigned int iHi = SIZE-1;
+    unsigned int iMinAgain = findMinimumIndex(iGuess, iLo, iHi, curve);
+    assert(isEqual(iMin, iMinAgain, 0.0)); // must be same integer
+  }
+
+  
 /*
   bool fNotIncreasing = true;
   bool fNotDecreasing = true;
@@ -147,8 +354,8 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
     
     double slopeLeft;
     double absisLeft;
-    vector<double> xLeft;
-    vector<double> yLeft;
+    //vector<double> xLeft;
+    //vector<double> yLeft;
     
     const double SMALLER_STEP = STEP/1; // changed from 4 to 1, CHECKMEEEEEEEEEEEEEEEEE
     // should work better than STEP for dwell costs, 
