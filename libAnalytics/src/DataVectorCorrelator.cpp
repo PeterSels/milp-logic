@@ -139,6 +139,7 @@ DataVectorCorrelator::DataVectorCorrelator(unsigned int firstPointIndex,
     (standardDeviation_[0] * standardDeviation_[1]);
 #endif    
     
+    /* works fine, but removed for speed
     // check: DEBUG
     double meanx = 0.0;
     double meany = 0.0;
@@ -156,7 +157,7 @@ DataVectorCorrelator::DataVectorCorrelator(unsigned int firstPointIndex,
     assert(isEqual(meanx, mean_[0], tolerance));
     assert(isEqual(meany, mean_[1], tolerance));
     // end debug
-    
+    */
     
     
     // linear regression of 1 to 0 ( = y to x)
