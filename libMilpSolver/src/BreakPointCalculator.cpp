@@ -152,6 +152,31 @@ BreakPointCalculator::BreakPointCalculator(double (*fPtr)
   }
 }
 
+BreakPointCalculator::BreakPointCalculator(double * curve,
+                                           unsigned int size,
+                                           unsigned int D1,
+                                           unsigned int dBrk,
+                                           double step)
+: D1_(D1) {
+  const bool verbose = false;
+  int iBrk = (int)(dBrk / step);
+  assert(iBrk >= 0);
+  assert(iBrk < (int)size);
+  dBrk_ = dBrk;
+  zBrk_ = curve[iBrk];
+  
+  if (verbose) {
+    cerr << "BreakPointCalculator: dBrk_=" << dBrk_ << ", zBrk_=" << zBrk_ 
+    << endl;
+    cerr << endl;
+  }  
+  if (zBrk_ < 0) {
+    assert(zBrk_ > -TOLERANCE);
+    cerr << "WARNING: Changing zBrk_ from " << zBrk_ << " to " << 0.0 << endl;
+    zBrk_ = 0;
+  }  
+}
+
 double BreakPointCalculator::getBreakPointAbsis() const {
   return dBrk_;
 }

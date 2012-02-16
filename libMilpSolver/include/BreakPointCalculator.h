@@ -12,6 +12,13 @@ public:
                        unsigned int D1,
                        bool fDecreasing,
                        unsigned int dBrk);
+  
+  BreakPointCalculator(double * curve,
+                       unsigned int size,
+                       unsigned int D1,
+                       unsigned int dBrk,
+                       double step);
+  
   double getBreakPointAbsis() const;
   double getBreakPointValue() const;
   ~BreakPointCalculator();

@@ -39,58 +39,103 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
 /// calc min & interpolate
 
 {
-  
-  
-#pragma omp parallel for num_threads(MAX_N_THREADS)
-  for (int d=0; d<(int)D1; d++) {
-    
+  const int SIZE = (int)(D1 / STEP) + 1;
+  double curve[SIZE];
+  int iMin = 0;
+  double zMin = numeric_limits<double>::max();
+//#pragma omp parallel for num_threads(MAX_N_THREADS)
+  for (int i=0; i<SIZE; i++) {
+    double d = i * STEP;
+    double z = (*fPtr)(parameters, d); // only here, should call fPtr
+    curve[i] = z;
+    // While you are at it, can calculate real minimum
+    // only to be overwritten in case of breakPoint io minPoint needed.
+    // See below: BreakPointCalculator.
+    if (z <= zMin) { 
+      zMin  = z;
+      iMin = i;
+    }
   }
+  assert(iMin >= 0);
+  assert(iMin < SIZE);
+  assert(zMin >=0);
   
-  brkPointNotMinimum_ = brkPointNotMinimum; // true
- 
-  double zPrev;
+  int dMinTemp = iMin * STEP;
+  double zMinTemp = zMin;
   
-  // only decides fNotIncreasing
+  brkPointNotMinimum_ = brkPointNotMinimum;
+/*
   bool fNotIncreasing = true;
-  zPrev = (*fPtr)(parameters, 0);
-  for (double d=0; (d<=D1) && fNotIncreasing; d+=STEP) {
-    double z = (*fPtr)(parameters, d);
-    if (z > zPrev) {
-      fNotIncreasing = false;
-    }
-    zPrev = z;
-  }
-  
-  // only decides fNotDecreasing
   bool fNotDecreasing = true;
-  zPrev = (*fPtr)(parameters, 0);
-  for (double d=0; (d<=D1) && fNotDecreasing; d+=STEP) {
-    double z = (*fPtr)(parameters, d);
-    if (z < zPrev) {
-      fNotDecreasing = false;
+
+#pragma omp parallel sections
+  {
+    
+#pragma omp section
+    {
+      // only decides fNotIncreasing
+      //zPrev = (*fPtr)(parameters, 0);
+      double zPrev = curve[0];
+      double d = 0;
+      //for (double d=0; (d<=D1) && fNotIncreasing; d+=STEP) {
+      for (int i=0; i<SIZE && fNotIncreasing; i++, d+= STEP) {
+        //double z = (*fPtr)(parameters, d);
+        double z = curve[i];
+        if (z > zPrev) {
+          fNotIncreasing = false;
+        }
+        zPrev = z;
+      }
     }
-    zPrev = z;
-  }
+  
+#pragma omp section
+    {
+      // only decides fNotDecreasing
+      //zPrev = (*fPtr)(parameters, 0);
+      double zPrev = curve[0];
+      double d = 0;
+      //for (double d=0; (d<=D1) && fNotDecreasing; d+=STEP) {
+      for (int i=0; (i<SIZE) && fNotDecreasing; i++, d+=STEP) {
+        //double z = (*fPtr)(parameters, d);
+        double z = curve[i];
+        if (z < zPrev) {
+          fNotDecreasing = false;
+        }
+        zPrev = z;
+      }
+    }
+    
+  } // end parallel sections
+*/
   
   // left point
   // 0
-  z0_   = (*fPtr)(parameters, 0);
+  //z0_   = (*fPtr)(parameters, 0);
+  z0_   = curve[0];
   
   // right point
   D1_  = D1;
   //zD1_ = (*fPtr)(parameters, (int)D1_);
-  zD1_ = (*fPtr)(parameters, D1_);
+  //zD1_ = (*fPtr)(parameters, D1_);
+  zD1_ = curve[SIZE-1];
   assert(zD1_ >= 0);
   
   // middle (low, minimal) point
   if (brkPointNotMinimum_) {
-    BreakPointCalculator brkCalc(fPtr, parameters, D1, fNotIncreasing, dBrk);
+    //BreakPointCalculator brkCalc(fPtr, parameters, D1, fNotIncreasing, dBrk);
+    BreakPointCalculator brkCalc(curve, SIZE, D1, dBrk, STEP);
     dMin_ = brkCalc.getBreakPointAbsis();
     zMin_ = brkCalc.getBreakPointValue();
   } else {
-    MinimumCalculator minCalc(fPtr, parameters, D1);
+    /*
+    MinimumCalculator minCalc(fPtr, parameters, D1, curve, SIZE);
     dMin_ = minCalc.getMinimumAbsis();
-    zMin_ = minCalc.getMinimumValue();  
+    zMin_ = minCalc.getMinimumValue(); 
+    assert(dMinTemp == dMin_);
+    assert(zMinTemp == zMin_);
+     */
+    dMin_ = dMinTemp;
+    zMin_ = zMinTemp;
   }
 
   assert(0 <= dMin_);
@@ -111,13 +156,19 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
     // what does it do for transfer costs? // FIXME
     
     unsigned int nPointsLeft = (dMin_ - 0.0)/SMALLER_STEP + 1;
-    if (nPointsLeft >= MIN_POINTS_FOR_REGRESSION) { 
+    if (nPointsLeft >= MIN_POINTS_FOR_REGRESSION) {
+      /*
       for (double d=0; d<=dMin_; d+=SMALLER_STEP) {
-        double z = (*fPtr)(parameters, d);
+        //double z = (*fPtr)(parameters, d);
+        double z = curve[i];
         xLeft.push_back(d);
         yLeft.push_back(z);
       }
       DataVectorCorrelator dvcLeft(xLeft, yLeft);
+      */
+      
+      DataVectorCorrelator dvcLeft(0, nPointsLeft, STEP, curve);
+      
       slopeLeft = dvcLeft.getSlope();
       absisLeft = dvcLeft.getAbsis();
     } else { // not enough data for regression
@@ -133,12 +184,17 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
     vector<double> yRight;
     unsigned int nPointsRight = (D1_ - dMin_)/STEP + 1;
     if (nPointsRight >= MIN_POINTS_FOR_REGRESSION) {
-      for (double d=dMin_/*+STEP*/; d<=D1_; d+=STEP) {
+      /*
+      for (double d=dMin_//+STEP
+        ; d<=D1_; d+=STEP) {
         double z = (*fPtr)(parameters, d);
         xRight.push_back(d);
         yRight.push_back(z);
       }
       DataVectorCorrelator dvcRight(xRight, yRight);
+      */
+      unsigned int rightPointIndex = dMin_ / STEP;
+      DataVectorCorrelator dvcRight(rightPointIndex, nPointsRight, STEP, curve);
       slopeRight = dvcRight.getSlope();
       absisRight = dvcRight.getAbsis();
     } else { // not enough data for regression

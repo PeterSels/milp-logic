@@ -9,7 +9,9 @@ public:
                                     & parameters, 
                                     double d),
                     const std::vector<double> & parameters,
-                    unsigned int D1);
+                    unsigned int D1,
+                    double * curve,
+                    unsigned int size);
   double getMinimumAbsis() const;
   double getMinimumValue() const;
   ~MinimumCalculator();
