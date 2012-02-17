@@ -13,7 +13,21 @@ public:
                   const std::vector<double> & parameters,
                   unsigned int D1,
                   unsigned int dBrk);
+  // Newton Raphson
   unsigned int findMinimumIndex(unsigned int iGuess, 
+                                unsigned int iLo, 
+                                unsigned int iHi,
+                                double * yValues) const;
+  
+  void calcDerivatives(double & fx,
+                       double & dfx, 
+                       double & ddfx,
+                       unsigned int intx,
+                       unsigned int iLo, unsigned int iHi,
+                       double * yValues) const;
+  
+  // Regula Falsi
+  unsigned int findMinimumIndex(bool skipFirstIncreasingFxPart,
                                 unsigned int iLo, 
                                 unsigned int iHi,
                                 double * yValues) const;

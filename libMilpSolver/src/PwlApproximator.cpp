@@ -30,22 +30,13 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum)
 , brkPointNotMinimum_(brkPointNotMinimum)
 {
 }
-/*
-double (*function)(double x, double lo, double hi) {
-  return x;
-};
 
-double (*derivative)(double x, double lo, double hi) {
-  return x;
-};
-*/
-
-/*
+// Finding minimum of f(x) by finding roots of derivative df(x)
+// by using Newton Raphson method. Fast, but no convergence guarantee.
 unsigned int PwlApproximator::findMinimumIndex(unsigned int iGuess, 
                                                unsigned int iLo, 
                                                unsigned int iHi,
                                                double * yValues) const {
-  //NewtonRaphsonsMethod nrm;
   assert(iLo <= iGuess);
   assert(iGuess <= iHi);
   
@@ -59,43 +50,21 @@ unsigned int PwlApproximator::findMinimumIndex(unsigned int iGuess,
   unsigned int nSteps = 0;
   double prevX = numeric_limits<double>::max();
   do {
-    //double fx = function(x, a, b);
     int intx = (int)(x+0.5); // rounding
     assert(intx >= 0);
-    double fx = yValues[intx];    
-    //double dfx = derivative(x, a, b);
+    
+    double fx;    
     double dfx;
-    double fwd_dfx;
     double ddfx;
-    if (intx+1 <= iHi) { // fwd derivative
-      dfx = (yValues[intx+1] - yValues[intx]); // divided by 1 (for 1 i increment)
-      if (intx+2 <= iHi)  {
-        fwd_dfx = (yValues[intx+2] - yValues[intx+1]); // divided by 1 (for 1 i increment)
-      } else {
-        fwd_dfx = dfx; // assume fwd aextrapolation
-      }
-      ddfx = fwd_dfx - dfx;
-    } else { // bwd derivative
-      assert(intx+1 > iHi);
-      if (intx <= iHi) {
-        assert(iLo <= intx-1);
-        double bwd_dfx = (yValues[intx] - yValues[intx-1]); // divided by 1 (for 1 i increment)
-        dfx = bwd_dfx; // ssume bwd extrapolation
-        assert(iLo <= intx-1-1);
-        double bwd_bwd_dfx = (yValues[intx-1] - yValues[intx-2]); // divided by 1 (for 1 i increment)
-        ddfx = (bwd_dfx - bwd_bwd_dfx);
-      } else {
-        assert(false);
-      }
-    }
-
+    calcDerivatives(fx, dfx, ddfx, 
+                    intx, iLo, iHi, yValues);
+    
     cout << "  " << nSteps << ": x=" << x << ", fx=" << fx << ", dfx=" << dfx 
-      << ", ddfx=" << ddfx << endl;
+    << ", ddfx=" << ddfx << endl;
     
     if (dfx==0) { // done
       return intx;
     } else {
-      //x -= fx/dfx;
       cout << "decrement (dfx/ddfx) = " << (dfx/ddfx) << endl;
       x -= dfx/ddfx;
       cout << "    x=" << x << endl;
@@ -107,11 +76,9 @@ unsigned int PwlApproximator::findMinimumIndex(unsigned int iGuess,
         return iHi;
       }      
       nSteps++;
-      //error = fabs(fx-0);
       error = ::fabs(x-prevX);
       prevX = x;
     }
-    //} while (error > NEWTON_TOLERANCE);
   } while ((error > xAbsTolerance) && 
            (nSteps < MAX_N_STEPS)); // avoid infinite loop
   
@@ -120,66 +87,126 @@ unsigned int PwlApproximator::findMinimumIndex(unsigned int iGuess,
   cout << "nSteps = " << nSteps;
   return x;
 }
-*/
 
-// Regula Falsi
-unsigned int PwlApproximator::findMinimumIndex(unsigned int iGuess, 
+void PwlApproximator::calcDerivatives(double & fx,
+                                      double & dfx, 
+                                      double & ddfx,
+                                      unsigned int intx,
+                                      unsigned int iLo, unsigned int iHi,
+                                      double * yValues) const {
+  fx = yValues[intx];
+  if (intx+1 <= iHi) { // fwd derivative
+    dfx = (yValues[intx+1] - yValues[intx]); // divided by 1 (for 1 i increment)
+    double fwd_dfx;
+    if (intx+2 <= iHi)  {
+      fwd_dfx = (yValues[intx+2] - yValues[intx+1]); // divided by 1 (for 1 i increment)
+    } else {
+      fwd_dfx = dfx; // assume fwd aextrapolation
+    }
+    ddfx = fwd_dfx - dfx;
+  } else { // bwd derivative
+    assert(intx+1 > iHi);
+    if (intx <= iHi) {
+      assert(iLo <= intx-1);
+      double bwd_dfx = (yValues[intx] - yValues[intx-1]); // divided by 1 (for 1 i increment)
+      dfx = bwd_dfx; // ssume bwd extrapolation
+      assert(iLo <= intx-1-1);
+      double bwd_bwd_dfx = (yValues[intx-1] - yValues[intx-2]); // divided by 1 (for 1 i increment)
+      ddfx = (bwd_dfx - bwd_bwd_dfx);
+    } else {
+      assert(false);
+    }
+  }  
+}
+
+// Since the Newton Raphson version does not converge in many cases,
+// we use a method that does.
+// Regula Falsi: we want to find the minimum of the function with
+// values stored in yValues. For this, we user the Regula Falsi method
+// to find the root of the derivative of this function.
+// For effeciency reasons, the derivative is calculated only in the points 
+// visited by the Regula Falsi method.
+// Regula Falsi is guaranteed to converge, but converges slower
+// than Newton Raphson (when this one does)
+// but still faster than the bisection method.
+// See: http://www.cs.purdue.edu/homes/enh/courses/cs158a/cs158ap1/c8.pdf
+unsigned int PwlApproximator::findMinimumIndex(bool skipFirstIncreasingFxPart,
                                                unsigned int iLo, 
                                                unsigned int iHi,
                                                double * yValues) const {
-  assert(iLo <= iGuess);
-  assert(iGuess <= iHi);
+  assert(iLo <= iHi);
   
   const unsigned int MAX_N_STEPS = 80;
   
-  cout << "findMinimumIndex" << endl;
+  //cout << "findMinimumIndex" << endl;
   
-  double x  = iGuess;
-  double xAbsTolerance = 1.0;
+  assert(iLo==0);
+  double iLoCurr = (double)iLo;
+  double dfxLo;
+  // Application Specific for transfer curve.
+  // Skip samples where fx is going up with increasing x
+  bool increasing;
+  if (skipFirstIncreasingFxPart) {
+    do {  
+      double fxLo, dfxLo, ddfxLo;
+      calcDerivatives(fxLo, dfxLo, ddfxLo,
+                      iLoCurr, iLo, iHi, yValues);
+      //cout << "  iLo=" << iLo << ", fxLo=" << yValues[iLo] << ", dfxLo=" << dfxLo 
+      //<< ", ddfxLo=" << ddfxLo << endl;
+      increasing = (dfxLo >= 0);
+      if (increasing) {
+        iLoCurr++;
+      }
+    } while (increasing); // skip first root, which is a maximum for fx
+  }
+  
+  // Regula Falsi
+  double x; //  = iGuess;
+  double xAbsTolerance = 0.1;
   double error;
   unsigned int nSteps = 0;
+  double iHiCurr = (double)iHi;
   double prevX = numeric_limits<double>::max();
   do {
-    //double fx = function(x, a, b);
-    int intx = (int)(x+0.5); // rounding
-    assert(intx >= 0);
-    double fx = yValues[intx];    
-    //double dfx = derivative(x, a, b);
-    double dfx;
-    double fwd_dfx;
-    double ddfx;
-    if (intx+1 <= iHi) { // fwd derivative
-      dfx = (yValues[intx+1] - yValues[intx]); // divided by 1 (for 1 i increment)
-      if (intx+2 <= iHi)  {
-        fwd_dfx = (yValues[intx+2] - yValues[intx+1]); // divided by 1 (for 1 i increment)
-      } else {
-        fwd_dfx = dfx; // assume fwd aextrapolation
-      }
-      ddfx = fwd_dfx - dfx;
-    } else { // bwd derivative
-      assert(intx+1 > iHi);
-      if (intx <= iHi) {
-        assert(iLo <= intx-1);
-        double bwd_dfx = (yValues[intx] - yValues[intx-1]); // divided by 1 (for 1 i increment)
-        dfx = bwd_dfx; // ssume bwd extrapolation
-        assert(iLo <= intx-1-1);
-        double bwd_bwd_dfx = (yValues[intx-1] - yValues[intx-2]); // divided by 1 (for 1 i increment)
-        ddfx = (bwd_dfx - bwd_bwd_dfx);
-      } else {
-        assert(false);
-      }
-    }
     
-    cout << "  " << nSteps << ": x=" << x << ", fx=" << fx << ", dfx=" << dfx 
-    << ", ddfx=" << ddfx << endl;
+    //cout << "  " << nSteps << ":" << endl;
+    double fxLo, dfxLo, ddfxLo;
+    calcDerivatives(fxLo, dfxLo, ddfxLo,
+                    iLoCurr, iLo, iHi, yValues);
+    //cout << "  iLo=" << iLo << ", fxLo=" << yValues[iLo] << ", dfxLo=" << dfxLo 
+    //<< ", ddfxLo=" << ddfxLo << endl;
     
-    if (dfx==0) { // done
-      return intx;
+    
+    double fxHi, dfxHi, ddfxHi;
+    calcDerivatives(fxHi, dfxHi, ddfxHi,
+                    iHiCurr, iLo, iHi, yValues);
+    //cout << "  iHi=" << iHi << ", fxHi=" << yValues[iHi] << ", dfxHi=" << dfxHi 
+    //<< ", ddfxHi=" << ddfxHi << endl;
+    
+    assert(dfxLo * dfxHi <= 0); // opposite sign or one or both are 0
+    
+    double denominator = dfxHi-dfxLo;
+    if (denominator==0) { // done
+      assert(dfxLo==0);
+      assert(dfxHi==0);
+      // both iLoCurr and iHiCurr are now roots
+      return iLoCurr;
     } else {
-      //x -= fx/dfx;
-      cout << "decrement (dfx/ddfx) = " << (dfx/ddfx) << endl;
-      x -= dfx/ddfx;
-      cout << "    x=" << x << endl;
+      double numerator = dfxHi * iLoCurr - dfxLo * iHiCurr;
+      x = numerator/denominator;
+      double fx, dfx, ddfx;
+      calcDerivatives(fx, dfx, ddfx,
+                      x, iLo, iHi, yValues);
+      if (dfx * dfxLo >= 0) { // same sign, update iLo, increase it
+        assert(iLoCurr < x);
+        iLoCurr = x;
+      } else { // same sign, update iHi
+        assert(dfx * dfxHi >= 0);
+        assert(x < iHiCurr);
+        iHiCurr = x;
+      }
+      
+      //cout << "    x=" << x << endl;
       // since we can assume a convex function,
       // leaving the interval once will never bring us back
       if (x < iLo) {
@@ -188,17 +215,16 @@ unsigned int PwlApproximator::findMinimumIndex(unsigned int iGuess,
         return iHi;
       }      
       nSteps++;
-      //error = fabs(fx-0);
-      error = ::fabs(x-prevX);
+      //error = ::fabs(iHiCurr - iLoCurr);
+      error = ::fabs(x - prevX);
       prevX = x;
     }
-    //} while (error > NEWTON_TOLERANCE);
-  } while ((error > xAbsTolerance) && 
-           (nSteps < MAX_N_STEPS)); // avoid infinite loop
+  } while (error >= xAbsTolerance); // && 
+           //(nSteps < MAX_N_STEPS)); // avoid infinite loop
   
-  assert(error < 1); // otherwise, takes too many steps somehow
+  assert(error < xAbsTolerance); // otherwise, takes too many steps somehow
   
-  cout << "nSteps = " << nSteps;
+  //cout << "nSteps = " << nSteps;
   return x;
 }
 
@@ -218,37 +244,29 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
   
   const int SIZE = (int)(D1 / STEP) + 1;
   double curve[SIZE];
-  double fwdDerivativeCurve[SIZE]; // first derivative
-  int iMin = 0;
-  double zMin = numeric_limits<double>::max();
 //#pragma omp parallel for num_threads(MAX_N_THREADS)
   for (int i=0; i<SIZE; i++) {
     double d = i * STEP;
     double z = (*fPtr)(parameters, d); // only here, should call fPtr
     curve[i] = z;
-    // While you are at it, can calculate real minimum
-    // only to be overwritten in case of breakPoint io minPoint needed.
-    // See below: BreakPointCalculator.
-    
-    if (!brkPointNotMinimum_) {
+  }
+  
+  // serial:
+  // While you are at it, can calculate real minimum
+  // only to be overwritten in case of breakPoint io minPoint needed.
+  // See below: BreakPointCalculator.
+  int iMin = 0;
+  double zMin = numeric_limits<double>::max();
+  if (!brkPointNotMinimum_) {
+    for (int i=0; i<SIZE; i++) {
+      double z = curve[i];
       if (z < zMin) {
         zMin  = z;
         iMin = i;
-        cout << "new zMin = " << zMin << " for iMin = " << iMin << endl;
+        //cout << "new zMin = " << zMin << " for iMin = " << iMin << endl;
       }
     }
-  }
-
-  if (!brkPointNotMinimum_) {
-    //#pragma omp parallel for num_threads(MAX_N_THREADS)
-    for (int i=0; i<SIZE-1; i++) {
-      fwdDerivativeCurve[i] = curve[i+1] - curve[i];
-    }    
-    assert(SIZE >= 2);
-    fwdDerivativeCurve[SIZE-1] = fwdDerivativeCurve[SIZE-2];
-  }
-  
-  if (!brkPointNotMinimum_) {
+    
     assert(iMin >= 0);
     assert(iMin < SIZE);
     assert(zMin >=0);
@@ -257,63 +275,67 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
   int dMinTemp = iMin * STEP;
   double zMinTemp = zMin;
   
-  
+  /* not converging or too slowly so not worth it, better choose a parallel
+     method
   if (!brkPointNotMinimum_) {
     // try to replace this minimum calculation with faster Newton Raphson
-   // But NR is unstable for non convex functions. For transfers, 
-   // on the left side, we have a slight inconvexity due to convolution.
+    // But NR is unstable for non convex functions. For transfers, 
+    // on the left side, we have a slight inconvexity due to convolution.
     unsigned int iGuess = (int)(dBrk / STEP);
-    cout << "iGuess = " << iGuess << endl;
+    //cout << "iGuess = " << iGuess << endl;
     const unsigned int iLo = 0;
     const unsigned int iHi = SIZE-1;
-    unsigned int iMinAgain = findMinimumIndex(iGuess, iLo, iHi, curve);
-    assert(isEqual(iMin, iMinAgain, 0.0)); // must be same integer
+    //unsigned int iMinAgain = findMinimumIndex(iGuess, iLo, iHi, curve);
+    unsigned int iMinAgain = findMinimumIndex(false, iLo, iHi, curve);
+    if (!isEqual(iMin, iMinAgain, 1.0)) { // must be same integer
+      cout << "iMin=" << iMin << " != iMinAgain=" << iMinAgain << endl;
+    }
   }
-
+  */  
   
-/*
-  bool fNotIncreasing = true;
-  bool fNotDecreasing = true;
-
-#pragma omp parallel sections
-  {
-    
-#pragma omp section
-    {
-      // only decides fNotIncreasing
-      //zPrev = (*fPtr)(parameters, 0);
-      double zPrev = curve[0];
-      double d = 0;
-      //for (double d=0; (d<=D1) && fNotIncreasing; d+=STEP) {
-      for (int i=0; i<SIZE && fNotIncreasing; i++, d+= STEP) {
-        //double z = (*fPtr)(parameters, d);
-        double z = curve[i];
-        if (z > zPrev) {
-          fNotIncreasing = false;
-        }
-        zPrev = z;
-      }
-    }
-  
-#pragma omp section
-    {
-      // only decides fNotDecreasing
-      //zPrev = (*fPtr)(parameters, 0);
-      double zPrev = curve[0];
-      double d = 0;
-      //for (double d=0; (d<=D1) && fNotDecreasing; d+=STEP) {
-      for (int i=0; (i<SIZE) && fNotDecreasing; i++, d+=STEP) {
-        //double z = (*fPtr)(parameters, d);
-        double z = curve[i];
-        if (z < zPrev) {
-          fNotDecreasing = false;
-        }
-        zPrev = z;
-      }
-    }
-    
-  } // end parallel sections
-*/
+  /*
+   bool fNotIncreasing = true;
+   bool fNotDecreasing = true;
+   
+   #pragma omp parallel sections
+   {
+   
+   #pragma omp section
+   {
+   // only decides fNotIncreasing
+   //zPrev = (*fPtr)(parameters, 0);
+   double zPrev = curve[0];
+   double d = 0;
+   //for (double d=0; (d<=D1) && fNotIncreasing; d+=STEP) {
+   for (int i=0; i<SIZE && fNotIncreasing; i++, d+= STEP) {
+   //double z = (*fPtr)(parameters, d);
+   double z = curve[i];
+   if (z > zPrev) {
+   fNotIncreasing = false;
+   }
+   zPrev = z;
+   }
+   }
+   
+   #pragma omp section
+   {
+   // only decides fNotDecreasing
+   //zPrev = (*fPtr)(parameters, 0);
+   double zPrev = curve[0];
+   double d = 0;
+   //for (double d=0; (d<=D1) && fNotDecreasing; d+=STEP) {
+   for (int i=0; (i<SIZE) && fNotDecreasing; i++, d+=STEP) {
+   //double z = (*fPtr)(parameters, d);
+   double z = curve[i];
+   if (z < zPrev) {
+   fNotDecreasing = false;
+   }
+   zPrev = z;
+   }
+   }
+   
+   } // end parallel sections
+   */
   
   // left point
   // 0
@@ -335,16 +357,16 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
     zMin_ = brkCalc.getBreakPointValue();
   } else {
     /*
-    MinimumCalculator minCalc(fPtr, parameters, D1, curve, SIZE);
-    dMin_ = minCalc.getMinimumAbsis();
-    zMin_ = minCalc.getMinimumValue(); 
-    assert(dMinTemp == dMin_);
-    assert(zMinTemp == zMin_);
+     MinimumCalculator minCalc(fPtr, parameters, D1, curve, SIZE);
+     dMin_ = minCalc.getMinimumAbsis();
+     zMin_ = minCalc.getMinimumValue(); 
+     assert(dMinTemp == dMin_);
+     assert(zMinTemp == zMin_);
      */
     dMin_ = dMinTemp;
     zMin_ = zMinTemp;
   }
-
+  
   assert(0 <= dMin_);
   assert(dMin_ <= D1_);
   
@@ -365,14 +387,14 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
     unsigned int nPointsLeft = (dMin_ - 0.0)/SMALLER_STEP + 1;
     if (nPointsLeft >= MIN_POINTS_FOR_REGRESSION) {
       /*
-      for (double d=0; d<=dMin_; d+=SMALLER_STEP) {
-        //double z = (*fPtr)(parameters, d);
-        double z = curve[i];
-        xLeft.push_back(d);
-        yLeft.push_back(z);
-      }
-      DataVectorCorrelator dvcLeft(xLeft, yLeft);
-      */
+       for (double d=0; d<=dMin_; d+=SMALLER_STEP) {
+       //double z = (*fPtr)(parameters, d);
+       double z = curve[i];
+       xLeft.push_back(d);
+       yLeft.push_back(z);
+       }
+       DataVectorCorrelator dvcLeft(xLeft, yLeft);
+       */
       
       DataVectorCorrelator dvcLeft(0, nPointsLeft, STEP, curve);
       
@@ -383,7 +405,7 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
       slopeLeft = 0.0;
       absisLeft = zMin_;
     }
-
+    
     
     double slopeRight;
     double absisRight;
@@ -392,14 +414,14 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
     unsigned int nPointsRight = (D1_ - dMin_)/STEP + 1;
     if (nPointsRight >= MIN_POINTS_FOR_REGRESSION) {
       /*
-      for (double d=dMin_//+STEP
-        ; d<=D1_; d+=STEP) {
-        double z = (*fPtr)(parameters, d);
-        xRight.push_back(d);
-        yRight.push_back(z);
-      }
-      DataVectorCorrelator dvcRight(xRight, yRight);
-      */
+       for (double d=dMin_//+STEP
+       ; d<=D1_; d+=STEP) {
+       double z = (*fPtr)(parameters, d);
+       xRight.push_back(d);
+       yRight.push_back(z);
+       }
+       DataVectorCorrelator dvcRight(xRight, yRight);
+       */
       unsigned int rightPointIndex = dMin_ / STEP;
       DataVectorCorrelator dvcRight(rightPointIndex, nPointsRight, STEP, curve);
       slopeRight = dvcRight.getSlope();
@@ -413,7 +435,7 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
     
     // (Slightly) adapt (0, z0_), (D1_, zD1_) and then,
     // their intersection: (dMin_, zMin_):
-
+    
     // 0 remains 0 of course
     z0_ = absisLeft + (0 * slopeLeft);
     assert(z0_ >= 0);
@@ -426,11 +448,11 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
         cerr << "NOTE: Allowing LinReg caused: zD1_=" << zD1_ << "<0" << endl;
       }
       /*
-      cerr << "WARNING: Correcting zD1_ from " << zD1_ 
-      << " to " << 0 << endl;
-      zD1_ = 0;
-      assert(false);
-      */
+       cerr << "WARNING: Correcting zD1_ from " << zD1_ 
+       << " to " << 0 << endl;
+       zD1_ = 0;
+       assert(false);
+       */
     }
     if (!linearRegression) {
       assert(zD1_ >= 0);
