@@ -14,10 +14,10 @@ public:
                   unsigned int D1,
                   unsigned int dBrk);
   // Newton Raphson
-  unsigned int findMinimumIndex(unsigned int iGuess, 
-                                unsigned int iLo, 
-                                unsigned int iHi,
-                                double * yValues) const;
+  unsigned int findMinimumIndexUsingNewtonRaphson(unsigned int iGuess, 
+                                                  unsigned int iLo, 
+                                                  unsigned int iHi,
+                                                  double * yValues) const;
   
   void calcDerivatives(double & fx,
                        double & dfx, 
@@ -27,10 +27,10 @@ public:
                        double * yValues) const;
   
   // Regula Falsi
-  unsigned int findMinimumIndex(bool skipFirstIncreasingFxPart,
-                                unsigned int iLo, 
-                                unsigned int iHi,
-                                double * yValues) const;
+  unsigned int findMinimumIndexUsingRegulaFalsi(bool skipFirstIncreasingFxPart,
+                                                unsigned int iLo, 
+                                                unsigned int iHi,
+                                                double * yValues) const;
   
   void crossingLinesIntersect(double & x, double & y,
                               double absis0, double slope0,

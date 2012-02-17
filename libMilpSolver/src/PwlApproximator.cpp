@@ -33,10 +33,11 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum)
 
 // Finding minimum of f(x) by finding roots of derivative df(x)
 // by using Newton Raphson method. Fast, but no convergence guarantee.
-unsigned int PwlApproximator::findMinimumIndex(unsigned int iGuess, 
-                                               unsigned int iLo, 
-                                               unsigned int iHi,
-                                               double * yValues) const {
+unsigned int PwlApproximator
+::findMinimumIndexUsingNewtonRaphson(unsigned int iGuess, 
+                                     unsigned int iLo, 
+                                     unsigned int iHi,
+                                     double * yValues) const {
   assert(iLo <= iGuess);
   assert(iGuess <= iHi);
   
@@ -130,15 +131,14 @@ void PwlApproximator::calcDerivatives(double & fx,
 // than Newton Raphson (when this one does)
 // but still faster than the bisection method.
 // See: http://www.cs.purdue.edu/homes/enh/courses/cs158a/cs158ap1/c8.pdf
-unsigned int PwlApproximator::findMinimumIndex(bool skipFirstIncreasingFxPart,
-                                               unsigned int iLo, 
-                                               unsigned int iHi,
-                                               double * yValues) const {
+unsigned int PwlApproximator
+::findMinimumIndexUsingRegulaFalsi(bool skipFirstIncreasingFxPart,
+                                   unsigned int iLo, 
+                                   unsigned int iHi,
+                                   double * yValues) const {
   assert(iLo <= iHi);
   
-  const unsigned int MAX_N_STEPS = 80;
-  
-  //cout << "findMinimumIndex" << endl;
+  const unsigned int MAX_N_STEPS = 100;
   
   assert(iLo==0);
   double iLoCurr = (double)iLo;
@@ -151,8 +151,9 @@ unsigned int PwlApproximator::findMinimumIndex(bool skipFirstIncreasingFxPart,
       double fxLo, dfxLo, ddfxLo;
       calcDerivatives(fxLo, dfxLo, ddfxLo,
                       iLoCurr, iLo, iHi, yValues);
-      //cout << "  iLo=" << iLo << ", fxLo=" << yValues[iLo] << ", dfxLo=" << dfxLo 
-      //<< ", ddfxLo=" << ddfxLo << endl;
+      //cout << "  iLo=" << iLo << ", fxLo=" << yValues[iLo] 
+      // << ", dfxLo=" << dfxLo 
+      // << ", ddfxLo=" << ddfxLo << endl;
       increasing = (dfxLo >= 0);
       if (increasing) {
         iLoCurr++;
@@ -217,18 +218,17 @@ unsigned int PwlApproximator::findMinimumIndex(bool skipFirstIncreasingFxPart,
       nSteps++;
       //error = ::fabs(iHiCurr - iLoCurr);
       error = ::fabs(x - prevX);
+      //error = ::fabs(x - prevX);
       prevX = x;
     }
   } while (error >= xAbsTolerance); // && 
-           //(nSteps < MAX_N_STEPS)); // avoid infinite loop
+  //(nSteps < MAX_N_STEPS)); // avoid infinite loop
   
   assert(error < xAbsTolerance); // otherwise, takes too many steps somehow
   
   //cout << "nSteps = " << nSteps;
   return x;
 }
-
-
 
 PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
                                  double (*fPtr)(const std::vector<double>
@@ -238,135 +238,100 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
                                  unsigned int D1,
                                  unsigned int dBrk) 
 /// calc min & interpolate
-
+: D1_(D1)
 {
-  brkPointNotMinimum_ = brkPointNotMinimum;
   
+  brkPointNotMinimum_ = brkPointNotMinimum;
+
+  // calculate curve array:
   const int SIZE = (int)(D1 / STEP) + 1;
   double curve[SIZE];
-//#pragma omp parallel for num_threads(MAX_N_THREADS)
+  
+#ifdef DO_OPEN_MP  
+  omp_set_dynamic(1);
+#endif
+  //num_threads(MAX_N_THREADS)
+#pragma omp parallel for if (SIZE > 1000) 
   for (int i=0; i<SIZE; i++) {
     double d = i * STEP;
     double z = (*fPtr)(parameters, d); // only here, should call fPtr
     curve[i] = z;
   }
+#ifdef DO_OPEN_MP  
+  omp_set_dynamic(0);
+#endif  
   
-  // serial:
-  // While you are at it, can calculate real minimum
-  // only to be overwritten in case of breakPoint io minPoint needed.
-  // See below: BreakPointCalculator.
-  int iMin = 0;
-  double zMin = numeric_limits<double>::max();
   if (!brkPointNotMinimum_) {
-    for (int i=0; i<SIZE; i++) {
-      double z = curve[i];
-      if (z < zMin) {
-        zMin  = z;
-        iMin = i;
-        //cout << "new zMin = " << zMin << " for iMin = " << iMin << endl;
-      }
-    }
+
+    // left point
+    z0_   = curve[0];
     
-    assert(iMin >= 0);
-    assert(iMin < SIZE);
-    assert(zMin >=0);
-  }
-  
-  int dMinTemp = iMin * STEP;
-  double zMinTemp = zMin;
-  
-  /* not converging or too slowly so not worth it, better choose a parallel
-     method
-  if (!brkPointNotMinimum_) {
-    // try to replace this minimum calculation with faster Newton Raphson
-    // But NR is unstable for non convex functions. For transfers, 
-    // on the left side, we have a slight inconvexity due to convolution.
-    unsigned int iGuess = (int)(dBrk / STEP);
-    //cout << "iGuess = " << iGuess << endl;
-    const unsigned int iLo = 0;
-    const unsigned int iHi = SIZE-1;
-    //unsigned int iMinAgain = findMinimumIndex(iGuess, iLo, iHi, curve);
-    unsigned int iMinAgain = findMinimumIndex(false, iLo, iHi, curve);
-    if (!isEqual(iMin, iMinAgain, 1.0)) { // must be same integer
-      cout << "iMin=" << iMin << " != iMinAgain=" << iMinAgain << endl;
+    // right point
+    zD1_ = curve[SIZE-1];
+    
+    // middle low point
+    // serial:
+    // While you are at it, can calculate real minimum
+    // only to be overwritten in case of breakPoint io minPoint needed.
+    // See below: BreakPointCalculator.
+    int iMin = 0;
+    double zMin = numeric_limits<double>::max();
+    if (!brkPointNotMinimum_) {
+      for (int i=0; i<SIZE; i++) {
+        double z = curve[i];
+        if (z < zMin) {
+          zMin  = z;
+          iMin = i;
+          //cout << "new zMin = " << zMin << " for iMin = " << iMin << endl;
+        }
+      }
+      assert(iMin >= 0);
+      assert(iMin < SIZE);
+      assert(zMin >=0);
     }
-  }
-  */  
-  
-  /*
-   bool fNotIncreasing = true;
-   bool fNotDecreasing = true;
-   
-   #pragma omp parallel sections
-   {
-   
-   #pragma omp section
-   {
-   // only decides fNotIncreasing
-   //zPrev = (*fPtr)(parameters, 0);
-   double zPrev = curve[0];
-   double d = 0;
-   //for (double d=0; (d<=D1) && fNotIncreasing; d+=STEP) {
-   for (int i=0; i<SIZE && fNotIncreasing; i++, d+= STEP) {
-   //double z = (*fPtr)(parameters, d);
-   double z = curve[i];
-   if (z > zPrev) {
-   fNotIncreasing = false;
-   }
-   zPrev = z;
-   }
-   }
-   
-   #pragma omp section
-   {
-   // only decides fNotDecreasing
-   //zPrev = (*fPtr)(parameters, 0);
-   double zPrev = curve[0];
-   double d = 0;
-   //for (double d=0; (d<=D1) && fNotDecreasing; d+=STEP) {
-   for (int i=0; (i<SIZE) && fNotDecreasing; i++, d+=STEP) {
-   //double z = (*fPtr)(parameters, d);
-   double z = curve[i];
-   if (z < zPrev) {
-   fNotDecreasing = false;
-   }
-   zPrev = z;
-   }
-   }
-   
-   } // end parallel sections
-   */
-  
-  // left point
-  // 0
-  //z0_   = (*fPtr)(parameters, 0);
-  z0_   = curve[0];
-  
-  // right point
-  D1_  = D1;
-  //zD1_ = (*fPtr)(parameters, (int)D1_);
-  //zD1_ = (*fPtr)(parameters, D1_);
-  zD1_ = curve[SIZE-1];
-  assert(zD1_ >= 0);
-  
-  // middle (low, minimal) point
-  if (brkPointNotMinimum_) {
-    //BreakPointCalculator brkCalc(fPtr, parameters, D1, fNotIncreasing, dBrk);
-    BreakPointCalculator brkCalc(curve, SIZE, D1, dBrk, STEP);
-    dMin_ = brkCalc.getBreakPointAbsis();
-    zMin_ = brkCalc.getBreakPointValue();
-  } else {
-    /*
+    dMin_ = iMin * STEP;
+    zMin_ = zMin;
+
+    /* used to be: but maybe we want to keep curve[] data here later...
      MinimumCalculator minCalc(fPtr, parameters, D1, curve, SIZE);
      dMin_ = minCalc.getMinimumAbsis();
      zMin_ = minCalc.getMinimumValue(); 
-     assert(dMinTemp == dMin_);
-     assert(zMinTemp == zMin_);
      */
-    dMin_ = dMinTemp;
-    zMin_ = zMinTemp;
+
+    /* not converging or too slowly so not worth it, better choose a parallel
+       method 
+    // try to replace this minimum calculation with faster Newton Raphson
+    // But NR is unstable for non convex functions. For transfers, 
+    // on the left side, we have a slight inconvexity due to convolution.
+    //unsigned int iGuess = (int)(dBrk / STEP);
+    //cout << "iGuess = " << iGuess << endl;
+    const unsigned int iLo = 0;
+    const unsigned int iHi = SIZE-1;
+    //unsigned int iMinAgain = 
+    //findMinimumIndexUsingNewtonRaphson(iGuess, iLo, iHi, curve);
+    unsigned int iMinAgain = 
+    findMinimumIndexUsingRegulaFalsi(false, iLo, iHi, curve);
+    if (!isEqual(iMin, iMinAgain, 1.0)) { // must be same integer
+      cout << "iMin=" << iMin << " != iMinAgain=" << iMinAgain << endl;
+    }
+    */
+    
+  } else {
+    assert(brkPointNotMinimum_);
+    // left point
+    z0_   = (*fPtr)(parameters, 0);
+    
+    // right point
+    zD1_ = (*fPtr)(parameters, D1_);
+    
+    // middle low point
+    BreakPointCalculator brkCalc(curve, SIZE, D1, dBrk, STEP);
+    dMin_ = brkCalc.getBreakPointAbsis();
+    zMin_ = brkCalc.getBreakPointValue();
   }
   
+  assert(zD1_ >= 0);
+    
   assert(0 <= dMin_);
   assert(dMin_ <= D1_);
   
