@@ -3,9 +3,9 @@
 #include <sstream>
 #include <iomanip>
 #include <limits>
+#include <stdlib.h>
 
 #include "Histogram.h"
-//#include "DataMap.h"
 
 using namespace std;
 

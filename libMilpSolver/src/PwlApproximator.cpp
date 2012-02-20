@@ -1,6 +1,8 @@
 #include <assert.h>
 #include <iostream>
 #include <math.h>
+#include <limits>
+#include <stdlib.h>
 
 #include "PwlApproximator.h"
 #include "MinimumCalculator.h"
