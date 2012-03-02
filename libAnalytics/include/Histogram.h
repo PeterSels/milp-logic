@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#define HISTO_CUT_OFF (10000)
+
 class Histogram : public std::map<int, double> {
 public:
   Histogram(unsigned int storeBucketSize=1);

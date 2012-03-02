@@ -7,6 +7,7 @@
 
 #include "Histogram.h"
 
+
 using namespace std;
 
 Histogram::Histogram(unsigned int storeBucketSize)
@@ -53,15 +54,27 @@ Histogram::Histogram(const std::vector<int> & values,
 }
 
 void Histogram::incrementOccurrenceOfX(int x) {
+  if (x > HISTO_CUT_OFF) {
+    cerr << "x>HISTO_CUT_OFF" << endl;
+  }
   incrementOccurrenceOfXByY(x, 1.0);
 }
 
 void Histogram::incrementOccurrenceOfXByY(int x, double y) {  
   int closeToX = calcClosestBucketMiddleToX(x);
+  if (closeToX > HISTO_CUT_OFF) {
+    cerr << "x>HISTO_CUT_OFF" << endl;
+    int temp = calcClosestBucketMiddleToX(x);
+    cerr << "temp = " << temp << endl;
+    return; // for now: FIXMEEEEEEEEE
+  }
   ((*this)[closeToX])+=y;
 }
 
 void Histogram::addPointXY(int x, double y) { 
+  if (x > HISTO_CUT_OFF) {
+    cerr << "x>HISTO_CUT_OFF" << endl;
+  }
   int closeToX = calcClosestBucketMiddleToX(x);
   unsigned int cnt = count(closeToX);
   assert(cnt == 0); // only if not present yet
@@ -70,8 +83,7 @@ void Histogram::addPointXY(int x, double y) {
 
 int Histogram::calcClosestBucketMiddleToX(int x) const {
   assert(x >= 0); // for our current application... // FIXME  
-  int bucketNr = (int)(
-                       ((double)x / (double)storeBucketSize_) + 0.5); 
+  int bucketNr = (int)( (double)x / (double)storeBucketSize_ ); 
   // correctly treats fractional part
   int closeToX = (int)((bucketNr+0.5) * storeBucketSize_); // 0.5 for bucket middle
   return closeToX;
