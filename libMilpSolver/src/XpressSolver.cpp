@@ -317,6 +317,10 @@ double XpressSolver::getObjVal() const {
   return model_->getObjVal();
 }
 
+double XpressSolver::getMipGap() const {
+  assert(false);
+  return -1; // invalid
+}
 
 unsigned int XpressSolver::getNumberOfRows() const {
   int rows;

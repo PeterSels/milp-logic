@@ -250,6 +250,7 @@ public:
   virtual double getValueOf(const SolverExpr & expr) const = 0;
   virtual double getValueOf(const SolverVar & var) const = 0;
   virtual double getObjVal() const = 0;
+  virtual double getMipGap() const = 0;
 
   virtual void calcAnIIS() const = 0;
   virtual void reportAnIISTo(std::ostream & ostr) const = 0;

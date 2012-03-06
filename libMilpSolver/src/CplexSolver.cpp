@@ -462,6 +462,11 @@ double CplexSolver::getObjVal() const {
   return objValue;
 }
 
+double CplexSolver::getMipGap() const {
+  assert(false);
+  return -1; // invalid
+}
+
 unsigned int CplexSolver::getNumberOfRows() const {
   int rows;
   //model_->getProperties();  

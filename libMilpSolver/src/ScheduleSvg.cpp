@@ -20,6 +20,11 @@ string toTime_HH_MM_SS(unsigned int units) {
   unsigned int rest = units;
   
   unsigned int hh = rest / UU_PER_HR;
+  if (hh > 24) {
+    cerr << "hh = " << hh << endl;
+    assert(hh <= 24);
+    exit(0);
+  }
   rest -= hh * UU_PER_HR;
   
   unsigned int mm = rest / UU;
@@ -35,7 +40,11 @@ string toTime_HH_MM_SS(unsigned int units) {
   << setw(2) << setfill('0') << (ss * (60 / UU));
   string str = oStrStr.str();
   unsigned int len = (unsigned int)str.length();
-  assert(len==8);
+  if (len!=8) {
+    cerr << "str = " << str << endl;
+    assert(len==8);
+    exit(0);
+  }
   return str;
 }
 

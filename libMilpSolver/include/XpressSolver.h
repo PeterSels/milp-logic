@@ -70,6 +70,7 @@ public:
   double getValueOf(const SolverExpr & expr) const;
   double getValueOf(const SolverVar & var) const;
   double getObjVal() const;
+  double getMipGap() const;
 
   unsigned int getNumberOfSets() const;
   unsigned int getNumberOfSetMembers() const;

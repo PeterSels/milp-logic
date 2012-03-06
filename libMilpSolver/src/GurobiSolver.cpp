@@ -302,6 +302,17 @@ double GurobiSolver::getObjVal() const {
   return model_->get(GRB_DoubleAttr_ObjVal);
 }
 
+double GurobiSolver::getObjBound() const {
+  return model_->get(GRB_DoubleAttr_ObjBound);
+}
+
+double GurobiSolver::getMipGap() const {
+  double bound = model_->get(GRB_DoubleAttr_ObjBound);
+  double value = model_->get(GRB_DoubleAttr_ObjVal);
+  double mipGap = 1 - (bound / value);
+  return mipGap;
+}
+
 //const SolverSos & 
 void GurobiSolver::addSos1SolverSpecific(
   const string & name,
