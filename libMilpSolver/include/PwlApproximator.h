@@ -34,19 +34,23 @@ public:
   
   void crossingLinesIntersect(double & x, double & y,
                               double absis0, double slope0,
-                              double absis1, double slope1);
+                              double absis1, double slope1) const;
   bool getBrkPointNotMinimum() const;
   void setBrkPointNotMinimum(bool brkPointNotMinimum);
   double eval(double d) const;
   double getD(unsigned int i) const;
   double getZ(unsigned int i) const;
+  
+  void printCurve(const double * curve, unsigned int SIZE) const;
+  void print() const;
+  
   ~PwlApproximator();
 
 private:
   // 0
   double z0_;
     
-  double D1_;
+  unsigned int D1_;
   double zD1_;
   
   // non const

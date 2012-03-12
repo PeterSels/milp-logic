@@ -246,27 +246,38 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
   brkPointNotMinimum_ = brkPointNotMinimum;
 
   // calculate curve array:
-  const int SIZE = (int)(D1 / STEP) + 1;
-  double curve[SIZE];
+  const int SIZE = (int)(D1_ / STEP) + 1;
+  //double curve[SIZE]; // xcode lets this pass, 
+  // MS Visual Studio doesn't, gives error
   
-#ifdef DO_OPEN_MP  
-  omp_set_dynamic(1);
-#endif
+  // Anyway: Works for both:
+  double * curve = new (nothrow) double [SIZE]; // and delete [] curve below
+  if (curve==0) {
+    cerr << "ERROR: Memeory allocation erro in "
+    << "PwlApproximator::PwlApproximator(...)" << endl;
+    assert(false);
+    exit(0);
+  }
+  
+//#ifdef DO_OPEN_MP  
+//  omp_set_dynamic(1);
+//#endif
   //num_threads(MAX_N_THREADS)
-#pragma omp parallel for if (SIZE > 1000) 
+//#pragma omp parallel for if (SIZE > 1000) 
   for (int i=0; i<SIZE; i++) {
     double d = i * STEP;
     double z = (*fPtr)(parameters, d); // only here, should call fPtr
     curve[i] = z;
   }
-#ifdef DO_OPEN_MP  
-  omp_set_dynamic(0);
-#endif  
+//#ifdef DO_OPEN_MP  
+//  omp_set_dynamic(0);
+//#endif  
   
+  cerr << "brkPointNotMinimum_ = " << brkPointNotMinimum_ << endl;
   if (!brkPointNotMinimum_) {
 
     // left point
-    z0_   = curve[0];
+    z0_   = (*fPtr)(parameters, 0); // curve[0]; Analyzer complains of curve[0] being garbage, dunno why
     
     // right point
     zD1_ = curve[SIZE-1];
@@ -321,10 +332,10 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
   } else {
     assert(brkPointNotMinimum_);
     // left point
-    z0_   = (*fPtr)(parameters, 0);
+    z0_   = (*fPtr)(parameters, 0); // curve[0]; Analyzer complains of curve[0] being garbage, dunno why
     
     // right point
-    zD1_ = (*fPtr)(parameters, D1_);
+    zD1_ = curve[SIZE-1]; //(*fPtr)(parameters, D1_);
     
     // middle low point
     BreakPointCalculator brkCalc(curve, SIZE, D1, dBrk, STEP);
@@ -332,6 +343,8 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
     zMin_ = brkCalc.getBreakPointValue();
   }
   
+  assert(z0_ >= 0);
+  assert(zMin_ >=0); // new one, maybe was left out because line reg corrects it?...
   assert(zD1_ >= 0);
     
   assert(0 <= dMin_);
@@ -351,7 +364,7 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
     // where there are few samples in STEP case,
     // what does it do for transfer costs? // FIXME
     
-    unsigned int nPointsLeft = (dMin_ - 0.0)/SMALLER_STEP + 1;
+    unsigned int nPointsLeft = (unsigned int)((dMin_ - 0.0)/SMALLER_STEP + 1);
     if (nPointsLeft >= MIN_POINTS_FOR_REGRESSION) {
       /*
        for (double d=0; d<=dMin_; d+=SMALLER_STEP) {
@@ -378,7 +391,7 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
     double absisRight;
     vector<double> xRight;
     vector<double> yRight;
-    unsigned int nPointsRight = (D1_ - dMin_)/STEP + 1;
+    unsigned int nPointsRight = (unsigned int)((D1_ - dMin_)/STEP + 1);
     if (nPointsRight >= MIN_POINTS_FOR_REGRESSION) {
       /*
        for (double d=dMin_//+STEP
@@ -389,7 +402,7 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
        }
        DataVectorCorrelator dvcRight(xRight, yRight);
        */
-      unsigned int rightPointIndex = dMin_ / STEP;
+      unsigned int rightPointIndex = (unsigned int)(dMin_ / STEP);
       DataVectorCorrelator dvcRight(rightPointIndex, nPointsRight, STEP, curve);
       slopeRight = dvcRight.getSlope();
       absisRight = dvcRight.getAbsis();
@@ -443,6 +456,14 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
         assert(0 <= dMin_);
         assert(false);
       }
+      if (dMin_ < TOLERANCE) {
+        cerr << "WARNING: Correcting dMin_ from " << dMin_ 
+        << " to " << 0 << endl;
+        printCurve(curve, SIZE);
+        dMin_ = 0.0; // avoid steep slope, dMin_=0 is inf steep, but is easily recognized further
+        print();
+        cerr << "ok" << endl;
+      }
       if (dMin_ > D1_) {
         cerr << "WARNING: Correcting dMin_ from " << dMin_ 
         << " to " << D1_ << endl;
@@ -450,19 +471,62 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
         assert(false);
       }
       assert(dMin_ <= D1_);
+      
+      if (!(zMin_>= 0)) {
+        cerr << "corrected zMin_ from " << zMin_ << " to 0.0" << endl;
+        zMin_ = 0.0;
+        printCurve(curve, SIZE);
+        print();
+      }
+      if (!(zD1_>= 0)) {
+        cerr << "corrected zD1_ from " << zD1_ << " to 0.0" << endl;
+        zD1_ = 0.0;
+        printCurve(curve, SIZE);
+        print();
+      }
     }
   } // end of linearRegression
+
+  
+  assert(0 <= dMin_);
+  assert(dMin_ <= D1_);
+  
+  assert(z0_ >= 0);
+  assert(!(z0_ < 0));
+  assert(zMin_ >= 0);
+  if (!(zD1_ >= 0)) {
+    printCurve(curve, SIZE);
+    print();
+    assert(zD1_ >= 0);    
+  }
+  
   
   if (dMin_ < 0) {
     assert(0 <= dMin_);
   }
   assert(0 <= dMin_);
   assert(dMin_ <= D1_);
+  
+  
+  // test evaluation of d=0, is tricky
+  eval(0);
+  
+  delete [] curve;
+  curve = 0;
+}
+
+void PwlApproximator::printCurve(const double * curve, unsigned int SIZE) 
+const {
+  cerr << "printing curve array" << endl;
+  for (int dd=0; dd<SIZE; dd++) {
+    cerr << curve[dd] << " ";
+  }  
 }
 
 void PwlApproximator::crossingLinesIntersect(double & x, double & y,
                                              double absis0, double slope0,
-                                             double absis1, double slope1) {
+                                             double absis1, double slope1) 
+const {
   // from http://mathworld.wolfram.com/Line-LineIntersection.html
   
   // (x1,y1) and (x2, y2) are points on this left line:
@@ -485,7 +549,7 @@ void PwlApproximator::crossingLinesIntersect(double & x, double & y,
   
   double denominator = x12 * y34 - y12 * x34;
   if (denominator == 0) { // lines are parallel
-    cerr << "ERROR: Point2D Line2D::intersect(Line2D aLine2D) const" << endl
+    cerr << "ERROR: PwlApproximator::crossingLinesIntersect" << endl
     << "  No intersection." << endl;
     assert(denominator!=0);
     exit(0); // invalid point
@@ -525,6 +589,12 @@ double PwlApproximator::eval(double d) const {
       z = zMin_;
     }
   }
+  if (!(z >= 0)) { // covers NaN case
+    
+    cerr << "ERROR: z=" << z << " is invalid" << endl;
+    print();
+    //assert(false);
+  }
   return z;
 }
 
@@ -550,6 +620,13 @@ double PwlApproximator::getZ(unsigned int i) const {
   } else {
     return zD1_;
   }
+}
+
+void PwlApproximator::print() const {
+  cerr << "pwlApprox_ = " << endl
+  << "(0,z0_)       = (0," << z0_ << ")" << endl
+  << "(dMin_,zMin_) = (" << dMin_ << "," << zMin_ << ")" << endl
+  << "(D1_, zD1_)   = (" << D1_ << "," << zD1_ << " )" << endl;
 }
 
 PwlApproximator::~PwlApproximator() {

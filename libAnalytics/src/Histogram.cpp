@@ -70,6 +70,9 @@ void Histogram::addPointXY(int x, double y) {
 }
 
 int Histogram::calcClosestBucketMiddleToX(int x) const {
+  if (x < 0) {
+    cerr << "ERROR: x=" << x << " cannot be negative" << endl;
+  }
   assert(x >= 0); // for our current application... // FIXME  
   int bucketNr = (int)( (double)x / (double)storeBucketSize_ ); 
   // correctly treats fractional part

@@ -313,17 +313,17 @@ int main (int argc, char * const argv[]) {
     int xmax = h.calcXMax();
     cout << "histogram x max = " << xmax << endl;
 
-    int ymax = h.calcYMax();
+    double ymax = h.calcYMax();
     cout << "histogram y max = " << ymax << endl;
 
-    int total = h.calcTotal();
+    double total = h.calcTotal();
     cout << "histogram total = " << total << endl;
     double avg = h.calcAverage();
     cout << "histogram x weighted average = " << avg << endl;
     
     assert(xmin==3);
     assert(xmax==9);
-    assert(ymax==2);
+    assert(ymax==2.0);
     assert(avg==6);
   }
     

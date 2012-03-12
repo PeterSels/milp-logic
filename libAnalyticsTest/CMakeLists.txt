@@ -7,11 +7,11 @@ set(SOURCES
 )
 
 include_directories( 
-  ../libAnalytics/include
+  ${CMAKE_SOURCE_DIR}/libAnalytics/include
 )
 
 link_directories(
-  ../libAnalytics
+  ${CMAKE_SOURCE_DIR}/libAnalytics
 )
 
 add_definitions( 
