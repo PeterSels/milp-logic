@@ -26,8 +26,8 @@ set(SOURCES
 
 include_directories(
   include
-  ${CMAKE_SOURCE_DIR}/libAnalytics/include
-  ${CMAKE_SOURCE_DIR}/libStringUtilities/include
+  $ENV{MILP_SOLVER_HOME}/libAnalytics/include
+  $ENV{MILP_SOLVER_HOME}/libStringUtilities/include
   $ENV{CPLEX_HOME}/include
   $ENV{CONCERT_HOME}/include
   $ENV{GUROBI_HOME}/include
@@ -35,7 +35,7 @@ include_directories(
 )
 
 add_definitions( 
-  -D_DEBUG
+#  -D_DEBUG
 )
 
 add_library(MilpSolver STATIC ${SOURCES} ${HEADERS})

@@ -16,9 +16,9 @@ set(SOURCES
 
 include_directories( 
   include
-  ${CMAKE_SOURCE_DIR}/libAnalytics/include
-  ${CMAKE_SOURCE_DIR}/libStringUtilities/include
-  ${CMAKE_SOURCE_DIR}/libMilpSolver/include
+  $ENV{MILP_SOLVER_HOME}/libAnalytics/include
+  $ENV{MILP_SOLVER_HOME}/libStringUtilities/include
+  $ENV{MILP_SOLVER_HOME}/libMilpSolver/include
   $ENV{CPLEX_HOME}/include
   $ENV{CONCERT_HOME}/include
   $ENV{GUROBI_HOME}/include
@@ -44,8 +44,8 @@ ELSE()
 ENDIF()
 
 link_directories(
-  ${CMAKE_SOURCE_DIR}/libStringUtilities
-  ${CMAKE_SOURCE_DIR}/libMilpSolver
+  $ENV{MILP_SOLVER_HOME}/libStringUtilities
+  $ENV{MILP_SOLVER_HOME}/libMilpSolver
   $ENV{CPLEX_HOME}/lib/${CPLEX_ARCH_DIR}
   $ENV{CONCERT_HOME}/lib/${CPLEX_ARCH_DIR}
   $ENV{GUROBI_HOME}/lib

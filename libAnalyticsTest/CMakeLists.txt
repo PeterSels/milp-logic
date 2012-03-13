@@ -7,17 +7,17 @@ set(SOURCES
 )
 
 include_directories( 
-  ${CMAKE_SOURCE_DIR}/libAnalytics/include
+  $ENV{MILP_SOLVER_HOME}/libAnalytics/include
 )
 
 link_directories(
-  ${CMAKE_SOURCE_DIR}/libAnalytics
+  $ENV{MILP_SOLVER_HOME}/libAnalytics
 )
 
 add_definitions( 
-  -DWIN32
-  -D_CONSOLE
-  -D_DEBUG
+##  -DWIN32
+##  -D_CONSOLE
+##  -D_DEBUG
 )
 
 add_executable( libAnalyticsTest WIN32 ${SOURCES} )

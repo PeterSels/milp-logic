@@ -19,8 +19,8 @@ include_directories(
 )
 
 add_definitions( 
-  -DWIN32
-  -D_DEBUG
+##  -DWIN32
+##  -D_DEBUG
 )
 
 add_library( Analytics STATIC ${SOURCES} ${HEADERS})
