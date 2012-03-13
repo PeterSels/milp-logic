@@ -13,7 +13,7 @@ public:
                   const std::vector<double> & parameters,
                   unsigned int D1,
                   unsigned int dBrk);
-  // Newton Raphson
+  /* not used anymore
   unsigned int findMinimumIndexUsingNewtonRaphson(unsigned int iGuess, 
                                                   unsigned int iLo, 
                                                   unsigned int iHi,
@@ -31,6 +31,7 @@ public:
                                                 unsigned int iLo, 
                                                 unsigned int iHi,
                                                 double * yValues) const;
+  */
   
   void crossingLinesIntersect(double & x, double & y,
                               double absis0, double slope0,

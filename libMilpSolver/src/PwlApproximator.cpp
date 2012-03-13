@@ -33,6 +33,7 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum)
 {
 }
 
+/* not used anymore
 // Finding minimum of f(x) by finding roots of derivative df(x)
 // by using Newton Raphson method. Fast, but no convergence guarantee.
 unsigned int PwlApproximator
@@ -88,7 +89,7 @@ unsigned int PwlApproximator
   assert(error < 1); // otherwise, takes too many steps somehow
   
   cout << "nSteps = " << nSteps;
-  return x;
+  return (unsigned int)(x);
 }
 
 void PwlApproximator::calcDerivatives(double & fx,
@@ -144,7 +145,7 @@ unsigned int PwlApproximator
   
   assert(iLo==0);
   double iLoCurr = (double)iLo;
-  double dfxLo;
+  //double dfxLo;
   // Application Specific for transfer curve.
   // Skip samples where fx is going up with increasing x
   bool increasing;
@@ -231,6 +232,7 @@ unsigned int PwlApproximator
   //cout << "nSteps = " << nSteps;
   return x;
 }
+not used anymore */
 
 PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
                                  double (*fPtr)(const std::vector<double>
@@ -258,6 +260,7 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
     assert(false);
     exit(0);
   }
+  assert(curve!=0);
   
 //#ifdef DO_OPEN_MP  
 //  omp_set_dynamic(1);
@@ -359,12 +362,14 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
     //vector<double> xLeft;
     //vector<double> yLeft;
     
-    const double SMALLER_STEP = STEP/1; // changed from 4 to 1, CHECKMEEEEEEEEEEEEEEEEE
+    //const double SMALLER_STEP = STEP/1; // changed from 4 to 1, CHECKMEEEEEEEEEEEEEEEEE
     // should work better than STEP for dwell costs, 
     // where there are few samples in STEP case,
     // what does it do for transfer costs? // FIXME
     
-    unsigned int nPointsLeft = (unsigned int)((dMin_ - 0.0)/SMALLER_STEP + 1);
+    assert(dMin_ >= 0);
+    //unsigned int nPointsLeft = (unsigned int)((dMin_ - 0.0)/SMALLER_STEP + 1);
+    unsigned int nPointsLeft = (unsigned int)((dMin_ - 0.0)/STEP + 1);
     if (nPointsLeft >= MIN_POINTS_FOR_REGRESSION) {
       /*
        for (double d=0; d<=dMin_; d+=SMALLER_STEP) {
@@ -391,6 +396,7 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
     double absisRight;
     vector<double> xRight;
     vector<double> yRight;
+    assert(D1_ - dMin_ >= 0);
     unsigned int nPointsRight = (unsigned int)((D1_ - dMin_)/STEP + 1);
     if (nPointsRight >= MIN_POINTS_FOR_REGRESSION) {
       /*
@@ -402,8 +408,10 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
        }
        DataVectorCorrelator dvcRight(xRight, yRight);
        */
-      unsigned int rightPointIndex = (unsigned int)(dMin_ / STEP);
-      DataVectorCorrelator dvcRight(rightPointIndex, nPointsRight, STEP, curve);
+      assert(dMin_ >= 0);
+      unsigned int minPointIndex = (unsigned int)(dMin_ / STEP);
+      assert((int)minPointIndex < SIZE);
+      DataVectorCorrelator dvcRight(minPointIndex, nPointsRight, STEP, curve);
       slopeRight = dvcRight.getSlope();
       absisRight = dvcRight.getAbsis();
     } else { // not enough data for regression
