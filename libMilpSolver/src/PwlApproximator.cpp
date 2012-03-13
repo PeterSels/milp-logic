@@ -362,14 +362,13 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
     //vector<double> xLeft;
     //vector<double> yLeft;
     
-    //const double SMALLER_STEP = STEP/1; // changed from 4 to 1, CHECKMEEEEEEEEEEEEEEEEE
+    const double SMALLER_STEP = STEP/1; // changed from 4 to 1, CHECKMEEEEEEEEEEEEEEEEE
     // should work better than STEP for dwell costs, 
     // where there are few samples in STEP case,
     // what does it do for transfer costs? // FIXME
     
     assert(dMin_ >= 0);
-    //unsigned int nPointsLeft = (unsigned int)((dMin_ - 0.0)/SMALLER_STEP + 1);
-    unsigned int nPointsLeft = (unsigned int)((dMin_ - 0.0)/STEP + 1);
+    unsigned int nPointsLeft = (unsigned int)((dMin_ - 0.0)/SMALLER_STEP + 1);
     if (nPointsLeft >= MIN_POINTS_FOR_REGRESSION) {
       /*
        for (double d=0; d<=dMin_; d+=SMALLER_STEP) {
@@ -526,7 +525,7 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
 void PwlApproximator::printCurve(const double * curve, unsigned int SIZE) 
 const {
   cerr << "printing curve array" << endl;
-  for (int dd=0; dd<SIZE; dd++) {
+  for (unsigned int dd=0; dd<SIZE; dd++) {
     cerr << curve[dd] << " ";
   }  
 }

@@ -277,6 +277,7 @@ int main (int argc, char * const argv[]) {
     }
   }
   
+  /*
   if (histogram) {
     Histogram h;
     h.inventDistributionWhenAbsent();  
@@ -287,11 +288,12 @@ int main (int argc, char * const argv[]) {
     Exponential e = expFitter.match(h);
     cout << "exp = " << e << endl;    
   }
+  */
   
   if (histogram) {
     Histogram h;
     h.incrementOccurrenceOfX(1);
-    h.inventDistributionWhenAbsent();  
+    //h.inventDistributionWhenAbsent();  
     double avg = h.calcAverage();
     assert(avg == 1);
     

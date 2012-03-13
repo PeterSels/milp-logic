@@ -334,10 +334,11 @@ void Svg::addText(
   unsigned int angle) {
 
 	// angle independent for now:
-	adaptUsedAreaToX(x - fontSize * text.length());
-	adaptUsedAreaToX(x + fontSize * text.length());
-	adaptUsedAreaToY(y - fontSize * text.length());
-	adaptUsedAreaToY(y + fontSize * text.length());
+  const int intFontTextLength = (int)fontSize * (int)text.length();
+	adaptUsedAreaToX((int)x - intFontTextLength);
+	adaptUsedAreaToX((int)x + intFontTextLength);
+	adaptUsedAreaToY((int)y - intFontTextLength);
+	adaptUsedAreaToY((int)y + intFontTextLength);
 	
   bodyStr_ << "<g font-size='" << fontSize << "' font-family='" 
 	<< fontName << "' >\n";

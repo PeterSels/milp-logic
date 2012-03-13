@@ -71,7 +71,7 @@ endif()
 
 target_link_libraries( milpSolverTest MilpSolver Analytics StringUtilities 
 ${GUROBI_CPP} $ENV{GUROBI_MAIN_VERSION} 
-ilocplex cplex${CPLEX_VERSION} concert 
+ilocplex cplex$ENV{CPLEX_VERSION} concert 
 #xprs xprb 
 ${MATH_LIB} ${EXTRA_LIBS} ${THREAD})
 

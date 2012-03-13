@@ -47,7 +47,7 @@ Histogram::Histogram(const std::vector<int> & values,
                      unsigned int storeBucketSize) 
 : storeBucketSize_(storeBucketSize)
 {
-  unsigned int n = values.size();
+  unsigned int n = (unsigned int)values.size();
   for (unsigned int i=0; i<n; i++) {
     incrementOccurrenceOfX(values[i]);
   }
@@ -64,7 +64,7 @@ void Histogram::incrementOccurrenceOfXByY(int x, double y) {
 
 void Histogram::addPointXY(int x, double y) { 
   int closeToX = calcClosestBucketMiddleToX(x);
-  unsigned int cnt = count(closeToX);
+  unsigned int cnt = (unsigned int)count(closeToX);
   assert(cnt == 0); // only if not present yet
   (*this)[closeToX] = y;
 }
@@ -80,6 +80,7 @@ int Histogram::calcClosestBucketMiddleToX(int x) const {
   return closeToX;
 }
 
+/*
 // hmm:... FIXME
 void Histogram::inventDistributionWhenAbsent() {
   bool verbose = false;
@@ -91,7 +92,7 @@ void Histogram::inventDistributionWhenAbsent() {
   
   //cout << "histogram:A = " << endl << toString() << endl;
   
-  unsigned int nx = size();
+  unsigned int nx = (unsigned int)size();
   if (nx==0) {
     if (verbose) {
       cout << "  Assuming reasonable delays of "
@@ -128,6 +129,7 @@ void Histogram::inventDistributionWhenAbsent() {
   //assert(nx==2);
   assert(nx>=1);
 }
+*/
 
 double Histogram::calcTotal() const {
   double total = 0.0;
@@ -159,12 +161,12 @@ double Histogram::calcAverage() const {
 
 // only works if y values are ints (io doubles)
 int Histogram::calcMedian() const {
-  unsigned int nSamples = 0;
+  double nSamples = 0;
   for (Histogram::const_iterator it =begin(); it!=end(); it++) {
     double y = it->second;
     nSamples += y;
   }
-  unsigned int midNSamples = (nSamples + 1) / 2;
+  double midNSamples = nSamples / 2.0;
   assert(midNSamples <= nSamples);
   nSamples = 0; // again
   for (Histogram::const_iterator it =begin(); it!=end(); it++) {
@@ -176,6 +178,8 @@ int Histogram::calcMedian() const {
     }
   }
   assert(false);
+  cerr << "ERROR: In Histogram::calcMedian()" << endl;
+  return 0;
 }
 
 int Histogram::calcXMin() const {
@@ -337,8 +341,8 @@ string Histogram::toRStringRest(string fileName,
   
   // guarantee an integer nr of steps is between
   // newXMin and newXMax
-  newXMax = newXMin +
-  ((int)(newXMax - newXMin) / (int)newXStep + 1) * newXStep;
+  newXMax = (int)(newXMin +
+  ((int)(newXMax - newXMin) / (int)newXStep + 1) * newXStep);
   
   strstr << "hist(" << xLabel
      << ", breaks=seq(" << newXMin << ", " << newXMax 

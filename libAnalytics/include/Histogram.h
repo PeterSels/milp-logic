@@ -17,7 +17,7 @@ public:
   
   int calcClosestBucketMiddleToX(int x) const;
   
-  void inventDistributionWhenAbsent();
+  //void inventDistributionWhenAbsent();
   
   int calcXMin() const;
   int calcXMax() const;
