@@ -24,10 +24,10 @@ else
 fi
 
 
-find . -name "*.xcodeproj" -exec rm -rf {} \;
-find . -name cmake_install.cmake -exec rm -f {} \;
-find . -name "CMakeFiles" -exec rm -rf {} \;
-find . -name "CMakeCache.txt" -exec rm -f {} \;
+find . -name "*.xcodeproj" | xargs rm -rf
+find . -name cmake_install.cmake | xargs rm -f
+find . -name "CMakeFiles" | xargs rm -rf
+find . -name "CMakeCache.txt" | xargs rm -f
 
 rm -rf CMakeFiles/
 rm -rf CMakeCache.txt 
