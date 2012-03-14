@@ -29,8 +29,8 @@ bool isEqual(double a, double b, double tolerance) {
 DataVectorCorrelator::DataVectorCorrelator(const std::vector<double> & v0,
                                            const std::vector<double> & v1) {
   
-  unsigned int size0 = v0.size();
-  unsigned int size1 = v1.size();
+  unsigned int size0 = (unsigned int)v0.size();
+  unsigned int size1 = (unsigned int)v1.size();
   assert(size0==size1);
   unsigned int size = size0;
   

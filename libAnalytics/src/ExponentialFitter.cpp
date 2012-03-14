@@ -32,8 +32,8 @@ Exponential ExponentialFitter::fit(
 	// See: http://mathworld.wolfram.com/LeastSquaresFittingExponential.hml
 	// for the derivation of the formulas for a and b and A and B.
 
-	unsigned int nX = x.size();
-	unsigned int nY = y.size();
+	unsigned int nX = (unsigned int)(x.size());
+	unsigned int nY = (unsigned int)(y.size());
 	assert(nX==nY);
 	unsigned int N = nX;
   double A;
@@ -92,7 +92,7 @@ Exponential ExponentialFitter::fit(
 
 Exponential ExponentialFitter::fit(
   const map<double, double> & distribution) {
-  unsigned int nx = distribution.size();
+  unsigned int nx = (unsigned int)distribution.size();
   bool verbose = false;
   if (verbose) {
     cout << "NOTE: #Different measurements = " << nx << endl;

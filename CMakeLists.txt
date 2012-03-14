@@ -3,7 +3,14 @@ cmake_minimum_required(VERSION 2.6)
 #set(CMAKE_C_COMPILER "gcc-4.2")
 #set(CMAKE_CXX_COMPILER "/usr/bin/g++-4.2")
 
+IF(WIN32)
+SET(CMAKE_CXX_FLAGS_RELEASE "/MT" CACHE STRING "runtime-library flags" FORCE)
+SET(CMAKE_CXX_FLAGS_DEBUG "/MTd"  CACHE STRING "runtime-library flags" FORCE)
+SET(CMAKE_CXX_FLAGS_MINSIZEREL "/MT"  CACHE STRING "runtime-library flags" FORCE)
+SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/MTd"  CACHE STRING  "runtime-library flags" FORCE)
+ENDIF()
 
+# The configurations with /MT io /MTd still give linker errors, a la error LNK2005: _heap_alloc already defined in LIBCMT.lib
 # The name of our project is "MilpSolver".  CMakeLists files in this project can
 # refer to the root source directory of the project as ${MilpSolver_SOURCE_DIR} and
 # to the root binary directory of the project as ${MilpSolver_BINARY_DIR}.
