@@ -143,7 +143,7 @@ public:
     const SolverExpr & rhsExpr,
     double rhsLowerBound,  double rhsUpperBound,
     double unit,
-    const std::string & name);																						 
+    const std::string & name);
   void addEqualConstr(
     const SolverVar & leBinVar,                                   
     const SolverExpr & lhsExpr,

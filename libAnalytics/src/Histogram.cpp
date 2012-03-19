@@ -103,7 +103,7 @@ void Histogram::inventDistributionWhenAbsent() {
     (*this)[1] = 1;
   } else if (nx==1) { // usually all zeroes, 
     int x = begin()->first;
-    unsigned int y = begin()->second; // FIXME: y should de double now...
+    unsigned int y = (unsigned int)begin()->second; // FIXME: y should de double now...
     // single sample is not much, but theoretically enough to fit exponential
     if (verbose) {
       cout << "WARNING: " << y << " times same sample = " << x << endl;
@@ -125,7 +125,7 @@ void Histogram::inventDistributionWhenAbsent() {
   }
   //cout << "histogram:B = " << endl << toString() << endl;
 
-  nx = size();
+  nx = (unsigned int)size();
   //assert(nx==2);
   assert(nx>=1);
 }

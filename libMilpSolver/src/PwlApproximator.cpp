@@ -457,6 +457,7 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
                              absisLeft, slopeLeft, 
                              absisRight, slopeRight);
       if (dMin_ < 0) { // for a SOURCE edge
+        cerr << "dMin_ < 0" << endl;
         cerr << "WARNING: Correcting dMin_ from " << dMin_ 
         << " to " << 0 << endl;
         dMin_ = 0;
@@ -464,14 +465,14 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
         assert(false);
       }
       if (dMin_ < TOLERANCE) {
+        cerr << "dMin_ < TOLERANCE" << endl;
         cerr << "WARNING: Correcting dMin_ from " << dMin_ 
         << " to " << 0 << endl;
-        printCurve(curve, SIZE);
         dMin_ = 0.0; // avoid steep slope, dMin_=0 is inf steep, but is easily recognized further
-        print();
-        cerr << "ok" << endl;
+        zMin_ = z0_;
       }
       if (dMin_ > D1_) {
+        cerr << "dMin_ > D1" << endl;
         cerr << "WARNING: Correcting dMin_ from " << dMin_ 
         << " to " << D1_ << endl;
         dMin_ = D1;
@@ -480,16 +481,18 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
       assert(dMin_ <= D1_);
       
       if (!(zMin_>= 0)) {
+        cerr << "!(zMin_ >= 0)" << endl;
         cerr << "corrected zMin_ from " << zMin_ << " to 0.0" << endl;
         zMin_ = 0.0;
         printCurve(curve, SIZE);
         print();
       }
       if (!(zD1_>= 0)) {
+        cerr << "!(zD1_ >= 0)" << endl;
         cerr << "corrected zD1_ from " << zD1_ << " to 0.0" << endl;
         zD1_ = 0.0;
-        printCurve(curve, SIZE);
-        print();
+        //printCurve(curve, SIZE);
+        //print();
       }
     }
   } // end of linearRegression

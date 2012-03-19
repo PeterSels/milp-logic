@@ -152,6 +152,7 @@ const SolverConstr & GurobiSolver::addConstr(
 
 // Specifically for Gurobi really
 void GurobiSolver::update() {
+  //cerr << "GurobiSolver::update()" << endl; // FIXME
   model_->update();
 }
 
