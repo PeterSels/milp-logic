@@ -245,6 +245,8 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
 : D1_(D1)
 {
   
+  const bool verbose = false;
+  
   brkPointNotMinimum_ = brkPointNotMinimum;
 
   // calculate curve array:
@@ -255,7 +257,7 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
   // Anyway: Works for both:
   double * curve = new (nothrow) double [SIZE]; // and delete [] curve below
   if (curve==0) {
-    cerr << "ERROR: Memeory allocation erro in "
+    cerr << "ERROR: Memeory allocation error in "
     << "PwlApproximator::PwlApproximator(...)" << endl;
     assert(false);
     exit(0);
@@ -276,7 +278,10 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
 //  omp_set_dynamic(0);
 //#endif  
   
-  cerr << "brkPointNotMinimum_ = " << brkPointNotMinimum_ << endl;
+  if (verbose) {
+    cerr << "brkPointNotMinimum_ = " << brkPointNotMinimum_ << endl;
+  }
+  
   if (!brkPointNotMinimum_) {
 
     // left point
@@ -430,7 +435,6 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
     // D1_ remains D1_ of course
     zD1_ = absisRight + (D1_ * slopeRight); // DEBUG, FIXME
     if (zD1_ < 0) {
-      const bool verbose = false;
       if (verbose) {
         cerr << "NOTE: Allowing LinReg caused: zD1_=" << zD1_ << "<0" << endl;
       }
@@ -457,42 +461,56 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
                              absisLeft, slopeLeft, 
                              absisRight, slopeRight);
       if (dMin_ < 0) { // for a SOURCE edge
-        cerr << "dMin_ < 0" << endl;
-        cerr << "WARNING: Correcting dMin_ from " << dMin_ 
-        << " to " << 0 << endl;
+        if (verbose) {
+          cerr << "dMin_ < 0" << endl;
+          cerr << "WARNING: Correcting dMin_ from " << dMin_ 
+          << " to " << 0 << endl;
+        }
         dMin_ = 0;
         assert(0 <= dMin_);
         assert(false);
       }
       if (dMin_ < TOLERANCE) {
-        cerr << "dMin_ < TOLERANCE" << endl;
-        cerr << "WARNING: Correcting dMin_ from " << dMin_ 
-        << " to " << 0 << endl;
+        if (verbose) {
+          cerr << "dMin_ < TOLERANCE" << endl;
+          cerr << "WARNING: Correcting dMin_ from " << dMin_ 
+          << " to " << 0 << endl;
+        }
         dMin_ = 0.0; // avoid steep slope, dMin_=0 is inf steep, but is easily recognized further
         zMin_ = z0_;
       }
       if (dMin_ > D1_) {
-        cerr << "dMin_ > D1" << endl;
-        cerr << "WARNING: Correcting dMin_ from " << dMin_ 
-        << " to " << D1_ << endl;
+        if (verbose) {
+          cerr << "dMin_ > D1" << endl;
+          cerr << "WARNING: Correcting dMin_ from " << dMin_ 
+          << " to " << D1_ << endl;
+        }
         dMin_ = D1;
         assert(false);
       }
       assert(dMin_ <= D1_);
       
       if (!(zMin_>= 0)) {
-        cerr << "!(zMin_ >= 0)" << endl;
-        cerr << "corrected zMin_ from " << zMin_ << " to 0.0" << endl;
+        if (verbose) {
+          cerr << "!(zMin_ >= 0)" << endl;
+          cerr << "corrected zMin_ from " << zMin_ << " to 0.0" << endl;
+        }
         zMin_ = 0.0;
-        printCurve(curve, SIZE);
-        print();
+        if (verbose) {
+          printCurve(curve, SIZE);
+          print();
+        }
       }
       if (!(zD1_>= 0)) {
-        cerr << "!(zD1_ >= 0)" << endl;
-        cerr << "corrected zD1_ from " << zD1_ << " to 0.0" << endl;
+        if (verbose) {
+          cerr << "!(zD1_ >= 0)" << endl;
+          cerr << "corrected zD1_ from " << zD1_ << " to 0.0" << endl;
+        }
         zD1_ = 0.0;
-        //printCurve(curve, SIZE);
-        //print();
+        if (verbose) {
+          printCurve(curve, SIZE);
+          print();
+        }
       }
     }
   } // end of linearRegression
