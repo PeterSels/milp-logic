@@ -69,6 +69,21 @@ public:
     const SolverExpr & lhs, const std::string & comp, const SolverExpr & rhs,
     const std::string & name, bool doUpdate=true) = 0;
 
+  
+  virtual void fastAddConstr(const SolverVar & lhs, 
+                             const std::string & comp, 
+                             const SolverVar & rhs, 
+                             const std::string & name) = 0;
+  virtual void fastAddConstr(const SolverExpr & lhs, 
+                             const std::string & comp, 
+                             const SolverVar & rhs, 
+                             const std::string & name) = 0;
+  virtual void fastAddConstr(const SolverExpr & lhs, 
+                             const std::string & comp, 
+                             const SolverExpr & rhs, 
+                             const std::string & name) = 0;
+  
+  
 	virtual void update() = 0; // Specifically for Gurobi really
 
   //// layer 2:

@@ -181,7 +181,7 @@ const SolverConstr & CplexSolver::addConstr(
     model_->add(constr);
     constr.setName(lpConvert(name).c_str());
     constrVector_.push_back(constr);
-  }  else if (comp=="<=") {
+  } else if (comp=="<=") {
     IloRange constr(*env_, -IloInfinity, lhs - rhs, 0);
     model_->add(constr);
     constr.setName(lpConvert(name).c_str());
@@ -258,6 +258,85 @@ const SolverConstr & CplexSolver::addConstr(
   }
   return constrVector_.back();
 }
+
+/////////////////////// fast add constraint methods //////////////////////////
+void CplexSolver::fastAddConstr(const SolverVar & lhs, 
+                                const std::string & comp, 
+                                const SolverVar & rhs, 
+                                const std::string & name) {
+  if (comp=="==") {
+    IloRange constr(*env_, 0, lhs - rhs, 0);
+    model_->add(constr);
+    constr.setName(lpConvert(name).c_str());
+  } else if (comp=="<=") {
+    IloRange constr(*env_, -IloInfinity, lhs - rhs, 0);
+    model_->add(constr);
+    constr.setName(lpConvert(name).c_str());
+  } else if (comp==">=") {
+    IloRange constr(*env_, 0, lhs - rhs, +IloInfinity);
+    model_->add(constr);
+    constr.setName(lpConvert(name).c_str());
+  } else {
+    cout << "ERROR: In CplexSolver::addConstr(...)" << endl;
+    cout << "  Wrong comparator argument string " << comp << " supplied." << endl;
+    cout << "  Should be '==', '<=' or '>='." << endl;
+    assert(false);
+    exit(0);
+  }
+}
+
+void CplexSolver::fastAddConstr(const SolverExpr & lhs, 
+                                const std::string & comp, 
+                                const SolverVar & rhs, 
+                                const std::string & name) {
+  if (comp=="==") {
+    IloRange constr(*env_, 0, lhs - rhs, 0);
+    model_->add(constr);
+    constr.setName(lpConvert(name).c_str());
+  }  else if (comp=="<=") {
+    IloRange constr(*env_, -IloInfinity, lhs - rhs, 0);
+    model_->add(constr);
+    constr.setName(lpConvert(name).c_str());
+  } else if (comp==">=") {
+    IloRange constr(*env_, 0, lhs - rhs, +IloInfinity);
+    model_->add(constr);
+    constr.setName(lpConvert(name).c_str());
+  } else {
+    cout << "ERROR: In CplexSolver::addConstr(...)" << endl;
+    cout << "  Wrong comparator argument string " << comp << " supplied." << endl;
+    cout << "  Should be '==', '<=' or '>='." << endl;
+    assert(false);
+    exit(0);
+  }
+}
+
+void CplexSolver::fastAddConstr(const SolverExpr & lhs, 
+                                const std::string & comp, 
+                                const SolverExpr & rhs, 
+                                const std::string & name) {
+  if (comp=="==") {
+    IloRange constr(*env_, 0, lhs - rhs, 0);
+    model_->add(constr);
+    constr.setName(lpConvert(name).c_str());
+  }  else if (comp=="<=") {
+    IloRange constr(*env_, -IloInfinity, lhs - rhs, 0);
+    model_->add(constr);
+    constr.setName(lpConvert(name).c_str());
+  } else if (comp==">=") {
+    IloRange constr(*env_, 0, lhs - rhs, +IloInfinity);
+    model_->add(constr);
+    constr.setName(lpConvert(name).c_str());
+  } else {
+    cout << "ERROR: In CplexSolver::addConstr(...)" << endl;
+    cout << "  Wrong comparator argument string " << comp << " supplied." << endl;
+    cout << "  Should be '==', '<=' or '>='." << endl;
+    assert(false);
+    exit(0);
+  }
+}
+//////////////////////////////////////////////////////////////////////////////
+
+
 
 //const SolverSos & 
 void CplexSolver::addSos1SolverSpecific(

@@ -38,6 +38,25 @@ public:
     const SolverExpr & lhs, const std::string & comp, const SolverExpr & rhs, 
     const std::string & name, bool doUpdate=true);
 
+  
+  
+  
+  //////////// fast constraint addition without pushing onto vector //////////
+  // nor doing solver_->update
+  void fastAddConstr(const SolverVar & lhs, 
+                     const std::string & comp, 
+                     const SolverVar & rhs, 
+                     const std::string & name);
+  void fastAddConstr(const SolverExpr & lhs, 
+                     const std::string & comp, 
+                     const SolverVar & rhs, 
+                     const std::string & name);
+  void fastAddConstr(const SolverExpr & lhs, 
+                     const std::string & comp, 
+                     const SolverExpr & rhs, 
+                     const std::string & name);
+  /////////////////////////////////////////////////////////////////////////////
+  
   //const SolverSos & 
   void addSos1SolverSpecific(
     const std::string & name,

@@ -37,6 +37,24 @@ public:
     const SolverExpr & lhs, const std::string & comp, const SolverExpr & rhs,
     const std::string & name, bool doUpdate=true);
 
+  
+  // fast add constraint methods
+  void fastAddConstr(const SolverVar & lhs, 
+                     const std::string & comp, 
+                     const SolverVar & rhs, 
+                     const std::string & name);
+  void fastAddConstr(const SolverExpr & lhs, 
+                     const std::string & comp, 
+                     const SolverVar & rhs, 
+                     const std::string & name);
+  void fastAddConstr(const SolverExpr & lhs, 
+                     const std::string & comp, 
+                     const SolverExpr & rhs, 
+                     const std::string & name);
+  //
+  
+  
+  
   void addSos1SolverSpecific(
     const std::string & name,
     const std::vector<SolverVar> & vars, 

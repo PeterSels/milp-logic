@@ -86,10 +86,10 @@ void Solver::addConjunctionConstr(
   const SolverVar & conjunctionBinVarC,
   const std::string & name) {
   
-  addConstr(conjunctionBinVarA, "<=", conjunctionBinVarB, 
-            name.substr(0, STR_MAX_LEN-7) + "_a_le_b");
-  addConstr(conjunctionBinVarA, "<=", conjunctionBinVarC, 
-            name.substr(0, STR_MAX_LEN-7) + "_a_le_c");
+  fastAddConstr(conjunctionBinVarA, "<=", conjunctionBinVarB, 
+                name.substr(0, STR_MAX_LEN-7) + "_a_le_b");
+  fastAddConstr(conjunctionBinVarA, "<=", conjunctionBinVarC, 
+                name.substr(0, STR_MAX_LEN-7) + "_a_le_c");
   SolverExpr oneExpr
 #ifdef USE_CPLEX_NATIVE
 	(*global_env_)
@@ -105,9 +105,9 @@ void Solver::addConjunctionConstr(
 	;
 	expr += conjunctionBinVarB;
 	expr += conjunctionBinVarC;
-  addConstr(expr, "<=", 
-            SolverExpr(conjunctionBinVarA+oneExpr), 
-            name.substr(0, STR_MAX_LEN-21) + "_b_plus_c_le_1_plus_a");  // - -> + !!!
+  fastAddConstr(expr, "<=", 
+                SolverExpr(conjunctionBinVarA+oneExpr), 
+                name.substr(0, STR_MAX_LEN-21) + "_b_plus_c_le_1_plus_a");  // - -> + !!!
 }
 
 const SolverVar Solver::addDisjunctionBinVar(
@@ -130,10 +130,10 @@ void Solver::addDisjunctionConstr(
   const SolverVar & disjunctionBinVarC,
   const std::string & name) {
   
-  addConstr(disjunctionBinVarA, ">=", disjunctionBinVarB, 
-            name.substr(0, STR_MAX_LEN-7) + "_a_ge_b");
-  addConstr(disjunctionBinVarA, ">=", disjunctionBinVarC, 
-            name.substr(0, STR_MAX_LEN-7) + "_a_ge_c");
+  fastAddConstr(disjunctionBinVarA, ">=", disjunctionBinVarB, 
+                name.substr(0, STR_MAX_LEN-7) + "_a_ge_b");
+  fastAddConstr(disjunctionBinVarA, ">=", disjunctionBinVarC, 
+                name.substr(0, STR_MAX_LEN-7) + "_a_ge_c");
 	
 	SolverExpr expr
 #ifdef USE_CPLEX_NATIVE
@@ -143,8 +143,8 @@ void Solver::addDisjunctionConstr(
 	expr += disjunctionBinVarB;
 	expr += disjunctionBinVarC;
 	
-  addConstr(SolverExpr(disjunctionBinVarA), "<=", 
-            expr, name.substr(0, STR_MAX_LEN-14) + "_a_le_b_plus_c");
+  fastAddConstr(SolverExpr(disjunctionBinVarA), "<=", 
+                expr, name.substr(0, STR_MAX_LEN-14) + "_a_le_b_plus_c");
 }
 
 void Solver::addNegationConstr(
@@ -158,8 +158,8 @@ void Solver::addNegationConstr(
 #endif
 	;
 	oneExpr += 1;	
-  addConstr(binVarA, "==", oneExpr - binVarB, 
-            name.substr(0, STR_MAX_LEN-8) + "_a_not_b");
+  fastAddConstr(binVarA, "==", oneExpr - binVarB, 
+                name.substr(0, STR_MAX_LEN-8) + "_a_not_b");
 }
 
 
@@ -316,14 +316,14 @@ void Solver::addLessOrEqualConstr(const SolverVar & leBinVar,
 #endif
    ;
   rhs+= Mle1;
-  addConstr(lhsExpr - rhsExpr + (Mle1 * leBinVar), 
-						"<=", rhs, name.substr(0, STR_MAX_LEN-5) + "_le_1");
+  fastAddConstr(lhsExpr - rhsExpr + (Mle1 * leBinVar), 
+                "<=", rhs, name.substr(0, STR_MAX_LEN-5) + "_le_1");
 
 	// real constraint when leBinVar=0, says nothing new when 1
   double Mle0 = (lhsLowerBound - rhsUpperBound);  
-  addConstr(lhsExpr - rhsExpr, 
-						">=", (Mle0 - unit) * leBinVar + unit, 
-            name.substr(0, STR_MAX_LEN-5) + "_le_0"); //  not('lhs < rhs') is equivalent to 'lhs >= rhs + unit'
+  fastAddConstr(lhsExpr - rhsExpr, 
+                ">=", (Mle0 - unit) * leBinVar + unit, 
+                name.substr(0, STR_MAX_LEN-5) + "_le_0"); //  not('lhs < rhs') is equivalent to 'lhs >= rhs + unit'
 }
 
 const SolverVar Solver::
@@ -360,13 +360,13 @@ addLessOrEqualConstr(const SolverVar & leBinVar,
 #endif
    ;
   newRhs+= Mle1;
-  addConstr(lhsExpr - rhs + (Mle1 * leBinVar), 
+  fastAddConstr(lhsExpr - rhs + (Mle1 * leBinVar), 
 						"<=", newRhs, 
             name.substr(0, STR_MAX_LEN-5) + "_le_1");
 
 	// real constraint when leBinVar=0, says nothing new when 1
   double Mle0 = (lhsLowerBound - rhs);  
-  addConstr(lhsExpr - rhs, 
+  fastAddConstr(lhsExpr - rhs, 
 						">=", (Mle0 - unit) * leBinVar + unit, 
             name.substr(0, STR_MAX_LEN-5) + "_le_0"); 
   //  not('lhs < rhs') is equivalent to 'lhs >= rhs + unit'
@@ -377,8 +377,8 @@ void Solver::addImplication(
   const SolverVar & binVarB, 
   const std::string & name) {
   
-  addConstr(binVarA, "<=", binVarB, 
-            name.substr(0, STR_MAX_LEN-12) + "_a_implies_b");
+  fastAddConstr(binVarA, "<=", binVarB, 
+                name.substr(0, STR_MAX_LEN-12) + "_a_implies_b");
 }
 
 void Solver::addEquivalence(
@@ -386,10 +386,10 @@ void Solver::addEquivalence(
   const SolverVar & binVarB, 
   const std::string & name) {
   
-  addConstr(binVarA, "<=", binVarB, 
-            name.substr(0, STR_MAX_LEN-18) + "_equiv_a_implies_b");
-  addConstr(binVarB, "<=", binVarA, 
-            name.substr(0, STR_MAX_LEN-18) + "_equiv_b_implies_a");
+  fastAddConstr(binVarA, "<=", binVarB, 
+                name.substr(0, STR_MAX_LEN-18) + "_equiv_a_implies_b");
+  fastAddConstr(binVarB, "<=", binVarA, 
+                name.substr(0, STR_MAX_LEN-18) + "_equiv_b_implies_a");
 }
 
 // only used in milpSolverTest
@@ -677,6 +677,8 @@ void Solver::addConvexMax(const SolverVar & x,
 													bool robust,
 													bool doUpdate) {
 	  
+  assert(doUpdate==false); // only mode supported anymore, for speed reasons
+  
 	const double D1 = parameters[1];	 // [1] is not transparant!
   
 	// x
@@ -684,10 +686,11 @@ void Solver::addConvexMax(const SolverVar & x,
 	string xName = getNameLoHi(xLo, xHi, &x);
 	
 	if (!robust) {
-		addConstr(x, "==", z, // "<=" gives same results since z is minimized
+		fastAddConstr(x, "==", z, // "<=" gives same results since z is minimized
 							// but == seems faster: eg: 40s io 45s
-							xName.substr(0, STR_MAX_LEN-22) + "_convex_max_up_tight_1",
-							doUpdate); // function row (1)
+							xName.substr(0, STR_MAX_LEN-22) + "_convex_max_up_tight_1"
+							//,doUpdate
+                  ); // function row (1)
     assert(false);
     cerr << "ERROR: not supported for now" << endl; // FIXME
 		return;
@@ -733,10 +736,11 @@ void Solver::addConvexMax(const SolverVar & x,
 	if (D1 > dMin) {
 		if (dMin > 0) { // only dnFunction when something left of dMin
 			dnFunctionExpr += z0 + (zdMin - z0)/(dMin /*- 0*/) * (x /*- 0*/);
-			addConstr(dnFunctionExpr, "<=", z,
+			fastAddConstr(dnFunctionExpr, "<=", z,
 								xName.substr(0, STR_MAX_LEN-30)
-                + "_convex_max_robust_dn_function",
-								doUpdate); // function row (1)	
+                + "_convex_max_robust_dn_function"
+								//,doUpdate
+                ); // function row (1)	
 		}
 		
 		SolverExpr upFunctionExpr
@@ -746,10 +750,11 @@ void Solver::addConvexMax(const SolverVar & x,
 		;
     upFunctionExpr += 
 		  zdMin + (zD1 - zdMin)/(D1 - dMin) * (x - dMin);
-		addConstr(upFunctionExpr, "<=", z,
+		fastAddConstr(upFunctionExpr, "<=", z,
 							xName.substr(0, STR_MAX_LEN-30)
-              + "_convex_max_robust_up_function",
-							doUpdate); // function row (1)	
+              + "_convex_max_robust_up_function"
+							//,doUpdate
+                  ); // function row (1)	
 	} else {
 		//cerr << D1 << " = D1 <= dMin = " << dMin << endl;
 		assert(D1==dMin);
@@ -757,10 +762,11 @@ void Solver::addConvexMax(const SolverVar & x,
 		assert(zD1 <= z0); // dn slope
 		dnFunctionExpr += 
 		z0 + (zD1 - z0)/(D1 /*- 0*/) * (x /*- 0*/);
-		addConstr(dnFunctionExpr, "<=", z,
+		fastAddConstr(dnFunctionExpr, "<=", z,
 							xName.substr(0, STR_MAX_LEN-35)
-              + "_convex_max_robust_dn_only_function",
-							doUpdate);		
+              + "_convex_max_robust_dn_only_function"
+							//,doUpdate
+                  );		
 	}
 }
 
@@ -774,6 +780,8 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
 	// according to http://lpsolve.sourceforge.net/5.0/SOS.htm
 	// function row (1)
 	
+  assert(doUpdate==false); // only mode supported anymore, for speed reasons
+
 	SolverExpr functionExpr
 #ifdef USE_CPLEX_NATIVE
 	(*global_env_)
@@ -797,9 +805,10 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
 		functionExpr += iBinSumVar * coef;
 	}
 	string xPlusYName = xName + "_plus_" + yName;
-	addConstr(functionExpr, "==", z,
-						xPlusYName.substr(0, STR_MAX_LEN-15) + "_bin_function_2",
-						doUpdate); // function row (1)
+	fastAddConstr(functionExpr, "==", z,
+						xPlusYName.substr(0, STR_MAX_LEN-15) + "_bin_function_2"
+						//,doUpdate
+            ); // function row (1)
 }
 
 
@@ -811,7 +820,8 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
                              const PwlApproximator & convexApprox,
 														 bool robust,
 														 bool doUpdate) {
-	
+
+  assert(doUpdate==false); // only mode supported anymore, for speed reasons
 
   const double D1 = parameters[2];	 // [2] is not transparant!
 
@@ -832,11 +842,12 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
 	string xPlusYName = (xName + "_plus_" + yName);
 	
 	if (!robust) {
-		addConstr(xPlusYExpr, "==", z, // "<=" gives same results since 
+		fastAddConstr(xPlusYExpr, "==", z, // "<=" gives same results since 
 							// z is minimized, but == seems faster: eg: 40s io 45s
 							xPlusYName.substr(0, STR_MAX_LEN-26) 
-              + "_sum_convex_max_up_tight_1",
-							doUpdate); // function row (1)
+              + "_sum_convex_max_up_tight_1"
+							//,doUpdate
+                  ); // function row (1)
     assert(false);
     cerr << "ERROR: not supported for now" << endl; // FIXME
 		return;
@@ -878,10 +889,11 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
 			dnFunctionExpr += z0 + (zdMin - z0)/(dMin - 0) * (xPlusYExpr - 0);
 			
 			// now imagine a V shape described by these 3 points.
-			addConstr(dnFunctionExpr, "<=", z,
+			fastAddConstr(dnFunctionExpr, "<=", z,
 								xPlusYName.substr(0, STR_MAX_LEN-34) 
-                + "_sum_convex_max_robust_up_function",
-								doUpdate);
+                + "_sum_convex_max_robust_up_function"
+								//,doUpdate
+                    );
 			// function row (1)	
 		}
 		
@@ -892,10 +904,11 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
 		;
 		upFunctionExpr += 
 		zdMin + (zD1 - zdMin)/(D1 - dMin) * (xPlusYExpr - dMin);
-		addConstr(upFunctionExpr, "<=", z,
+		fastAddConstr(upFunctionExpr, "<=", z,
 							xPlusYName.substr(0, STR_MAX_LEN-34) 
-              + "_sum_convex_max_robust_dn_function",
-							doUpdate);
+              + "_sum_convex_max_robust_dn_function"
+							//,doUpdate
+                  );
 		// function row (1)	
 		
 	} else {
@@ -905,10 +918,11 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
 		assert(zD1 <= z0); // dn slope
 		dnFunctionExpr += 
 		z0 + (zD1 - z0)/(D1 - 0) * (xPlusYExpr - 0);
-		addConstr(dnFunctionExpr, "<=", z,
+		fastAddConstr(dnFunctionExpr, "<=", z,
 							xPlusYName.substr(0, STR_MAX_LEN-39)
-              + "_sum_convex_max_robust_dn_only_function",
-							doUpdate);		
+              + "_sum_convex_max_robust_dn_only_function"
+							//,doUpdate
+                  );		
 	}
 }
 

@@ -172,6 +172,67 @@ const SolverConstr & XpressSolver::addConstr(
   return constrVector_.back();
 }
 
+
+/// fast add constraint methods ///
+void XpressSolver::fastAddConstr(const SolverVar & lhs, 
+                                 const std::string & comp, 
+                                 const SolverVar & rhs, 
+                                 const std::string & name) {
+  if (comp=="==") {
+    model_->newCtr(lpConvert(name).c_str(), lhs == rhs);
+  }  else if (comp=="<=") {
+    model_->newCtr(lpConvert(name).c_str(), lhs <= rhs);
+  } else if (comp==">=") {
+    model_->newCtr(lpConvert(name).c_str(), lhs >= rhs);
+  } else {
+    cerr << "ERROR: In XpressSolver::addConstr(...)" << endl;
+    cerr << "  Wrong comparator argument string " << comp << " supplied." << endl;
+    cerr << "  Should be '==', '<=' or '>='." << endl;
+    assert(false);
+    exit(0);
+  }
+}
+
+void XpressSolver::fastAddConstr(const SolverExpr & lhs, 
+                                 const std::string & comp, 
+                                 const SolverVar & rhs, 
+                                 const std::string & name) {
+  if (comp=="==") {
+    model_->newCtr(lpConvert(name).c_str(), lhs == rhs);
+  }  else if (comp=="<=") {
+    model_->newCtr(lpConvert(name).c_str(), lhs <= rhs);
+  } else if (comp==">=") {
+    model_->newCtr(lpConvert(name).c_str(), lhs >= rhs);
+  } else {
+    cerr << "ERROR: In XpressSolver::addConstr(...)" << endl;
+    cerr << "  Wrong comparator argument string " << comp << " supplied." << endl;
+    cerr << "  Should be '==', '<=' or '>='." << endl;
+    assert(false);
+    exit(0);
+  }
+}
+
+void XpressSolver::addConstr(const SolverExpr & lhs, 
+                             const std::string & comp, 
+                             const SolverExpr & rhs, 
+                             const std::string & name) {
+  if (comp=="==") {
+    model_->newCtr(lpConvert(name).c_str(), lhs == rhs);
+  }  else if (comp=="<=") {
+    model_->newCtr(lpConvert(name).c_str(), lhs <= rhs);
+  } else if (comp==">=") {
+    model_->newCtr(lpConvert(name).c_str(), lhs >= rhs);
+  } else {
+    cerr << "ERROR: In XpressSolver::addConstr(...)" << endl;
+    cerr << "  Wrong comparator argument string " << comp << " supplied." << endl;
+    cerr << "  Should be '==', '<=' or '>='." << endl;
+    assert(false);
+    exit(0);
+  }
+}
+///////////////////////////////////
+
+
 //const SolverSos & 
 void XpressSolver::addSos1SolverSpecific(
   const string & name,

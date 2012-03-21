@@ -150,9 +150,46 @@ const SolverConstr & GurobiSolver::addConstr(
   return constrVector_.back();
 }
 
+//////////// fast constraint addition without pushing onto vector ////////////
+
+void GurobiSolver::fastAddConstr(const SolverVar & lhs, 
+                                 const std::string & comp, 
+                                 const SolverVar & rhs, 
+                                 const std::string & name) {
+  char ch = 
+  compStringToChar(comp,
+                   "fastAddConstr(SolverVar &, const string &, SolverVar &)");
+  model_->addConstr(lhs, ch, rhs, lpConvert(name).
+                    substr(0, STR_MAX_LEN));
+}
+
+void GurobiSolver::fastAddConstr(const SolverExpr & lhs, 
+                                 const std::string & comp, 
+                                 const SolverVar & rhs, 
+                                 const std::string & name) {
+  char ch = 
+  compStringToChar(comp,
+                   "fastAddConstr(SolverExpr &, const string &, SolverVar &)");
+  model_->addConstr(lhs, ch, rhs, lpConvert(name).
+                    substr(0, STR_MAX_LEN));
+}
+
+void GurobiSolver::fastAddConstr(const SolverExpr & lhs, 
+                                 const std::string & comp, 
+                                 const SolverExpr & rhs, 
+                                 const std::string & name) {
+  char ch = compStringToChar(comp, 
+                             "addConstr(SolverExpr &, const string &, SolverExpr &)");
+  model_->addConstr(lhs, ch, rhs, lpConvert(name).
+                    substr(0, STR_MAX_LEN));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+
+
 // Specifically for Gurobi really
 void GurobiSolver::update() {
-  //cerr << "GurobiSolver::update()" << endl; // FIXME
   model_->update();
 }
 

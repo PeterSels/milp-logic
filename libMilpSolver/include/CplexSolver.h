@@ -38,7 +38,20 @@ public:
   const SolverConstr & addConstr(
     const SolverExpr & lhs, const std::string & comp, const SolverExpr & rhs,
     const std::string & name, bool doUpdate=true);
-
+  
+  void fastAddConstr(const SolverVar & lhs, 
+                     const std::string & comp, 
+                     const SolverVar & rhs, 
+                     const std::string & name);
+  void fastAddConstr(const SolverExpr & lhs, 
+                     const std::string & comp, 
+                     const SolverVar & rhs, 
+                     const std::string & name);
+  void fastAddConstr(const SolverExpr & lhs, 
+                     const std::string & comp, 
+                     const SolverExpr & rhs, 
+                     const std::string & name);
+  
 	virtual void update();
 
   //const SolverSos & 
