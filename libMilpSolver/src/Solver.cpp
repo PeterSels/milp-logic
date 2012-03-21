@@ -237,6 +237,26 @@ void Solver::addEqualConstr(
 	 addConjunctionConstr(eqBinVar, leBinVar, geBinVar, 
                         name.substr(0, STR_MAX_LEN-17) 
                         + "_eq_le" + "_eq_ge" + "_conj");	
+/*
+  // avoid generation of extra vars (which requires update for Gurobi,
+  // before the constraints over them can be added)
+  assert(false);
+  addLessOrEqualConstr(eqBinVar,
+                       lhsExpr,
+                       lhsLowerBound, lhsUpperBound,
+                       rhsExpr,
+                       rhsLowerBound, rhsUpperBound,
+                       unit,
+                       name + "_le");
+  
+  addLessOrEqualConstr(eqBinVar,
+                       rhsExpr,
+                       rhsLowerBound, rhsUpperBound,
+                       lhsExpr,
+                       lhsLowerBound, lhsUpperBound,
+                       unit,
+                       name + "_ge");
+*/
 }
 
 const SolverVar Solver::addEqualBinVar(
