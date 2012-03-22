@@ -259,6 +259,32 @@ void Solver::addEqualConstr(
 */
 }
 
+// supposing leBinVar and geBinVar already exist,
+// avoids having to do update in here
+void Solver::fastAddEqualConstr(const SolverVar & eqBinVar,
+                                const SolverVar & leBinVar,
+                                const SolverVar & geBinVar,
+                                const SolverExpr & lhsExpr,
+                                double lhsLowerBound,  double lhsUpperBound,
+                                const SolverExpr & rhsExpr,
+                                double rhsLowerBound,  double rhsUpperBound,
+                                double unit,
+                                const std::string & name) {
+  addLessOrEqualConstr(leBinVar,
+                       lhsExpr, lhsLowerBound, lhsUpperBound,  // lhs
+                       rhsExpr, rhsLowerBound, rhsUpperBound,  // rhs non-swapped
+                       unit, 
+                       name.substr(0, STR_MAX_LEN-6) + "_eq_le");
+  addLessOrEqualConstr(geBinVar,
+                       rhsExpr, rhsLowerBound, rhsUpperBound,  // rhs
+                       lhsExpr, lhsLowerBound, lhsUpperBound,  // lhs swapped!
+                       unit, 
+                       name.substr(0, STR_MAX_LEN-6) + "_eq_ge");
+  addConjunctionConstr(eqBinVar, leBinVar, geBinVar, 
+                       name.substr(0, STR_MAX_LEN-17) 
+                       + "_eq_le" + "_eq_ge" + "_conj");	
+}
+
 const SolverVar Solver::addEqualBinVar(
   double objCoef,
   const SolverExpr & lhsExpr,
@@ -300,6 +326,33 @@ void Solver::addEqualConstr(
 	 addConjunctionConstr(eqBinVar, leBinVar, geBinVar, 
      name.substr(0, STR_MAX_LEN-17) + "_eq_le" + "_eq_ge" + "_conj");	
 }
+
+
+void Solver::fastAddEqualConstr(const SolverVar & eqBinVar,
+                                const SolverVar & leBinVar,
+                                const SolverVar & geBinVar,
+                                const SolverExpr & lhsExpr,
+                                double lhsLowerBound,  double lhsUpperBound,
+                                double rhs,
+                                double unit,
+                                const std::string & name) {
+  
+  // == when <= and >=
+  addLessOrEqualConstr(leBinVar,
+                       lhsExpr-rhs, lhsLowerBound-rhs, lhsUpperBound-rhs, // lhs // rhs non-swapped
+                       0,
+                       unit, 
+                       name.substr(0, STR_MAX_LEN-6) + "_eq_le");
+  addLessOrEqualConstr(geBinVar, 
+                       rhs-lhsExpr, rhs-lhsLowerBound, rhs-lhsUpperBound, // rhs // lhs swapped!
+                       0,
+                       unit, 
+                       name.substr(0, STR_MAX_LEN-6) + "_eq_ge");
+  addConjunctionConstr(eqBinVar, leBinVar, geBinVar, 
+                       name.substr(0, STR_MAX_LEN-17) +
+                         "_eq_le" + "_eq_ge" + "_conj");	
+}
+
 
 const SolverVar Solver::
 addLessOrEqualBinVar(double objCoef,

@@ -167,7 +167,18 @@ public:
     double rhsLowerBound,  double rhsUpperBound,
     double unit,
     const std::string & name);
-	
+	void fastAddEqualConstr(
+    const SolverVar & eqBinVar,
+    const SolverVar & leBinVar,
+    const SolverVar & geBinVar,
+    const SolverExpr & lhsExpr,
+    double lhsLowerBound,  double lhsUpperBound,
+    const SolverExpr & rhsExpr,
+    double rhsLowerBound,  double rhsUpperBound,
+    double unit,
+    const std::string & name);
+
+  
   const SolverVar addEqualBinVar(
     double objCoef,
     const SolverExpr & lhsExpr,
@@ -182,7 +193,17 @@ public:
     double rhs,
     double unit,
     const std::string & name);
-
+  void fastAddEqualConstr(
+    const SolverVar & eqBinVar,
+    const SolverVar & leBinVar,
+    const SolverVar & geBinVar,
+    const SolverExpr & lhsExpr,
+    double lhsLowerBound,  double lhsUpperBound,
+    double rhs,
+    double unit,
+    const std::string & name);
+  
+  
   // a => b
   void addImplication(
     const SolverVar & binVarA, 

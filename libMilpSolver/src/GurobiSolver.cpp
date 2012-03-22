@@ -34,7 +34,8 @@ void GurobiSolver::resetModel() {
   if (model_==0) {
     // somehow not printed
     cerr << "ERROR: Could not initialize Gurobi problem." << endl;
-    cerr << "  Possible cause is that another Gurobi is already running," << endl;
+    cerr << "  Possible cause is that another Gurobi is already running," 
+    << endl;
     cerr << "  or that your license server is not correctly set up." << endl;
     cerr << "Quitting." << endl;
     assert(false);
@@ -124,8 +125,9 @@ const SolverConstr & GurobiSolver::addConstr(
   const SolverExpr & lhs, const std::string & comp, const SolverVar & rhs, 
   const std::string & name, bool doUpdate) {
   
-  char ch = compStringToChar(comp,
-                             "addConstr(SolverExpr &, const string &, SolverVar &)");
+  char ch = 
+  compStringToChar(comp,
+                   "addConstr(SolverExpr &, const string &, SolverVar &)");
   constrVector_.push_back(model_->addConstr(lhs, ch, rhs, 
                                             lpConvert(name).
                                             substr(0, STR_MAX_LEN)));
@@ -178,8 +180,9 @@ void GurobiSolver::fastAddConstr(const SolverExpr & lhs,
                                  const std::string & comp, 
                                  const SolverExpr & rhs, 
                                  const std::string & name) {
-  char ch = compStringToChar(comp, 
-                             "addConstr(SolverExpr &, const string &, SolverExpr &)");
+  char ch = 
+  compStringToChar(comp, 
+                   "addConstr(SolverExpr &, const string &, SolverExpr &)");
   model_->addConstr(lhs, ch, rhs, lpConvert(name).
                     substr(0, STR_MAX_LEN));
 }
@@ -190,6 +193,7 @@ void GurobiSolver::fastAddConstr(const SolverExpr & lhs,
 
 // Specifically for Gurobi really
 void GurobiSolver::update() {
+  cout << "GurobiSolver::update()" << endl;
   model_->update();
 }
 
@@ -206,7 +210,8 @@ char GurobiSolver::compStringToChar(
     ch = GRB_GREATER_EQUAL;
   } else {
     cerr << "ERROR: In GurobiSolver::" << funcName << endl;
-    cerr << "  Wrong comparator argument string " << comp << " supplied." << endl;
+    cerr << "  Wrong comparator argument string " << comp << " supplied." 
+    << endl;
     cerr << "  Should be '==', '<=' or '>='." << endl;
     assert(false);
     exit(0);
@@ -315,8 +320,9 @@ bool GurobiSolver::solve(double gap, int nThreads) {
     cout << "Error code = " << e.getErrorCode() << endl;
     cout << e.getMessage() << endl;
   } catch (...) {
-    cerr << "ERROR: Gurobi exception catched at calling new GurobiSolver::solve()" 
-         << endl;
+    cerr 
+    << "ERROR: Gurobi exception catched at calling new GurobiSolver::solve()" 
+    << endl;
   }
     
   return solved_;
@@ -379,7 +385,8 @@ void GurobiSolver::addSos1SolverSpecific(
   //model_->addSOS(GRB.SOS_TYPE1, [x, y, z], [1, 2, 4]);
   //const SolverSos & sos = 
 #ifdef USE_SOS_VECTOR  
-  sosVector_.push_back(model_->addSOS(sosVars, sosWeights, nVars, GRB_SOS_TYPE1));
+  sosVector_.push_back(model_->addSOS(sosVars, sosWeights, 
+                                      nVars, GRB_SOS_TYPE1));
 #else
   model_->addSOS(sosVars, sosWeights, nVars, GRB_SOS_TYPE1);
 #endif
