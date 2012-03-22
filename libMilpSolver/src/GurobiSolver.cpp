@@ -193,7 +193,7 @@ void GurobiSolver::fastAddConstr(const SolverExpr & lhs,
 
 // Specifically for Gurobi really
 void GurobiSolver::update() {
-  cout << "GurobiSolver::update()" << endl;
+  //cout << "GurobiSolver::update()" << endl;
   model_->update();
 }
 
