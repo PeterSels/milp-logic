@@ -4,9 +4,7 @@ project( libAnalytics )
 
 CMAKE_POLICY(SET CMP0009 OLD)
 
-if(NOT WIN32)
-  file(GLOB_RECURSE HEADERS "*.h" "./include/*.h")
-endif()
+file(GLOB HEADERS "*.h" "./include/*.h")
 
 set(SOURCES 
   src/BiExponentialConvolution.cpp
@@ -18,8 +16,7 @@ set(SOURCES
 )
 
 include_directories( 
-  include
-  
+  include  
 )
 
 add_definitions( 

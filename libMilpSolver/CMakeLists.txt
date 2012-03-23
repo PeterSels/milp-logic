@@ -15,9 +15,7 @@ endif()
 
 CMAKE_POLICY(SET CMP0009 OLD)
 
-if(NOT WIN32)
-  file(GLOB_RECURSE HEADERS "*.h" "./include/*.h")
-endif()
+file(GLOB HEADERS "*.h" "./include/*.h")
 
 set(SOURCES 
   src/BclException.cpp
