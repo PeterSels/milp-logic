@@ -212,10 +212,10 @@ void XpressSolver::fastAddConstr(const SolverExpr & lhs,
   }
 }
 
-void XpressSolver::addConstr(const SolverExpr & lhs, 
-                             const std::string & comp, 
-                             const SolverExpr & rhs, 
-                             const std::string & name) {
+void XpressSolver::fastAddConstr(const SolverExpr & lhs, 
+                                 const std::string & comp, 
+                                 const SolverExpr & rhs, 
+                                 const std::string & name) {
   if (comp=="==") {
     model_->newCtr(lpConvert(name).c_str(), lhs == rhs);
   }  else if (comp=="<=") {

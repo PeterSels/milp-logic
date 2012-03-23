@@ -16,11 +16,10 @@ set(SOURCES
 
 include_directories( 
   include
+  
 )
 
 add_definitions( 
-##  -DWIN32
-##  -D_DEBUG
 )
 
 add_library( Analytics STATIC ${SOURCES} ${HEADERS})

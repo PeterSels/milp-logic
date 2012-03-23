@@ -128,7 +128,7 @@ int main(int argc, char * argv[]) {
       
       solver_->setMinimize();
 			
-			solver_->exportModelAsLpFile("sosxyf");						
+			//solver_->exportModelAsLpFile("sosxyf");						
 			
 			double gap = 0.0;
       bool solved = solver_->solve(gap);

@@ -29,16 +29,19 @@ include_directories(
 IF(APPLE)
  set(CPLEX_ARCH_DIR x86-64_darwin9_gcc4.0/static_pic)
  set(GUROBI_CPP gurobi_c++)
+ set(XPRESS_LIBS )
  set(MATH_LIB m)
  set(THREAD )
 ELSEIF(WIN32)
  set(CPLEX_ARCH_DIR x86_windows_vs2008/stat_mta)
  set(GUROBI_CPP gurobi_c++mtd2008)
+ set(XPRESS_LIBS xprs xprb)
  set(MATH_LIB )
  set(THREAD )
 ELSE()
  set(CPLEX_ARCH_DIR x86-64_sles10_4.1/static_pic)
  set(GUROBI_CPP gurobi_c++)
+ set(XPRESS_LIBS )
  set(MATH_LIB m)
  set(THREAD pthread)
 ENDIF()
@@ -72,6 +75,6 @@ endif()
 target_link_libraries( milpSolverTest MilpSolver Analytics StringUtilities 
 ${GUROBI_CPP} $ENV{GUROBI_MAIN_VERSION} 
 ilocplex cplex$ENV{CPLEX_VERSION} concert 
-#xprs xprb 
+${XPRESS_LIBS}
 ${MATH_LIB} ${EXTRA_LIBS} ${THREAD})
 
