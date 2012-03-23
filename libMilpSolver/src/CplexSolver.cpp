@@ -49,6 +49,7 @@ CplexSolver::CplexSolver(unsigned int maxGetLicenseSeconds,
 : Solver()
 , maxGetLicenseSeconds_(maxGetLicenseSeconds)
 , maxSolveSeconds_(maxSolveSeconds)
+, sense_(-1) // minimize by default
 {
   assert(maxGetLicenseSeconds_ >= 0);
   assert(maxSolveSeconds_ >= 0);
