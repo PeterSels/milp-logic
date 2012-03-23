@@ -15,9 +15,7 @@ link_directories(
 )
 
 add_definitions( 
-##  -DWIN32
-##  -D_CONSOLE
-##  -D_DEBUG
+  -D_CONSOLE
 )
 
 add_executable( libAnalyticsTest ${SOURCES} )

@@ -3,7 +3,10 @@ cmake_minimum_required(VERSION 2.6)
 project( libStringUtilities )
 
 CMAKE_POLICY(SET CMP0009 OLD)
-file(GLOB_RECURSE HEADERS "*.h" "./include/*.h")
+
+if(NOT WIN32)
+  file(GLOB_RECURSE HEADERS "*.h" "./include/*.h")
+endif()
 
 set(SOURCES 
   src/StringUtilities.cpp

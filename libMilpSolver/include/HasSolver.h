@@ -14,6 +14,9 @@
 #undef USE_OSI
 
 #ifdef _WIN32
+#include <iostream>
+// to get namespace std definition only
+
 // define only one!
 #define USE_CPLEX_NATIVE
 //#define USE_GUROBI_NATIVE
