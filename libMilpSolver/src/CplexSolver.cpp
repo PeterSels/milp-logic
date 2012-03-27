@@ -542,9 +542,16 @@ double CplexSolver::getObjVal() const {
   return objValue;
 }
 
+double CplexSolver::getObjBound() const {
+  double objBound = global_cplex_->getBestObjValue();
+  return objBound;
+}
+
 double CplexSolver::getMipGap() const {
-  assert(false);
-  return -1; // invalid
+  double bound = getObjBound();
+  double value = getObjVal();
+  double mipGap = 1 - (bound / value);
+  return mipGap;
 }
 
 unsigned int CplexSolver::getNumberOfRows() const {
@@ -720,7 +727,6 @@ IloCplex * CplexSolver::getLicense(int maxLicenseGetSeconds) {
   return cplex; // 0 if bad
 }
 
-
 void CplexSolver::setBranchingMethod(int method) {
   /* Gurobi version:
   assert(-1 <= method);
@@ -733,7 +739,6 @@ void CplexSolver::setBranchingMethod(int method) {
 }
 
 ////////////////// End Cuts Control ///////////////
-
 
 void CplexSolver::setIntFeasTol(double value) {
   try {
