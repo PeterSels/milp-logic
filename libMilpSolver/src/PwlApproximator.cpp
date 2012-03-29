@@ -528,16 +528,15 @@ PwlApproximator::PwlApproximator(bool brkPointNotMinimum,
     assert(zD1_ >= 0);    
   }
   
-  
   if (dMin_ < 0) {
     assert(0 <= dMin_);
   }
   assert(0 <= dMin_);
   assert(dMin_ <= D1_);
   
-  
-  // test evaluation of d=0, is tricky
-  eval(0);
+  // DEBUG, FIXME: test evaluation of d=0 and d=D1_, are tricky
+  //eval(0);
+  //eval(D1_);
   
   delete [] curve;
   curve = 0;
@@ -604,24 +603,28 @@ double PwlApproximator::eval(double d) const {
   }
   
   double z;
-  if (d==dMin_) {
+  if (d==0) {
+    z = z0_;
+  } else if (d==dMin_) {
     z = zMin_;
+  } else if (d==D1_) {
+    z = zD1_;
   } else if (d < dMin_) {
     assert(dMin_ > 0);
     z = z0_ + (zMin_ - z0_)/(dMin_ - 0) * (d - 0); 
   } else {
-    assert(d >= dMin_);
+    assert(d > dMin_);
     if (D1_ > dMin_) {
       z = zMin_ + (zD1_ - zMin_)/(D1_ - dMin_) * (d - dMin_); 
     } else {
       z = zMin_;
     }
   }
-  if (!(z >= 0)) { // covers NaN case
-    
-    cerr << "ERROR: z=" << z << " is invalid" << endl;
+  if (!(z >= 0)) { // covers NaN case    
+    cerr << "ERROR: for d=" << d << ", z=" << z << " is invalid" << endl;
     print();
-    //assert(false);
+    assert(false);
+    exit(0);
   }
   return z;
 }
