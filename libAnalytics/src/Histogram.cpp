@@ -98,7 +98,8 @@ void Histogram::inventDistributionWhenAbsent() {
       cout << "  Assuming reasonable delays of "
            << "twice zero delay and once unit delay." << endl;
     }
-    cout << "WARNING: Data absent. Creating 2*0 + 1*1 distribution." << endl;
+    //cout << "WARNING: Data absent. Creating 2*0 + 1*1 distribution." << endl;
+    // FIXMEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
     (*this)[0] = 2;
     (*this)[1] = 1;
   } else if (nx==1) { // usually all zeroes, 

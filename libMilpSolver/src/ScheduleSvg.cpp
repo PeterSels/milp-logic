@@ -1,6 +1,8 @@
 #include <fstream>
 #include <iomanip>
 #include <assert.h>
+#include <stdlib.h>
+// for exit on Linux
 
 #include "ScheduleSvg.h"
 #include "StringUtilities.h"
