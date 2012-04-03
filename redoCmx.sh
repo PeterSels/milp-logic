@@ -28,6 +28,16 @@ find . -name "*.xcodeproj" | xargs rm -rf
 find . -name cmake_install.cmake | xargs rm -f
 find . -name "CMakeFiles" | xargs rm -rf
 find . -name "CMakeCache.txt" | xargs rm -f
+find . -name "CMakeScripts" | xargs rm -rf
+find . -name "Debug" | xargs rm -rf
+find . -name "Release" | xargs rm -rf
+find . -name "*.build" | xargs rm -rf
+find . -name "Makefile" | xargs rm -rf
+
+find . -name "*.vcxproj.filters" | xargs rm -f
+find . -name "*.vcproj.*" | xargs rm -f
+find . -name "*.vcproj" | xargs rm -f
+find . -name "lib*.a" | xargs rm -f
 
 rm -rf CMakeFiles/
 rm -rf CMakeCache.txt 

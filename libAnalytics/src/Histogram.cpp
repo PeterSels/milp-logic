@@ -80,7 +80,6 @@ int Histogram::calcClosestBucketMiddleToX(int x) const {
   return closeToX;
 }
 
-
 // hmm:... FIXME
 void Histogram::inventDistributionWhenAbsent() {
   bool verbose = false;
