@@ -224,9 +224,9 @@ void Svg::adaptUsedAreaToY(int y) {
 }
 
 void Svg::addRectangle(unsigned int xTmp,
-											 unsigned int y,
+											 unsigned int yTmp,
 											          int widthTmp, 
-											 unsigned int height,
+                                int heightTmp,
 											 unsigned int strokeWidth,
 											 const string strokeColor,
 											 const string fillColor,
@@ -240,16 +240,28 @@ void Svg::addRectangle(unsigned int xTmp,
 	// default
 	unsigned int x = xTmp;
 	unsigned int width = widthTmp;
+  unsigned int y = yTmp;
+  unsigned int height = heightTmp;
 	// but
 	if (widthTmp < 0) {
-		int xHi = xTmp;
-		int xLo = xTmp + widthTmp;
+		int xHi = (int)xTmp;
+		int xLo = (int)xTmp + widthTmp;
 		assert(xLo <= xHi);
 		x = xLo;
-		width = (unsigned)(-widthTmp);
+		width = (unsigned int)(-widthTmp);
 		assert((int)x + (int)width == xHi);
 	}
-	
+
+  // but
+	if (heightTmp < 0) {
+		int yHi = (int)yTmp;
+		int yLo = (int)yTmp + heightTmp;
+		assert(yLo <= yHi);
+		y = yLo;
+		height = (unsigned int)(-heightTmp);
+		assert((int)y + (int)height == yHi);
+	}  
+  
 	adaptUsedAreaToX(x);
 	adaptUsedAreaToY(y);
 	adaptUsedAreaToX(x+width);

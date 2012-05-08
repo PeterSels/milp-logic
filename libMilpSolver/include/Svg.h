@@ -42,7 +42,7 @@ public:
 	void adaptUsedAreaToY(int y);
 	
 	void addRectangle(unsigned int x, unsigned int y,
-										         int width, unsigned int height,
+										         int width, int height,
 										unsigned int strokeWidth=1,
 										const std::string strokeColor = DEFAULT_COLOR,
 										const std::string fillColor = DEFAULT_COLOR,
