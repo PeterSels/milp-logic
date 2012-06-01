@@ -86,7 +86,7 @@ function getZoomFactor() {
 
 function zoomIndependentScrollByLogicalPixels (dx, dy) {
     var zoomFactor = getZoomFactor();
-    //window.scrollBy (dx * zoomFactor, dy * zoomFactor);
-    doTimer(dx * zoomFactor, dy * zoomFactor);
+    window.scrollBy (dx * zoomFactor, dy * zoomFactor);
+    //doTimer(dx * zoomFactor, dy * zoomFactor);
 }
 
