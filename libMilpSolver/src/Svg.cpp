@@ -4,6 +4,9 @@
 #include "Svg.h"
 #include "StringUtilities.h"
 
+//#include <boost/regex.hpp>
+#include "StringUtilities.h"
+
 #define CROP_BORDER (1000)
 #define HOVER_FILL_OPACITY (0.5)
 
@@ -323,7 +326,7 @@ void Svg::addRectangle(unsigned int xTmp,
 		//bodyStr_ << "    <desc>'" << dataFile << "'</desc>" << endl;
 	}
   
-	bodyStr_	
+	bodyStr_
 	<< "  </rect>" << endl;	 
 
   if (xlinkTo != "") {
@@ -345,21 +348,30 @@ void Svg::addText(
   const string fontName,
   unsigned int angle) {
 
-	// angle independent for now:
-  const int intFontTextLength = (int)fontSize * (int)text.length();
-	adaptUsedAreaToX((int)x - intFontTextLength);
-	adaptUsedAreaToX((int)x + intFontTextLength);
-	adaptUsedAreaToY((int)y - intFontTextLength);
-	adaptUsedAreaToY((int)y + intFontTextLength);
-	
-  bodyStr_ << "<g font-size='" << fontSize << "' font-family='" 
-	<< fontName << "' >\n";
-  bodyStr_ << "<text ";
-  bodyStr_ << " style='stroke:none; fill:" << color << ";'";
-  bodyStr_ << " x='" << x << "' y='" << y << "'";
-  bodyStr_ << " transform='rotate(" << angle << ", " << x << ", " << y << ")'";
-  bodyStr_ << ">";
-  bodyStr_ << text << "</text></g>" << endl;
+  vector<string> lines = splitStringOnString(text, "\\n");
+  unsigned int nMatches = lines.size();
+  int newx = x;
+  int ySep = 2;
+  for (int i=0; i<nMatches; i++) {
+    
+    int newy = y + (fontSize + ySep) * i;
+    
+    // angle independent for now:
+    const int intFontTextLength = (int)fontSize * (int)lines[i].length();
+    adaptUsedAreaToX((int)newx - intFontTextLength);
+    adaptUsedAreaToX((int)newx + intFontTextLength);
+    adaptUsedAreaToY((int)newy - intFontTextLength);
+    adaptUsedAreaToY((int)newy + intFontTextLength);
+    
+    bodyStr_ << "<g font-size='" << fontSize << "' font-family='" 
+    << fontName << "' >\n";
+    bodyStr_ << "<text ";
+    bodyStr_ << " style='stroke:none; fill:" << color << ";'";
+    bodyStr_ << " x='" << newx << "' y='" << newy << "'";
+    bodyStr_ << " transform='rotate(" << angle << ", " << newx << ", " << newy << ")'";
+    bodyStr_ << ">";
+    bodyStr_ << lines[i] << "</text></g>" << endl;
+  }
 }
 
 void Svg::addSvgString(const string & svgString) {

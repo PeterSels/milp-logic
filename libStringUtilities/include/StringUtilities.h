@@ -21,9 +21,14 @@ bool removeFirstDotFromString(std::string & str);
 
 std::vector<std::string> splitStringOnFirstChar(const std::string & str, 
 																								char ch);
+std::vector<std::string> splitStringOnFirstChar(const std::string & str, 
+																								const std::string & substr);
+
 std::vector<std::string> splitStringOnChar(std::vector<std::string> & v, 
 																					 char ch);
 std::vector<std::string> splitStringOnChar(const std::string & str, char ch);
+std::vector<std::string> splitStringOnString(const std::string & str,
+                                             const std::string & substr);
 
 std::string readStringUpTo(std::istream & istr, char ch);
 int readIntUpTo(std::istream & istr, char ch);

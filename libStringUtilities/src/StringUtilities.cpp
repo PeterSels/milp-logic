@@ -86,10 +86,43 @@ vector<string> splitStringOnFirstChar(const string & str, char ch) {
   return v;
 }
 
+vector<string> splitStringOnFirstString(const string & str,
+                                        const string & substr) {
+  vector<string> v;
+  unsigned int beyond = (unsigned int)str.length();
+  unsigned int pos = (unsigned int)str.find(substr);
+  if (pos >= beyond) {
+    v.push_back(str);
+  } else {
+    string pre = str.substr(0, pos);
+    string post = str.substr(pos+substr.length());
+    v.push_back(pre);
+    v.push_back(post);
+  }
+  return v;
+}
+
+
 bool splitStringVectorBackOnChar(vector<string> & v, char ch) {
   string str = v.back();
   
   vector<string> v1 = splitStringOnFirstChar(str, ch);
+  if (v1.size()==1) {
+    // leave vector v unchanged
+    return false;
+  } else {
+    // replace back string by 2 strings
+    v.pop_back();
+    v.push_back(v1[0]);
+    v.push_back(v1[1]);
+    return true;
+  }
+}
+
+bool splitStringVectorBackOnString(vector<string> & v, const string & substr) {
+  string str = v.back();
+  
+  vector<string> v1 = splitStringOnFirstString(str, substr);
   if (v1.size()==1) {
     // leave vector v unchanged
     return false;
@@ -108,6 +141,17 @@ vector<string> splitStringOnChar(const string & str, char ch) {
   bool replaced = false;
   do {
     replaced = splitStringVectorBackOnChar(v, ch);
+  } while (replaced);
+  return v;
+}
+
+vector<string> splitStringOnString(const string & str,
+                                   const string & substr) {
+  vector<string> v;
+  v.push_back(str);
+  bool replaced = false;
+  do {
+    replaced = splitStringVectorBackOnString(v, substr);
   } while (replaced);
   return v;
 }

@@ -547,8 +547,8 @@ void Solver::addEquivalence(
 //   A var must start with a letter (either upper or lower case), and may
 //   contain any number of additional letters, numerals, or characters
 //   from this list: _[]{}/.&#$%~'@^
-//   The '-' character is also removed (replaced by '_') because
-//   fabrice.buscaylet@artelys.com from Xpress/FICO told me so.
+//   The '-' character is also removed for XPRESS and replaced by '_',because
+//   fabrice.buscaylet@artelys.com from Xpress/FICO told me to do so.
 string Solver::lpConvert(const string & name) {
   string convName = name;
   string oddEvenStr = " _:_-_/_._";

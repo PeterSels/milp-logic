@@ -15,6 +15,14 @@ endif()
 
 CMAKE_POLICY(SET CMP0009 OLD)
 
+SET(BOOST_ROOT /usr/local/boost_1_49_0)
+SET(BOOST_DIR /usr/local/boost_1_49_0)
+
+SET(BOOST_INCLUDEDIR /usr/local/boost_1_49_0)
+#SET(BOOST_LIBRARYDIR /usr/local/boost_1_49_0)
+
+SET(BOOST_VERSION 1_49)
+
 file(GLOB HEADERS "*.h" "./include/*.h")
 
 set(SOURCES 
@@ -38,6 +46,7 @@ include_directories(
   $ENV{CONCERT_HOME}/include
   $ENV{GUROBI_HOME}/include
   $ENV{XPRESS_HOME}/include
+  ${BOOST_INCLUDEDIR}
 )
 
 add_definitions( 
