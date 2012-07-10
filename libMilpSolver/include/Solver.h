@@ -274,6 +274,7 @@ public:
                                double startValue) const = 0;
 
   virtual bool solve(double gap, int nThreads=0) = 0;
+  bool timedSolve(double gap, int nThreads=0);
 
   // get results
   virtual unsigned int getNumberOfRows() const = 0;

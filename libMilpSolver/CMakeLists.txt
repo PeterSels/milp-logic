@@ -15,13 +15,7 @@ endif()
 
 CMAKE_POLICY(SET CMP0009 OLD)
 
-SET(BOOST_ROOT /usr/local/boost_1_49_0)
-SET(BOOST_DIR /usr/local/boost_1_49_0)
-
-SET(BOOST_INCLUDEDIR /usr/local/boost_1_49_0)
-#SET(BOOST_LIBRARYDIR /usr/local/boost_1_49_0)
-
-SET(BOOST_VERSION 1_49)
+INCLUDE(${CMAKE_SOURCE_DIR}/boost.cmake)
 
 file(GLOB HEADERS "*.h" "./include/*.h")
 

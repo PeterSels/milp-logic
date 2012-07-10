@@ -1,17 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
 
-#set(CMAKE_C_COMPILER "gcc-4.2")
-#set(CMAKE_CXX_COMPILER "/usr/bin/g++-4.2")
-
-#set(CMAKE_C_COMPILER "/usr/bin/gcc")
-#set(CMAKE_CXX_COMPILER "/usr/bin/g++")
-#are links to:
-#set(CMAKE_C_COMPILER /usr/bin/llvm-gcc-4.2)
-#set(CMAKE_CXX_COMPILER /usr/bin/llvm-g++-4.2)
-
-#set(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION "4.0")
-
-
 IF(WIN32)
   SET(CMAKE_CXX_FLAGS_RELEASE "/MT" CACHE STRING "runtime-library flags" FORCE)
   SET(CMAKE_CXX_FLAGS_DEBUG "/MTd"  CACHE STRING "runtime-library flags" FORCE)
@@ -37,6 +25,9 @@ endif()
 
 
 project(MilpSolver)
+
+
+INCLUDE(${CMAKE_SOURCE_DIR}/boost.cmake)
 
 #if(DEFINED ENV{DO_OPEN_MP})
 #  message("DO_OPEN_MP is defined")

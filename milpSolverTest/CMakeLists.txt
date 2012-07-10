@@ -17,6 +17,8 @@ ENDIF()
 
 file(GLOB_RECURSE HEADERS "*.h")
 
+INCLUDE(${CMAKE_SOURCE_DIR}/boost.cmake)
+
 set(SOURCES 
   src/milpSolverTest.cpp
 )
@@ -31,7 +33,6 @@ include_directories(
   $ENV{GUROBI_HOME}/include
   $ENV{XPRESS_HOME}/include
 )
-
 
 IF(APPLE)
  set(CPLEX_ARCH_DIR x86-64_darwin9_gcc4.0/static_pic)
@@ -60,6 +61,7 @@ link_directories(
   $ENV{CONCERT_HOME}/lib/${CPLEX_ARCH_DIR}
   $ENV{GUROBI_HOME}/lib
   $ENV{XPRESS_HOME}/lib
+  ${BOOST_LIBRARYDIR}/stage/lib
 )
 
 add_definitions( 
@@ -83,5 +85,7 @@ target_link_libraries( milpSolverTest MilpSolver Analytics StringUtilities
 ${GUROBI_CPP} $ENV{GUROBI_MAIN_VERSION} 
 ilocplex cplex$ENV{CPLEX_VERSION} concert 
 ${XPRESS_LIBS}
-${MATH_LIB} ${EXTRA_LIBS} ${THREAD})
+${MATH_LIB} ${EXTRA_LIBS} ${THREAD}
+${BOOST_TIMER_LIB}
+)
 
