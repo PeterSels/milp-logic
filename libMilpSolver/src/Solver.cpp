@@ -1003,15 +1003,11 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
 }
 
 bool Solver::timedSolve(double gap, int nThreads) {
-  
   boost::timer::cpu_timer t; // start timing
-  
-  solve(gap, nThreads);  
-  
+  bool result = solve(gap, nThreads);  
   timer::cpu_times elapsed_time = t.elapsed();
-  
-  cout << "Solving took: " << format(elapsed_time) << endl;
-  
+  cout << "Solving took: " << format(elapsed_time) << endl;  
+  return result;
 }
 
 
