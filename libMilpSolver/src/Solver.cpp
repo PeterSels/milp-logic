@@ -1,7 +1,7 @@
 #include <sstream>
 #include <assert.h>
 
-//#include <boost/timer/timer.hpp>
+#include <boost/timer/timer.hpp>
 //#include <boost/system/system.hpp>
 
 #include "Solver.h"
