@@ -26,8 +26,7 @@ endif()
 
 project(MilpSolver)
 
-
-INCLUDE(${CMAKE_SOURCE_DIR}/boost.cmake)
+INCLUDE($ENV{MILP_SOLVER_HOME}/boost.cmake)
 
 #if(DEFINED ENV{DO_OPEN_MP})
 #  message("DO_OPEN_MP is defined")

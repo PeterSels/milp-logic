@@ -17,7 +17,7 @@ ENDIF()
 
 file(GLOB_RECURSE HEADERS "*.h")
 
-INCLUDE(${CMAKE_SOURCE_DIR}/boost.cmake)
+INCLUDE($ENV{MILP_SOLVER_HOME}/boost.cmake)
 
 set(SOURCES 
   src/milpSolverTest.cpp

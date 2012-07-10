@@ -15,7 +15,7 @@ endif()
 
 CMAKE_POLICY(SET CMP0009 OLD)
 
-INCLUDE(${CMAKE_SOURCE_DIR}/boost.cmake)
+INCLUDE($ENV{MILP_SOLVER_HOME}/boost.cmake)
 
 file(GLOB HEADERS "*.h" "./include/*.h")
 
