@@ -2,7 +2,6 @@
 #include <assert.h>
 
 #include <boost/timer/timer.hpp>
-//#include <boost/system/system.hpp>
 
 #include "Solver.h"
 #include "StringUtilities.h"
@@ -17,7 +16,7 @@ extern IloEnv * global_env_;
 #endif
 
 using namespace std;
-//using namespace boost;
+using namespace boost;
 
 Solver::Solver()
 : model_(0)
@@ -1004,7 +1003,7 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
 }
 
 bool Solver::timedSolve(double gap, int nThreads) {
-  /*
+  
   boost::timer::cpu_timer t; // start timing
   
   solve(gap, nThreads);  
@@ -1012,7 +1011,7 @@ bool Solver::timedSolve(double gap, int nThreads) {
   timer::cpu_times elapsed_time = t.elapsed();
   
   cout << "Solving took: " << format(elapsed_time) << endl;
-  */
+  
 }
 
 

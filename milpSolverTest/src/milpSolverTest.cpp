@@ -87,7 +87,7 @@ int main(int argc, char * argv[]) {
 			solver_->exportModelAsLpFile("sosx");			
 			
 			double gap = 0.0;
-      bool solved = solver_->solve(gap);
+      bool solved = solver_->timedSolve(gap);
       
       assert(solved);
       double objSol_ = solved ? solver_->getObjVal() : 0;
@@ -131,7 +131,7 @@ int main(int argc, char * argv[]) {
 			//solver_->exportModelAsLpFile("sosxyf");						
 			
 			double gap = 0.0;
-      bool solved = solver_->solve(gap);
+      bool solved = solver_->timedSolve(gap);
       
       assert(solved);
       double objSol_ = solved ? solver_->getObjVal() : 0;
@@ -228,7 +228,7 @@ int main(int argc, char * argv[]) {
     solver_->exportModelAsLpFile("le");
 		
 		double gap = 0.0;
-    bool solved = solver_->solve(gap);
+    bool solved = solver_->timedSolve(gap);
     assert(solved);
 		
     double objSol_ = solved ? solver_->getObjVal() : 0;
@@ -284,7 +284,7 @@ int main(int argc, char * argv[]) {
     solver_->exportModelAsLpFile("eq");
 		
 		double gap = 0.0;
-    bool solved = solver_->solve(gap);
+    bool solved = solver_->timedSolve(gap);
     assert(solved);
 		
     double objSol_ = solved ? solver_->getObjVal() : 0;
