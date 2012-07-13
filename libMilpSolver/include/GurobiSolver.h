@@ -125,6 +125,9 @@ public:
 
   void setIntFeasTol(double value);
   
+  std::string getVersionString() const;
+
+  
 private:
   void setNThreads(int nThreads);
   

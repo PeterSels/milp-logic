@@ -20,10 +20,13 @@ using namespace boost;
 
 Solver::Solver()
 : model_(0)
-, solved_(false)
 , nullExpr_(0)
 , oneExpr_(0)
 , minusOneExpr_(0)
+, solved_(false)
+, wallTime_(-1.0)
+, userTime_(-1.0)
+, systemTime_(-1.0)
 {
   varVector_.clear();
   exprVector_.clear();
@@ -1003,10 +1006,25 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
 }
 
 bool Solver::timedSolve(double gap, int nThreads) {
+  string fullSolverName = getFullSolverName();
+  cout << "Starting solver: " << fullSolverName << endl;
+  
   boost::timer::cpu_timer t; // start timing
+  wallTime_ = -1.0;
+  userTime_ = -1.0;
+  systemTime_ = -1.0;
+  
   bool result = solve(gap, nThreads);  
+  
   timer::cpu_times elapsed_time = t.elapsed();
-  cout << "Solving took: " << format(elapsed_time) << endl;  
+  
+  cout << "Solving with " << fullSolverName 
+    << " took: " << format(elapsed_time) << endl;  
+  
+  wallTime_ = elapsed_time.wall;
+  userTime_ = elapsed_time.user;
+  systemTime_ = elapsed_time.system;
+  
   return result;
 }
 
@@ -1144,6 +1162,15 @@ void Solver::setIntFeasTol(double value) {
 }
 
 ////////////////// End Cuts Control ///////////////
+
+const std::string Solver::getSolverName() const {
+  return SOLVER_NAME;
+}
+
+const std::string Solver::getFullSolverName() const {
+  return getSolverName() + " v" + getVersionString();
+}
+
 
 Solver::~Solver() {
   cout << "in ~Solver()" << endl;  

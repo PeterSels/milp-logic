@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdlib>
+#include <sstream>
 
 #include "GurobiSolver.h"
 
@@ -568,6 +569,15 @@ void GurobiSolver::setBranchingMethod(int method) {
 
 ////////////////// End Cuts Control ///////////////
 
+string GurobiSolver::getVersionString() const {
+  int major     = GRB_VERSION_MAJOR;
+  int minor     = GRB_VERSION_MINOR;
+  int technical = GRB_VERSION_TECHNICAL;
+  stringstream ss;
+  ss << major << "." << minor << "." << technical;
+  string versionString = ss.str();
+  return versionString;
+}
 
 void GurobiSolver::setIntFeasTol(double value) {
   model_->getEnv().set(GRB_DoubleParam_IntFeasTol, value); // C++		     

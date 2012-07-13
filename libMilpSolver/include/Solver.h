@@ -38,6 +38,12 @@ protected:
 	SolverExpr * minusOneExpr_;
 	
   bool solved_;
+
+public:  
+  double wallTime_;
+  double userTime_;
+  double systemTime_;
+
 public:
   Solver();
 
@@ -345,6 +351,10 @@ public:
 	const SolverExpr & getOneExpr();
 	const SolverExpr & getMinusOneExpr();
 	
+  const std::string getSolverName() const;
+  const std::string getFullSolverName() const;  
+  virtual std::string getVersionString() const = 0;
+
 	virtual ~Solver();
   
 private:

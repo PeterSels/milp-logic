@@ -45,6 +45,7 @@ typedef dashoptimization::XPRBlinExp SolverExpr; // linear!
 typedef dashoptimization::XPRBctr SolverConstr;
 typedef dashoptimization::XPRBsos SolverSos;
 #include "BclException.h"
+#define SOLVER_NAME "Fico Xpress"
 #endif
 
 #ifdef USE_GUROBI_NATIVE
@@ -55,6 +56,7 @@ typedef GRBLinExpr SolverExpr;
 typedef GRBConstr SolverConstr;
 typedef GRBException SolverException;
 typedef GRBSOS SolverSos;
+#define SOLVER_NAME "Gurobi"
 #endif
 
 #ifdef USE_CPLEX_NATIVE
@@ -76,6 +78,7 @@ typedef IloException SolverException;
 typedef IloSOS1 SolverSos;
 typedef IloEnv SolverEnv;
 //#include "BclException.h"
+#define SOLVER_NAME "Cplex"
 #endif
 
 #ifdef USE_CBC
@@ -92,6 +95,7 @@ typedef CBCLinExpr SolverExpr;
 typedef CBCConstr SolverConstr;
 typedef CBCException SolverException;
 typedef CBCSOS SolverSos;
+#define SOLVER_NAME "Cbc"
 #endif
 
 #ifdef USE_OSI
@@ -104,6 +108,7 @@ typedef flopc::MP_variable* SolverVar;
 typedef flopc::MP_expression* SolverExpr;
 typedef flopc::MP_constraint* SolverConstr;
 typedef flopc::MP_model* SolverModel;
+#define SOLVER_NAME "Osi"
 #endif
 
 #endif // HAS_SOLVER_H
