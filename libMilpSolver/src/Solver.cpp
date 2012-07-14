@@ -1016,8 +1016,6 @@ bool Solver::timedSolve(double gap, int nThreads) {
   
   bool result = solve(gap, nThreads);  
 
-  string fullSolverName = getFullSolverName();
-  
   timer::cpu_times elapsed_time = t.elapsed();
   
   cout << "Solving with " << fullSolverName 

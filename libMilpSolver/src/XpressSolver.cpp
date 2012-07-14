@@ -447,15 +447,7 @@ void XpressSolver::setNThreads(int nThreads) {
 }
 
 string XpressSolver::getVersionString() const {
-  /*
-   int major     = GRB_VERSION_MAJOR;
-   int minor     = GRB_VERSION_MINOR;
-   int technical = GRB_VERSION_TECHNICAL;
-   stringstream ss;
-   ss << major << "." << minor << "." << technical;
-   */
-  string versionString = "empty";
-  //= ss.str();
+  string versionString = "empty";   //model_->getVersion();
   return versionString;
 }
 
