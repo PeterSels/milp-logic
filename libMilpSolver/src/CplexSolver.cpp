@@ -466,13 +466,11 @@ bool CplexSolver::solve(double gap, int nThreads) {
   global_cplex_->setParam(IloCplex::EpGap, gap); // was 0.05
 
   solved_ = false;
-  (void)global_cplex_->solve(/*"g"*/); 
-  /* g for XPRESS meant: solve the problem as MIP */
+  (void)global_cplex_->solve(); 
 
   IloAlgorithm::Status mipStatus = global_cplex_->getStatus();
   cout << "MIP solver status = " << mipStatus << endl;
 
-  //solved_ = false;
   if (mipStatus == IloAlgorithm::Unknown) { // 0
     cout << "WARNING: Model solution state is unknown." << endl;
     solved_ = false;
