@@ -102,6 +102,8 @@ public:
   void setBranchingMethod(int method);  
   void setIntFeasTol(double value);
   
+  std::string getVersionString() const;
+
   ~CplexSolver();
 
   static char compStringToChar(

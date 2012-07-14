@@ -446,7 +446,18 @@ void XpressSolver::setNThreads(int nThreads) {
   XPRSsetintcontrol(opt_prob, XPRS_THREADS, nThreads);
 }
 
-
+string XpressSolver::getVersionString() const {
+  /*
+   int major     = GRB_VERSION_MAJOR;
+   int minor     = GRB_VERSION_MINOR;
+   int technical = GRB_VERSION_TECHNICAL;
+   stringstream ss;
+   ss << major << "." << minor << "." << technical;
+   */
+  string versionString = "empty";
+  //= ss.str();
+  return versionString;
+}
 
 XpressSolver::~XpressSolver() {
   delete model_;

@@ -1015,6 +1015,8 @@ bool Solver::timedSolve(double gap, int nThreads) {
   systemTime_ = -1.0;
   
   bool result = solve(gap, nThreads);  
+
+  string fullSolverName = getFullSolverName();
   
   timer::cpu_times elapsed_time = t.elapsed();
   

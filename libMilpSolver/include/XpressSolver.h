@@ -98,6 +98,8 @@ public:
 
   double getInfinity() const;  
   
+  std::string getVersionString() const;
+
   ~XpressSolver();
 
   static char compStringToChar(

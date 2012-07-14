@@ -755,6 +755,13 @@ void CplexSolver::setIntFeasTol(double value) {
   }
 }
 
+string CplexSolver::getVersionString() const {
+  
+  IloCplex cplex(*model_);
+  string versionString = cplex.getVersion();
+  return versionString;
+}
+
 CplexSolver::~CplexSolver() {
   deleteModelAndEnv();
 }
