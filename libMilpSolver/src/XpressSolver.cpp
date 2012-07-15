@@ -328,6 +328,10 @@ bool XpressSolver::solve(double gap, int nThreads) {
   xo_prob_struct * opt_prob = model_->getXPRSprob();
   XPRSsetdblcontrol(opt_prob, XPRS_MIPRELSTOP, gap);
 
+  cout << "NEW: setting XPRS_MAXTIME to " << maxSolveSeconds_ << endl; 
+  XPRSsetdblcontrol(opt_prob, XPRS_MAXTIME, maxSolveSeconds_);
+  cout << "NEW: set XPRS_MAXTIME to " << maxSolveSeconds_ << endl; 
+  
   solved_ = false;
   model_->solve("g"); // Solve the problem as MIP
 
