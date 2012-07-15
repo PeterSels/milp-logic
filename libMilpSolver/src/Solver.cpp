@@ -18,7 +18,8 @@ extern IloEnv * global_env_;
 using namespace std;
 using namespace boost;
 
-Solver::Solver()
+Solver::Solver(double maxGetLicenseSeconds, 
+               double maxSolveSeconds)
 : model_(0)
 , nullExpr_(0)
 , oneExpr_(0)
@@ -27,6 +28,8 @@ Solver::Solver()
 , wallTime_(-1.0)
 , userTime_(-1.0)
 , systemTime_(-1.0)
+, maxGetLicenseSeconds_(maxGetLicenseSeconds)
+, maxSolveSeconds_(maxSolveSeconds)
 {
   varVector_.clear();
   exprVector_.clear();

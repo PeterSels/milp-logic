@@ -9,7 +9,8 @@
 
 class CplexSolver : public Solver {
 public:
-  CplexSolver(unsigned int maxGetLicenseSeconds, unsigned int maxSolveSeconds);
+  CplexSolver(double maxGetLicenseSeconds, 
+              double maxSolveSeconds);
 
 	void anyOSSleep(unsigned int);
   // setting up model
@@ -112,9 +113,6 @@ public:
 private:
   void setNThreads(int nThreads); 
     // should only be called in (=at) solve
-
-  unsigned int maxGetLicenseSeconds_;
-  unsigned int maxSolveSeconds_;
   SolverExpr * objFunction_;
   SolverEnv * env_;
   int sense_;

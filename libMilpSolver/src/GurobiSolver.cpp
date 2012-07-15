@@ -9,8 +9,10 @@
 using namespace std;
 
 
-GurobiSolver::GurobiSolver()
-: Solver()
+GurobiSolver::GurobiSolver(double maxGetLicenseSeconds, 
+                           double maxSolveSeconds)
+: Solver(maxGetLicenseSeconds,
+         maxSolveSeconds)
 , env_(0)
 {
 }
@@ -268,6 +270,8 @@ bool GurobiSolver::solve(double gap, int nThreads) {
   //model_->set(GRB_DBL_PAR_MIPGAP, gap); // C
   model_->getEnv().set(GRB_DoubleParam_MIPGap, gap); // C++
 
+  model_->getEnv().set(GRB_DoubleParam_TimeLimit, maxSolveSeconds_); // C++  
+  
   // FIXME: The settings below should be moved to the Solver level
   // so that other solvers, like: CPLEX and XPRESS act the same
   
@@ -508,6 +512,12 @@ void GurobiSolver::improveStartGap(double gap) {
 	assert(0.0 <= gap);
 	assert(gap <= GRB_INFINITY);
   model_->getEnv().set(GRB_DoubleParam_ImproveStartGap, gap); // C++	
+}
+
+void GurobiSolver::setTimeLimit(double time) {
+	assert(0.0 <= time);
+	assert(time <= GRB_INFINITY);
+  model_->getEnv().set(GRB_DoubleParam_TimeLimit, time); // C++	
 }
 
 void GurobiSolver::improveStartTime(double time) {

@@ -9,7 +9,8 @@
 
 class XpressSolver : public Solver {
 public:
-  XpressSolver();
+  XpressSolver(double maxGetLicenseSeconds, 
+               double maxSolveSeconds);
 
   // setting up model
   void resetModel();
@@ -106,7 +107,7 @@ public:
     const std::string & comp, const std::string & funcName);
 private:
   void setNThreads(int nThreads);
-  
+
   SolverExpr objFunction_;
 };
 

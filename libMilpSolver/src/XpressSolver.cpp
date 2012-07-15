@@ -13,8 +13,10 @@
 using namespace std;
 using namespace dashoptimization;
 
-XpressSolver::XpressSolver() 
-: Solver()
+XpressSolver::XpressSolver(double maxGetLicenseSeconds, 
+                           double maxSolveSeconds) 
+: Solver(maxGetLicenseSeconds, 
+         maxSolveSeconds)
 {
 }
 

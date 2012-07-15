@@ -43,17 +43,20 @@ double f(const vector<double> & parameters, double i) {
 
 
 void resetModel(unsigned int maxGetLicenseSeconds, 
-								unsigned int maxSolverSeconds) {
+								unsigned int maxSolveSeconds) {
 	cout << "resetModel" << endl;
   if (solver_==0) {
 #ifdef USE_GUROBI_NATIVE
-    solver_ = new GurobiSolver();
+    solver_ = new GurobiSolver(maxGetLicenseSeconds, 
+                               maxSolveSeconds);
 #endif
 #ifdef USE_XPRESS_NATIVE
-    solver_ = new XpressSolver();
+    solver_ = new XpressSolver(maxGetLicenseSeconds, 
+                               maxSolveSeconds);
 #endif
 #ifdef USE_CPLEX_NATIVE
-    solver_ = new CplexSolver(maxGetLicenseSeconds, maxGetLicenseSeconds);
+    solver_ = new CplexSolver(maxGetLicenseSeconds, 
+                              maxSolveSeconds);
 #endif
   }
   assert(solver_!=0);

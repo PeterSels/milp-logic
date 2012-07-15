@@ -44,11 +44,10 @@ IloEnv * global_env_; // same as env_, but Cplex often needs
 // it in Ilo object construction
 IloCplex * global_cplex_;
 
-CplexSolver::CplexSolver(unsigned int maxGetLicenseSeconds, 
-                         unsigned int maxSolveSeconds) 
-: Solver()
-, maxGetLicenseSeconds_(maxGetLicenseSeconds)
-, maxSolveSeconds_(maxSolveSeconds)
+CplexSolver::CplexSolver(double maxGetLicenseSeconds, 
+                         double maxSolveSeconds) 
+: Solver(maxGetLicenseSeconds,
+         maxSolveSeconds)
 , sense_(-1) // minimize by default
 {
   assert(maxGetLicenseSeconds_ >= 0);

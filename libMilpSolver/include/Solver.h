@@ -45,7 +45,8 @@ public:
   double systemTime_;
 
 public:
-  Solver();
+  Solver(double maxGetLicenseSeconds, 
+         double maxSolveSeconds);
 
   // setting up model
   virtual void resetModel() = 0;
@@ -359,7 +360,9 @@ public:
   
 private:
   virtual void setNThreads(int nThreads) = 0;
-
+protected:
+  double maxGetLicenseSeconds_; 
+  double maxSolveSeconds_;
 };
 
 #endif // SOLVER_H

@@ -9,7 +9,8 @@
 
 class GurobiSolver : public Solver {
 public:
-  GurobiSolver();
+  GurobiSolver(double maxGetLicenseSeconds, 
+               double maxSolveSeconds);
 
   // setting up model
   void resetModel();
@@ -112,6 +113,7 @@ public:
 	void setSymmetryDetectionLevel(int level);
 	void improveStartGap(double gap);
 	void improveStartTime(double time);
+  void setTimeLimit(double time);
 	void setHeuristics(double level);
   void setVarBranch(int value);
 	
@@ -130,7 +132,7 @@ public:
   
 private:
   void setNThreads(int nThreads);
-  
+
   GRBEnv * env_;
 };
 
