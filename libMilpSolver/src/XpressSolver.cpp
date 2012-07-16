@@ -453,7 +453,6 @@ void XpressSolver::setNThreads(int nThreads) {
 }
 
 string XpressSolver::getVersionString() const {
-  string XpressSolver::getVersionString() const {
   stringstream ss;
   ss << XPRS_VERSION;
   string versionString = ss.str();
