@@ -385,8 +385,10 @@ double XpressSolver::getObjVal() const {
 }
 
 double XpressSolver::getMipGap() const {
-  assert(false);
-  return -1; // invalid
+  double gap = -1.0;
+  xo_prob_struct * opt_prob = model_->getXPRSprob();
+  XPRSgetdblattrib(opt_prob, XPRS_BARCGAP, &gap);
+  return gap; // invalid
 }
 
 unsigned int XpressSolver::getNumberOfRows() const {
@@ -453,11 +455,16 @@ void XpressSolver::setNThreads(int nThreads) {
 }
 
 string XpressSolver::getVersionString() const {
-  stringstream ss;
-  ss << XPRS_VERSION;
-  string versionString = ss.str();
-  return versionString;
-}
+  const char * s;
+  s = XPRBgetversion();
+  
+  /*
+   char * s;
+   xo_prob_struct * opt_prob = model_->getXPRSprob();
+   XPRSgetstrattrib(opt_prob, XPRS_VERSION, s);
+   */
+  return string(s);
+} 
 
 XpressSolver::~XpressSolver() {
   delete model_;
