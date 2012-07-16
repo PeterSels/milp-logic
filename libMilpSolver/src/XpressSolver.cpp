@@ -1,10 +1,10 @@
 #include <iostream>
+#include <sstream>
 #include <assert.h>
 
 #include "XpressSolver.h"
 
 #ifdef USE_XPRESS_NATIVE
-
 
 #include "xprb_cpp.h"
 #include "xprb.h"
@@ -453,7 +453,10 @@ void XpressSolver::setNThreads(int nThreads) {
 }
 
 string XpressSolver::getVersionString() const {
-  string versionString = "empty";   //model_->getVersion();
+  string XpressSolver::getVersionString() const {
+  stringstream ss;
+  ss << XPRS_VERSION;
+  string versionString = ss.str();
   return versionString;
 }
 

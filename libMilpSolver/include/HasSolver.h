@@ -45,7 +45,7 @@ typedef dashoptimization::XPRBlinExp SolverExpr; // linear!
 typedef dashoptimization::XPRBctr SolverConstr;
 typedef dashoptimization::XPRBsos SolverSos;
 #include "BclException.h"
-#define SOLVER_NAME "Fico Xpress"
+#define SOLVER_NAME "Xpress"
 #endif
 
 #ifdef USE_GUROBI_NATIVE
