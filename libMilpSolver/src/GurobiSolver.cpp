@@ -270,7 +270,9 @@ bool GurobiSolver::solve(double gap, int nThreads) {
   //model_->set(GRB_DBL_PAR_MIPGAP, gap); // C
   model_->getEnv().set(GRB_DoubleParam_MIPGap, gap); // C++
 
-  model_->getEnv().set(GRB_DoubleParam_TimeLimit, maxSolveSeconds_); // C++  
+  if (maxSolveSeconds_!=0) {
+    model_->getEnv().set(GRB_DoubleParam_TimeLimit, maxSolveSeconds_); // C++  
+  }
   
   // FIXME: The settings below should be moved to the Solver level
   // so that other solvers, like: CPLEX and XPRESS act the same

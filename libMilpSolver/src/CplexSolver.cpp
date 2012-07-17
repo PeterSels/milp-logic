@@ -461,7 +461,10 @@ bool CplexSolver::solve(double gap, int nThreads) {
     ofstream cplexLogStr(cplexLogFileName.c_str());
 	  global_cplex_->setOut(cplexLogStr);
   }
-  global_cplex_->setParam(IloCplex::TiLim, maxSolveSeconds_);
+  
+  if (maxSolveSeconds_!=0) {
+    global_cplex_->setParam(IloCplex::TiLim, maxSolveSeconds_);
+  }
   global_cplex_->setParam(IloCplex::EpGap, gap); // was 0.05
 
   solved_ = false;
