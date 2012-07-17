@@ -93,6 +93,14 @@ public:
   
 	virtual void update() = 0; // Specifically for Gurobi really
 
+  /// layer 1.5:
+  const SolverVar & addVar(bool continuous,
+                           double lo, double hi, double objCoef, const std::string & name,
+                           bool doUpdate=true);
+  const SolverVar & addBinVar(bool continuous,
+                              double objCoef, const std::string & name,
+                              bool doUpdate=true);
+  
   //// layer 2:
   // a = (b and c)
   virtual const SolverVar /*&*/ addConjunctionBinVar(

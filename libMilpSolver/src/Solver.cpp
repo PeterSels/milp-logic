@@ -76,6 +76,30 @@ void Solver::resetModelNullOneExpressions() {
 	update();
 }
 
+
+const SolverVar & Solver::addVar(bool continuous,
+                                 double lo, double hi, double objCoef, 
+                                 const std::string & name,
+                                 bool doUpdate) {
+  const SolverVar & var = continuous ?
+    addLpVar(lo, hi, objCoef, name, doUpdate) :
+    addIntVar(lo, hi, objCoef, name, doUpdate);
+  return var;
+}
+
+const SolverVar & Solver::addBinVar(bool continuous,
+                                    double objCoef, 
+                                    const std::string & name,
+                                    bool doUpdate) {
+  const SolverVar & var = continuous ?
+  addLpVar(0, 1, objCoef, name, doUpdate) :
+  addBinVar(objCoef, name, doUpdate);
+  return var;  
+}
+
+
+
+
 const SolverVar Solver::addConjunctionBinVar(
   double objCoef,
   const SolverVar & conjunctionBinVarB, 
