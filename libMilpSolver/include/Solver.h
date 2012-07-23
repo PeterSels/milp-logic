@@ -316,7 +316,6 @@ public:
 	virtual void improveStartTime(double time); // = 0;
 	virtual void setHeuristics(double level); // = 0
 	virtual void setVarBranch(int value); // = 0
-
 	
 	virtual void setCutsLevel(int level); // = 0
 	virtual void setCliqueCutsLevel(int level); // = 0

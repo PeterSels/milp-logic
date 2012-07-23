@@ -188,7 +188,9 @@ void Svg::addCircle(
   unsigned int radius,
   unsigned int strokeWidth,
   const string strokeColor,
-  const string fillColor) {
+  const string fillColor,
+  float strokeOpacity,
+  float fillOpacity) {
 
 	adaptUsedAreaToX(cx+radius);
 	adaptUsedAreaToX(cx-radius);
@@ -197,9 +199,21 @@ void Svg::addCircle(
 		
   bodyStr_ << "<circle cx='" << cx << "' cy='" << cy << "' r='" 
 	<< radius << "'" << endl;
-  bodyStr_ << "stroke='" << strokeColor
-    << "' stroke-width='" << strokeWidth << "' fill='" << fillColor 
-	<< "'/>" << endl;
+  bodyStr_ 
+  
+  //<< "stroke='" << strokeColor
+  //<< "' stroke-width='" << strokeWidth 
+  //<< "' fill='" << fillColor 
+
+  
+  << " style='fill:" << fillColor 
+	<< ";stroke:" << strokeColor 
+	<< ";stroke-width:" << strokeWidth
+	<< ";fill-opacity:" << fillOpacity 
+	<< ";stroke-opacity:" << strokeOpacity << "'" 
+
+  
+  << "/>" << endl;
 }
 
 void Svg::adaptUsedAreaToX(int x) {
@@ -307,7 +321,8 @@ void Svg::addRectangle(unsigned int xTmp,
 	<< ";stroke:" << strokeColor 
 	<< ";stroke-width:" << strokeWidth
 	<< ";fill-opacity:" << fillOpacity 
-	<< ";stroke-opacity:" << strokeOpacity << "'" << endl;
+	<< ";stroke-opacity:" << strokeOpacity << "'" 
+  << endl;
   
 	bodyStr_
   //<< "onload='makeInvisible(evt)' " << endl

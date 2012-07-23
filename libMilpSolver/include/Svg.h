@@ -36,7 +36,9 @@ public:
 	  unsigned int radius = 1,
 	  unsigned int strokeWidth = 1,
 	  const std::string strokeColor = DEFAULT_COLOR,
-	  const std::string fillColor = DEFAULT_COLOR);
+	  const std::string fillColor = DEFAULT_COLOR,
+    float strokeOpacity=1.0,
+    float fillOpacity=1.0);
 	
 	void adaptUsedAreaToX(int x);
 	void adaptUsedAreaToY(int y);
