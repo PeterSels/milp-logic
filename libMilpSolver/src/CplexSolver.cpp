@@ -421,8 +421,9 @@ void CplexSolver::setMaximize() {
 
 void CplexSolver::setStartValueOf(SolverVar & var, 
                                   double startValue) const {
-  cerr << "CplexSolver::setStartValueOf(...) not implemented yet" << endl;
-  assert(false);
+  cerr << "WARNING: CplexSolver::setStartValueOf(...) not implemented yet"
+  << endl;
+  //assert(false);
   //var.set(GRB_DoubleAttr_Start, startValue);
 }
 
