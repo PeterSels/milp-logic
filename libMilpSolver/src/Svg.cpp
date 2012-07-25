@@ -7,16 +7,17 @@
 //#include <boost/regex.hpp>
 #include "StringUtilities.h"
 
-#define CROP_BORDER (1000)
 #define HOVER_FILL_OPACITY (0.5)
 
 using namespace std;
 
 Svg::Svg(const string & fileName,
-		 unsigned int width, unsigned int height)
+		 unsigned int width, unsigned int height,
+     unsigned int cropBorder)
 : fileName_(fileName)
 , width_(width)
 , height_(height)
+, cropBorder_(cropBorder)
 , minX_(width-1)
 , maxX_(0)
 , minY_(height-1)
@@ -411,14 +412,14 @@ void Svg::cropToUsedArea() const {
   unsigned int newWidth  = maxX_ - minX_ + 1;
   unsigned int newHeight = maxY_ - minY_ + 1;
 	
-	width_  = newWidth  + 2 * CROP_BORDER;
-	height_ = newHeight + 2 * CROP_BORDER;
+	width_  = newWidth  + 2 * cropBorder_;
+	height_ = newHeight + 2 * cropBorder_;
 }
 
 string Svg::getTranslationHeader() const {
 	stringstream strStr;
-  strStr << "<g transform='translate(" << -((int)minX_ - CROP_BORDER) 
-	  << "," << -((int)minY_-CROP_BORDER) << ")'" << ">" 
+  strStr << "<g transform='translate(" << -((int)minX_ - cropBorder_) 
+	  << "," << -((int)minY_-cropBorder_) << ")'" << ">" 
 	  << endl;
 	return strStr.str();
 }

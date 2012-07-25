@@ -15,7 +15,8 @@
 class Svg {
 public:
 	Svg(const std::string & fileName,
-		  unsigned int width, unsigned int height);
+		  unsigned int width, unsigned int height,
+      unsigned int cropBorder=1000);
 
 	// As long as you call these before close, even multiple times, 
 	// it will have the wanted effect on your svg file:
@@ -78,7 +79,8 @@ protected:
   std::string fileName_;
   mutable unsigned int width_; // mutable for crop
   mutable unsigned int height_;
-	
+	unsigned int cropBorder_;
+  
 	int minX_;
 	int maxX_;
 	int minY_;
