@@ -4,8 +4,10 @@
 #include "Svg.h"
 #include "StringUtilities.h"
 
-//#include <boost/regex.hpp>
 #include "StringUtilities.h"
+
+#include <boost/regex.hpp>
+
 
 #define HOVER_FILL_OPACITY (0.5)
 
@@ -611,6 +613,37 @@ void Svg::svgHtmlWrapperWrite(ostream & ostr) const {
   << endl
   << "</html>" << endl
   << endl;
+}
+
+bool Svg::subst(string oldStr, string newStr) {
+  
+  
+  bool didSubstitution = false;
+  
+  string in = bodyStr_.str();
+  string out;
+  /*
+  boost::regex pattern (oldStr,
+                        boost::regex_constants::icase|
+                        boost::regex_constants::perl);
+  out = boost::regex_replace(in, pattern, newStr);                
+  */
+  
+  unsigned long int beyond = (unsigned long int)in.length();
+  unsigned long int pos = (unsigned long int)in.find(oldStr);
+  if (pos >= beyond) {
+    //cout << "DBG NOTFOUND" << endl;
+  } else {
+    //cout << "DBG FOUND" << endl;
+    string pre = in.substr(0, pos);
+    string post = in.substr(pos+oldStr.length()); 
+    out = pre + newStr + post;
+    bodyStr_.str(""); // This is needed!!!
+    bodyStr_.clear(); // and then this
+    bodyStr_ << out;
+    didSubstitution = true;
+  }
+  return didSubstitution;
 }
 
 void Svg::close() const {

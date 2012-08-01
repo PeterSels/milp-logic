@@ -24,8 +24,8 @@
 //#define USE_CBC
 #else
 //#define USE_OSI
-#define USE_CPLEX_NATIVE
-//#define USE_GUROBI_NATIVE
+//#define USE_CPLEX_NATIVE
+#define USE_GUROBI_NATIVE
 //#define USE_XPRESS_NATIVE
 // XPRESS not available for Mac OS X
 #endif

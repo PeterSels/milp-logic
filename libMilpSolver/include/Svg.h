@@ -69,7 +69,9 @@ public:
 	std::string getBody() const;
 	std::string getTranslationFooter() const;
 	std::string getFooter() const;
-	
+
+	bool subst(std::string oldStr, std::string newStr);
+  
 	void cropToUsedArea() const;
 	void svgWrite(std::ostream & ostr) const;
   void svgHtmlWrapperWrite(std::ostream & ostr) const;
