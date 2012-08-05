@@ -420,8 +420,11 @@ void Svg::cropToUsedArea() const {
 
 string Svg::getTranslationHeader() const {
 	stringstream strStr;
-  strStr << "<g transform='translate(" << -((int)minX_ - cropBorder_) 
-	  << "," << -((int)minY_-cropBorder_) << ")'" << ">" 
+  cout << "minX_ = " << minX_ << endl;
+  cout << "minY_ = " << minY_ << endl;
+  cout << "cropBorder_ = " << cropBorder_ << endl;
+  strStr << "<g transform='translate(" << -((int)minX_ - (int)cropBorder_) 
+	  << "," << -((int)minY_-(int)cropBorder_) << ")'" << ">" 
 	  << endl;
 	return strStr.str();
 }
