@@ -4,12 +4,6 @@
 #include <boost/timer/timer.hpp>
 
 #include "Solver.h"
-//#include "StringUtilities.h"
-  // for replaceAllOddByEven
-//#include "MinimumCalculator.h"
-
-//#define MANUALLY_ADD_SOS_CONSTRAINTS (true)
-//#define ADD_SOLVER_SOS (false)
 
 #ifdef USE_CPLEX_NATIVE
 extern IloEnv * global_env_;
@@ -48,8 +42,6 @@ void replaceAllOddByEven(string & str, const string & oddEven) {
     replaceAll(str, oldCh, newCh);
   }
 }
-
-
 
 Solver::Solver(double maxGetLicenseSeconds, 
                double maxSolveSeconds)
@@ -90,7 +82,6 @@ void Solver::resetModelNullOneExpressions() {
 														 *global_env_
 #endif
 														 );
-	// nullExpr_ : has correct value already
 	
 	oneExpr_ = new SolverExpr(
 #ifdef USE_CPLEX_NATIVE
@@ -585,7 +576,7 @@ void Solver::addEquivalence(
       xSos1ScalarProductExpr += (int)i * iBinVar;
     }
   }
-  const bool manuallyAddConstraints = true; //MANUALLY_ADD_SOS_CONSTRAINTS;
+  const bool manuallyAddConstraints = true;
   if (manuallyAddConstraints) {
     // according to http://lpsolve.sourceforge.net/5.0/SOS.htm
     addConstr(xSos1SumExpr, "==", oneExpr, 
@@ -807,114 +798,6 @@ void Solver::addSos1(const SolverVar & x,
 						doUpdate); // function row (1)	
 }
 
-/*
-void Solver::addConvexMax(const SolverVar & x,
-													const SolverVar & z,
-													double (*fPtr)(const vector<double> & parameters, 
-																				 double d),
-													const vector<double> & parameters,
-                          const PwlApproximator & convexApprox,
-													bool robust,
-													bool doUpdate) {
-	  
-  assert(doUpdate==false); // only mode supported anymore, for speed reasons
-  
-	const double D1 = parameters[1];	 // [1] is not transparant!
-  
-	// x
-  int xLo, xHi;
-	string xName = getNameLoHi(xLo, xHi, &x);
-	
-	if (!robust) {
-		fastAddConstr(x, "==", z, // "<=" gives same results since z is minimized
-							// but == seems faster: eg: 40s io 45s
-							xName.substr(0, STR_MAX_LEN-22) + "_convex_max_up_tight_1"
-							//,doUpdate
-                  ); // function row (1)
-    assert(false);
-    cerr << "ERROR: not supported for now" << endl; // FIXME
-		return;
-	}
-	
-	// point 0
-	double z0 = convexApprox.getZ(0); //(*fPtr)(parameters, 0);
-	
-	// point 1
-	//double dMin = (*fPtr)(parameters, -1);
-  
-  //MinimumCalculator minCalc(fPtr, parameters, D1);
-  //double dMin = minCalc.getMinimumAbsis();
-	//double zdMin = minCalc.getMinimumValue(); //(*fPtr)(parameters, dMin);
-  
-  double dMin  = convexApprox.getD(1);
-  double zdMin = convexApprox.getZ(1);
-  
-	// point 2
-	double zD1 = convexApprox.getZ(2); //(*fPtr)(parameters, D1);
-	
-	// on the d axis:
-  assert(0 <= dMin);
-  assert(dMin <= D1);
-	
-	// on the cost axis:
-  //assert(zdMin <= z0); // DISABLED because of SINK increasing cost func
-  //assert(zdMin <= zD1); // not true anymore since used BreakPointCalulator
-  // io MinimumCalculator
-		
-	// now imagine a V shape described by these 3 points.
-		
-  if (dMin <0) {
-    cerr << "dMin = " << dMin << endl;
-	  assert(dMin > 0);
-  }
-	SolverExpr dnFunctionExpr
-#ifdef USE_CPLEX_NATIVE
-	(*global_env_)
-#endif
-	;
-  
-	if (D1 > dMin) {
-		if (dMin > 0) { // only dnFunction when something left of dMin
-			dnFunctionExpr += z0 + (zdMin - z0)/(dMin //- 0
-) * (x //- 0
- );
-			fastAddConstr(dnFunctionExpr, "<=", z,
-								xName.substr(0, STR_MAX_LEN-30)
-                + "_convex_max_robust_dn_function"
-								//,doUpdate
-                ); // function row (1)	
-		}
-		
-		SolverExpr upFunctionExpr
-#ifdef USE_CPLEX_NATIVE
-		(*global_env_)
-#endif
-		;
-    upFunctionExpr += 
-		  zdMin + (zD1 - zdMin)/(D1 - dMin) * (x - dMin);
-		fastAddConstr(upFunctionExpr, "<=", z,
-							xName.substr(0, STR_MAX_LEN-30)
-              + "_convex_max_robust_up_function"
-							//,doUpdate
-                  ); // function row (1)	
-	} else {
-		//cerr << D1 << " = D1 <= dMin = " << dMin << endl;
-		assert(D1==dMin);
-		assert(D1!=0);
-		assert(zD1 <= z0); // dn slope
-		dnFunctionExpr +=
-		z0 + (zD1 - z0)/(D1 //- 0
-) * (x //- 0
-                                    );
-		fastAddConstr(dnFunctionExpr, "<=", z,
-							xName.substr(0, STR_MAX_LEN-35)
-              + "_convex_max_robust_dn_only_function"
-							//,doUpdate
-                  );		
-	}
-}
-*/
-
 void Solver::addSumSos1(const SolverVar & x, const SolverVar & y, 
 												const SolverVar & z, 
 												double (*fPtr)(const vector<double> & parameters, 
@@ -954,122 +837,6 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
 						//,doUpdate
             ); // function row (1)
 }
-
-/*
-void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y, 
-														 const SolverVar & z, 
-														 double (*fPtr)(const vector<double> & parameters, 
-																						double d),
-														 const vector<double> & parameters,
-                             const PwlApproximator & convexApprox,
-														 bool robust,
-														 bool doUpdate) {
-
-  assert(doUpdate==false); // only mode supported anymore, for speed reasons
-
-  const double D1 = parameters[2];	 // [2] is not transparant!
-
-  // x
-  int xLo, xHi;
-	string xName = getNameLoHi(xLo, xHi, &x);	
-	// y
-	int yLo, yHi;
-	string yName = getNameLoHi(yLo, yHi, &y);
-	
-	SolverExpr xPlusYExpr
-#ifdef USE_CPLEX_NATIVE
-	(*global_env_)
-#endif
-	;
-  xPlusYExpr += x;
-  xPlusYExpr += y;
-	string xPlusYName = (xName + "_plus_" + yName);
-	
-	if (!robust) {
-		fastAddConstr(xPlusYExpr, "==", z, // "<=" gives same results since 
-							// z is minimized, but == seems faster: eg: 40s io 45s
-							xPlusYName.substr(0, STR_MAX_LEN-26) 
-              + "_sum_convex_max_up_tight_1"
-							//,doUpdate
-                  ); // function row (1)
-    assert(false);
-    cerr << "ERROR: not supported for now" << endl; // FIXME
-		return;
-	}
-
-	// point 0
-	double z0 = convexApprox.getZ(0); //(*fPtr)(parameters, 0);
-	
-	// point 1
-  
-	//double dMin = (*fPtr)(parameters, -1);
-  //MinimumCalculator minCalc(fPtr, parameters, D1);
-  //double dMin = minCalc.getMinimumAbsis();
-	//double zdMin = minCalc.getMinimumValue(); //(*fPtr)(parameters, dMin);	
-  double dMin  = convexApprox.getD(1);
-  double zdMin = convexApprox.getZ(1);
-  
-	// point 2
-	double zD1 = convexApprox.getZ(2);//(*fPtr)(parameters, D1);
-
-	// on the d axis:
-  assert(0 <= dMin);
-  assert(dMin <= D1);
-
-	// on the cost axis:
-  ////assert(zdMin <= z0); // DISABLED, since we also have increasing functions now (for dwell and sink edges)
-  //assert(zdMin <= zD1); // not true anymore since used BreakPointCalulator
-  // io MinimumCalculator
-		
-	SolverExpr dnFunctionExpr
-#ifdef USE_CPLEX_NATIVE
-	(*global_env_)
-#endif
-	;
-	
-	if (D1 > dMin) {
-	
-		if (dMin > 0) { // only dnFunction when something left of dMin
-			dnFunctionExpr += z0 + (zdMin - z0)/(dMin - 0) * (xPlusYExpr - 0);
-			
-			// now imagine a V shape described by these 3 points.
-			fastAddConstr(dnFunctionExpr, "<=", z,
-								xPlusYName.substr(0, STR_MAX_LEN-34) 
-                + "_sum_convex_max_robust_up_function"
-								//,doUpdate
-                    );
-			// function row (1)	
-		}
-		
-		SolverExpr upFunctionExpr
-#ifdef USE_CPLEX_NATIVE
-		(*global_env_)
-#endif
-		;
-		upFunctionExpr += 
-		zdMin + (zD1 - zdMin)/(D1 - dMin) * (xPlusYExpr - dMin);
-		fastAddConstr(upFunctionExpr, "<=", z,
-							xPlusYName.substr(0, STR_MAX_LEN-34) 
-              + "_sum_convex_max_robust_dn_function"
-							//,doUpdate
-                  );
-		// function row (1)	
-		
-	} else {
-		//cerr << D1 << " = D1 <= dMin = " << dMin << endl;
-		assert(D1==dMin);
-		assert(D1!=0);
-		assert(zD1 <= z0); // dn slope
-		dnFunctionExpr += 
-		z0 + (zD1 - z0)/(D1 - 0) * (xPlusYExpr - 0);
-		fastAddConstr(dnFunctionExpr, "<=", z,
-							xPlusYName.substr(0, STR_MAX_LEN-39)
-              + "_sum_convex_max_robust_dn_only_function"
-							//,doUpdate
-                  );		
-	}
-}
-*/
 
 bool Solver::timedSolve(double gap, int nThreads) {
   string fullSolverName = getFullSolverName();
