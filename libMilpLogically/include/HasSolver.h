@@ -13,6 +13,11 @@
 #undef USE_CBC
 #undef USE_OSI
 
+// Currently only the 3 modes:
+// USE_GUROBI_NATIVE, USE_CPLEX_NATIVE and USE_XPRESS_NATIVE
+// are tested an working fine.
+// More work is needed to make USE_CBC or USE_OSI work.
+
 #ifdef _WIN32
 #include <iostream>
 // to get namespace std definition only
@@ -24,7 +29,7 @@
 //#define USE_CBC
 #else
 //#define USE_OSI
-//#define USE_CPLEX_NATIVE
+//#define USE_CPLEX_NATIVEZ
 #define USE_GUROBI_NATIVE
 //#define USE_XPRESS_NATIVE
 // XPRESS not available for Mac OS X
@@ -32,15 +37,14 @@
 
 #ifdef USE_XPRESS_NATIVE
 #include <string>
-// to define NULL for xprb_cpp.h
+// #include<string> is needed to define NULL for xprb_cpp.h
 // xprb_cpp.h should in fact include this itself!
 #include "xprb_cpp.h"
 #include "xprb.h"
 #include "xprs.h"
 typedef dashoptimization::XPRBprob SolverModel;
 typedef dashoptimization::XPRBvar SolverVar;
-//typedef dashoptimization::XPRBexpr SolverExpr; // general?
-typedef dashoptimization::XPRBlinExp SolverExpr; // linear!
+typedef dashoptimization::XPRBlinExp SolverExpr;
 typedef dashoptimization::XPRBctr SolverConstr;
 typedef dashoptimization::XPRBsos SolverSos;
 #include "BclException.h"
@@ -65,18 +69,11 @@ using namespace std;
 #include "CplexExpression.h"
 typedef IloModel SolverModel;
 typedef IloNumVar SolverVar;
-////typedef IloExpr SolverExpr; // general?
-typedef IloNumExpr SolverExpr; // linear!
-//#define SolverExpr() (SolverExpr(global_env_))
-//#define SolverExpr(expr) (SolverExpr(global_env_, expr))
-//#define SolverExpr(env, expr) (SolverExpr expr(env))
-//typedef CplexExpression SolverExpr; // linear!
-////typedef IloLinearNumExpr SolverExpr; // linear!
+typedef IloNumExpr SolverExpr;
 typedef IloConstraint SolverConstr;
 typedef IloException SolverException;
 typedef IloSOS1 SolverSos;
 typedef IloEnv SolverEnv;
-//#include "BclException.h"
 #define SOLVER_NAME "Cplex"
 #endif
 
