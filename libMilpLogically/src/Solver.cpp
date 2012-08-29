@@ -4,9 +4,9 @@
 #include <boost/timer/timer.hpp>
 
 #include "Solver.h"
-#include "StringUtilities.h"
+//#include "StringUtilities.h"
   // for replaceAllOddByEven
-#include "MinimumCalculator.h"
+//#include "MinimumCalculator.h"
 
 //#define MANUALLY_ADD_SOS_CONSTRAINTS (true)
 //#define ADD_SOLVER_SOS (false)
@@ -17,6 +17,39 @@ extern IloEnv * global_env_;
 
 using namespace std;
 using namespace boost;
+
+
+// Some needed string utility functions
+
+bool replace(string & str, char oldCh, char newCh) {
+  unsigned int beyond = (unsigned int)str.length();
+  unsigned int pos = (unsigned int)str.find(oldCh);
+  if (pos >= beyond) {
+    return false;
+  } else {
+    str[pos] = newCh;
+    return true;
+  }
+}
+
+void replaceAll(string & str, char oldCh, char newCh) {
+  bool replaced = false;
+  do {
+    replaced = replace(str, oldCh, newCh);
+  } while (replaced);
+}
+
+void replaceAllOddByEven(string & str, const string & oddEven) {
+  unsigned int oeLen = (unsigned int)oddEven.length();
+  assert(oeLen % 2 == 0);
+  for (unsigned int i=0; i<oeLen; i+=2) {
+    char oldCh = oddEven[i];
+    char newCh = oddEven[i+1];
+    replaceAll(str, oldCh, newCh);
+  }
+}
+
+
 
 Solver::Solver(double maxGetLicenseSeconds, 
                double maxSolveSeconds)
@@ -774,6 +807,7 @@ void Solver::addSos1(const SolverVar & x,
 						doUpdate); // function row (1)	
 }
 
+/*
 void Solver::addConvexMax(const SolverVar & x,
 													const SolverVar & z,
 													double (*fPtr)(const vector<double> & parameters, 
@@ -841,7 +875,9 @@ void Solver::addConvexMax(const SolverVar & x,
   
 	if (D1 > dMin) {
 		if (dMin > 0) { // only dnFunction when something left of dMin
-			dnFunctionExpr += z0 + (zdMin - z0)/(dMin /*- 0*/) * (x /*- 0*/);
+			dnFunctionExpr += z0 + (zdMin - z0)/(dMin //- 0
+) * (x //- 0
+ );
 			fastAddConstr(dnFunctionExpr, "<=", z,
 								xName.substr(0, STR_MAX_LEN-30)
                 + "_convex_max_robust_dn_function"
@@ -866,8 +902,10 @@ void Solver::addConvexMax(const SolverVar & x,
 		assert(D1==dMin);
 		assert(D1!=0);
 		assert(zD1 <= z0); // dn slope
-		dnFunctionExpr += 
-		z0 + (zD1 - z0)/(D1 /*- 0*/) * (x /*- 0*/);
+		dnFunctionExpr +=
+		z0 + (zD1 - z0)/(D1 //- 0
+) * (x //- 0
+                                    );
 		fastAddConstr(dnFunctionExpr, "<=", z,
 							xName.substr(0, STR_MAX_LEN-35)
               + "_convex_max_robust_dn_only_function"
@@ -875,7 +913,7 @@ void Solver::addConvexMax(const SolverVar & x,
                   );		
 	}
 }
-
+*/
 
 void Solver::addSumSos1(const SolverVar & x, const SolverVar & y, 
 												const SolverVar & z, 
@@ -917,7 +955,7 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
             ); // function row (1)
 }
 
-
+/*
 void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y, 
 														 const SolverVar & z, 
 														 double (*fPtr)(const vector<double> & parameters, 
@@ -1031,6 +1069,7 @@ void Solver::addSumConvexMax(const SolverVar & x, const SolverVar & y,
                   );		
 	}
 }
+*/
 
 bool Solver::timedSolve(double gap, int nThreads) {
   string fullSolverName = getFullSolverName();

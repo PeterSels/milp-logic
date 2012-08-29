@@ -24,31 +24,16 @@ else()
 endif()
 
 
-project(MilpSolver)
+project(MilpLogically)
 
 INCLUDE($ENV{MILP_SOLVER_HOME}/boost.cmake)
-
-#if(DEFINED ENV{DO_OPEN_MP})
-#  message("DO_OPEN_MP is defined")
-#  IF(APPLE)
-#    SET(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION com.apple.compilers.llvmgcc42 CACHE STRING "" FORCE)
-#    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -O0")
-#    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp -O0")
-#  ENDIF()
-#else()
-#  message("DO_OPEN_MP is NOT defined")
-#endif()
 
 
 # Recurse into the "libMilpSolver" etc. subdirectories.  This does not actually
 # cause another cmake executable to run.  The same process will walk through
 # the project's entire directory structure.
 
-add_subdirectory(libAnalytics)
-add_subdirectory(libAnalyticsTest)
-
-add_subdirectory(libStringUtilities)
-
-add_subdirectory(libMilpSolver)
-add_subdirectory(milpSolverTest)
+add_subdirectory(libMilpLogically)
+add_subdirectory(milpLogicallyTest)
+#add_subdirectory(milpLogicallySortingNetworkTest)
 

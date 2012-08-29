@@ -6,12 +6,12 @@
 #include <string>
 
 #include "HasSolver.h"
-#include "PwlApproximator.h"
+//#include "PwlApproximator.h"
 
 #undef USE_SOS_VECTOR
 
 #define STR_MAX_LEN 255
-// fir Gurobi >= 4.6.0 really, but now spread over all solvers
+// for Gurobi >= 4.6.0 really, but now spread over all solvers
 
 typedef std::map<const SolverVar *, std::map<int, SolverVar> > BinVarMap;
 
@@ -245,6 +245,7 @@ public:
 																 double d),
 									const std::vector<double> & parameters,
 									bool doUpdate=true);
+  /*
   void addConvexMax(const SolverVar & x, 
 										const SolverVar & z, 
 										double (*fPtr)(const std::vector<double> & parameters, 
@@ -253,7 +254,7 @@ public:
                     const PwlApproximator & convexApprox,
 										bool robust,
 										bool doUpdate=true);
-	
+*/
   void addSumSos1(const SolverVar & x, 
 									const SolverVar & y,
 									const SolverVar & z, 
@@ -261,6 +262,7 @@ public:
 																 double d),
 									const std::vector<double> & parameters,
 									bool doUpdate=true);
+  /*
   void addSumConvexMax(const SolverVar & x, 
 											 const SolverVar & y,
 											 const SolverVar & z, 
@@ -270,6 +272,7 @@ public:
                        const PwlApproximator & convexApprox,
 											 bool robust,
 											 bool doUpdate=true);
+*/
   
   virtual std::string  getName(const SolverVar & var) const = 0;
   virtual double getLowerBound(const SolverVar & var) const = 0;

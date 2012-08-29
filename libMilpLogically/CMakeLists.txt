@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-project(libMilpSolver)
+project(libMilpLogically)
 
 if(DEFINED ENV{DO_OPEN_MP})
   message("DO_OPEN_MP is defined")
@@ -21,21 +21,19 @@ file(GLOB HEADERS "*.h" "./include/*.h")
 
 set(SOURCES 
   src/BclException.cpp
-  src/BreakPointCalculator.cpp
+#  src/BreakPointCalculator.cpp
   src/CplexSolver.cpp
   src/GurobiSolver.cpp
-  src/MinimumCalculator.cpp
-  src/PwlApproximator.cpp
-  src/ScheduleSvg.cpp
+#  src/MinimumCalculator.cpp
+#  src/PwlApproximator.cpp
   src/Solver.cpp
-  src/Svg.cpp
   src/XpressSolver.cpp
 )
 
 include_directories(
   include
-  ${CMAKE_SOURCE_DIR}/libAnalytics/include
-  ${CMAKE_SOURCE_DIR}/libStringUtilities/include
+#  ${CMAKE_SOURCE_DIR}/libAnalytics/include
+#  ${CMAKE_SOURCE_DIR}/libStringUtilities/include
   $ENV{CPLEX_HOME}/include
   $ENV{CONCERT_HOME}/include
   $ENV{GUROBI_HOME}/include
@@ -47,7 +45,7 @@ add_definitions(
 #  -D_DEBUG
 )
 
-add_library(MilpSolver STATIC ${SOURCES} ${HEADERS})
+add_library(MilpLogically STATIC ${SOURCES} ${HEADERS})
 
 if(DEFINED $ENV{DO_OPEN_MP})
   SET_TARGET_PROPERTIES( MilpSolver PROPERTIES COMPILE_FLAGS "-fopenmp" )
