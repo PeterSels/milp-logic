@@ -41,7 +41,6 @@ double f(const vector<double> & parameters, double i) {
   }	
 }
 
-
 void resetModel(unsigned int maxGetLicenseSeconds, 
 								unsigned int maxSolveSeconds) {
 	cout << "resetModel" << endl;

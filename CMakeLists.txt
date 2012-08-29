@@ -35,5 +35,5 @@ INCLUDE($ENV{MILP_SOLVER_HOME}/boost.cmake)
 
 add_subdirectory(libMilpLogically)
 add_subdirectory(milpLogicallyTest)
-#add_subdirectory(milpLogicallySortingNetworkTest)
+add_subdirectory(milpLogicallySortingNetworkOptimizer)
 
