@@ -97,7 +97,6 @@ const SolverVar & XpressSolver::addBinVar(
 const SolverExpr & XpressSolver::addExpr(
   const SolverExpr & expr, const std::string & name, bool doUpdate) {
   (void)doUpdate;
-  //exprVector_.push_back(model_->addExpr(expr, name.str());
   exprVector_.push_back(expr);
   return exprVector_.back();
 }
@@ -234,8 +233,6 @@ void XpressSolver::fastAddConstr(const SolverExpr & lhs,
 }
 ///////////////////////////////////
 
-
-//const SolverSos & 
 void XpressSolver::addSos1SolverSpecific(
   const string & name,
   const vector<SolverVar> & vars, 
@@ -310,7 +307,6 @@ void XpressSolver::setStartValueOf(SolverVar & var,
                                   double startValue) const {
   cerr << "XpressSolver::setStartValueOf(...) not implemented yet" << endl;
   assert(false);
-  //var.set(GRB_DoubleAttr_Start, startValue);
 }
 
 bool XpressSolver::solve(double gap, int nThreads) {
@@ -388,7 +384,7 @@ double XpressSolver::getMipGap() const {
   double gap = -1.0;
   xo_prob_struct * opt_prob = model_->getXPRSprob();
   XPRSgetdblattrib(opt_prob, XPRS_BARCGAP, &gap);
-  return gap; // invalid
+  return gap;
 }
 
 unsigned int XpressSolver::getNumberOfRows() const {
@@ -401,7 +397,6 @@ unsigned int XpressSolver::getNumberOfRows() const {
 
 unsigned int XpressSolver::getNumberOfColumns() const {
   int cols;
-  ///model_->getIntAttrib(XPRS.ORIGINALCOLS);
   xo_prob_struct * opt_prob = model_->getXPRSprob();
   XPRSgetintattrib(opt_prob, XPRS_ORIGINALCOLS, &cols);  
   assert(cols >= 0);
@@ -419,27 +414,32 @@ unsigned int XpressSolver::getNumberOfNonZeroes() const {
   return (unsigned int)nonZeroes;
 }
 
-
 unsigned int XpressSolver::getNumberOfSets() const {
-  // FIXME
+  cout << "ERROR: XpressSolver::getNumberOfSets: unimplemented still." << endl;
+  assert(false);
+  exit(0);
   return 0;
 }
 
 unsigned int XpressSolver::getNumberOfSetMembers() const {
-  // FIXME
+  cout << "ERROR: XpressSolver::getNumberOfSetMembers: unimplemented still."
+  << endl;
+  assert(false);
+  exit(0);
   return 0;
 }
 
 void XpressSolver::calcAnIIS() const {
-  cout << "ERROR: calcAnIIS: unimplemented still." << endl;
+  cout << "ERROR: XpressSolver::calcAnIIS: unimplemented still." << endl;
   assert(false);
+  exit(0);
 }
 
 void XpressSolver::reportAnIISTo(ostream & ostr) const {
-  ostr << "ERROR: reportAnIIS: unimplemented still." << endl;
+  ostr << "ERROR: XpressSolver::reportAnIIS: unimplemented still." << endl;
   assert(false);
+  exit(0);
 }
-
 
 double XpressSolver::getInfinity() const {
   return XPRB_INFINITY;

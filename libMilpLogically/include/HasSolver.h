@@ -5,7 +5,8 @@
 // You can make this conditional on the host system or/and OS type.
 // The #ifdefs HAS_<solver> in our code are such that
 // you can only define one HAS_<solver> at a time.
-// If you define multiple ones, you will get multiple defined variables.
+// If you define multiple ones, you will get multiple defined variables,
+// which will prevent you from building this library.
 
 #undef USE_XPRESS_NATIVE
 #undef USE_GUROBI_NATIVE

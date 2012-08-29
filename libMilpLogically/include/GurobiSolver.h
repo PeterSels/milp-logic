@@ -58,7 +58,6 @@ public:
                      const std::string & name);
   /////////////////////////////////////////////////////////////////////////////
   
-  //const SolverSos & 
   void addSos1SolverSpecific(
     const std::string & name,
     const std::vector<SolverVar> & vars, 

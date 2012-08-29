@@ -13,6 +13,7 @@ public:
               double maxSolveSeconds);
 
 	void anyOSSleep(unsigned int);
+  
   // setting up model
   void resetModel();
   void deleteModelAndEnv();

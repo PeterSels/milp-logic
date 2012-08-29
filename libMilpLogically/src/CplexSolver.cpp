@@ -337,8 +337,6 @@ void CplexSolver::fastAddConstr(const SolverExpr & lhs,
 //////////////////////////////////////////////////////////////////////////////
 
 
-
-//const SolverSos & 
 void CplexSolver::addSos1SolverSpecific(
   const string & name,
   const vector<SolverVar> & vars, 
@@ -423,8 +421,6 @@ void CplexSolver::setStartValueOf(SolverVar & var,
                                   double startValue) const {
   cerr << "WARNING: CplexSolver::setStartValueOf(...) not implemented yet"
   << endl;
-  //assert(false);
-  //var.set(GRB_DoubleAttr_Start, startValue);
 }
 
 // Everything is handled here, nothing is thrown out
@@ -557,10 +553,8 @@ double CplexSolver::getMipGap() const {
 
 unsigned int CplexSolver::getNumberOfRows() const {
   int rows;
-  //model_->getProperties();  
   IloCplex cplex(*model_);
   rows = cplex.getNrows();
-  //rows = global_cplex_->getNrows(); // global_cplex_ seems to be 0!
   return (unsigned int)rows;
 }
 
@@ -569,7 +563,6 @@ unsigned int CplexSolver::getNumberOfColumns() const {
   
   IloCplex cplex(*model_);
   cols = cplex.getNcols();
-  //cols = global_cplex_->getNcols();  
   assert(cols >= 0);
   return (unsigned int)cols;
 }
@@ -578,8 +571,7 @@ unsigned int CplexSolver::getNumberOfNonZeroes() const {
   int nonZeroes;
   IloCplex cplex(*model_);
   nonZeroes = cplex.getNNZs();
-  //nonZeroes = global_cplex_->getNNZs();
-  assert(nonZeroes >= 0);  
+  assert(nonZeroes >= 0);
   return (unsigned int)nonZeroes;
 }
 
@@ -587,14 +579,14 @@ unsigned int CplexSolver::getNumberOfSets() const {
   int nSOSs;
   IloCplex cplex(*model_);
   nSOSs = cplex.getNSOSs();
-  //nSOSs = global_cplex_->getNSOSs();
   assert(nSOSs >= 0);
   
   return (unsigned int)nSOSs;
 }
 
 unsigned int CplexSolver::getNumberOfSetMembers() const {
-  // FIXME
+  cout << "ERROR: calcAnIIS: unimplemented still." << endl;
+  assert(false);
   return 0;
 }
 

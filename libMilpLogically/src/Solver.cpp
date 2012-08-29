@@ -248,36 +248,6 @@ void Solver::addEqualConstr(
   double unit,
   const std::string & name) {
 
-	/* If defining a binVar p as equivalent to both a<=b as well as to a>=b this variable cannot be false.
-	 Since if false, then a>b *and* (io or) a<b. So p is true.
-	// == when <= and >=
-	addLessOrEqualConstr(eqBinVar, 
-											 lhsExpr, lhsLowerBound, lhsUpperBound,  // lhs
-											 rhsExpr, rhsLowerBound, rhsUpperBound,  // rhs non-swapped
-											 unit, 
-											 name + "_eq_le");
-	addLessOrEqualConstr(eqBinVar, 
-											 rhsExpr, rhsLowerBound, rhsUpperBound,  // rhs
-											 lhsExpr, lhsLowerBound, lhsUpperBound,  // lhs swapped!
-											 unit, 
-											 name + "_eq_ge");
-  */
-	
-	// defining two binVars: le and ge and letting eq = conjunction(le, ge) would work but gives lots of equations
-	
-	/*
-	// shorter is:
-	// When eqBinVar==1, this constraints lhs == rhs, just fine
-	// but when eqBinVar==0 this does not constrain anything 
-  double Mle1 = (lhsUpperBound - rhsLowerBound);
-  addConstr(lhsExpr - rhsExpr + (Mle1 * eqBinVar), 
-						"<=", Mle1, name + "_eq_1");
-  double Mle0 = (lhsLowerBound - rhsUpperBound);
-	addConstr(lhsExpr - rhsExpr + (Mle0 * eqBinVar), 
-						">=", Mle0, name + "_eq_0");
-	
-	 */
-
 	 // == when <= and >=
 	 SolverVar leBinVar =
 	 addLessOrEqualBinVar(0,
@@ -293,27 +263,7 @@ void Solver::addEqualConstr(
 	   name.substr(0, STR_MAX_LEN-6) + "_eq_ge");
 	 addConjunctionConstr(eqBinVar, leBinVar, geBinVar, 
                         name.substr(0, STR_MAX_LEN-17) 
-                        + "_eq_le" + "_eq_ge" + "_conj");	
-/*
-  // avoid generation of extra vars (which requires update for Gurobi,
-  // before the constraints over them can be added)
-  assert(false);
-  addLessOrEqualConstr(eqBinVar,
-                       lhsExpr,
-                       lhsLowerBound, lhsUpperBound,
-                       rhsExpr,
-                       rhsLowerBound, rhsUpperBound,
-                       unit,
-                       name + "_le");
-  
-  addLessOrEqualConstr(eqBinVar,
-                       rhsExpr,
-                       rhsLowerBound, rhsUpperBound,
-                       lhsExpr,
-                       lhsLowerBound, lhsUpperBound,
-                       unit,
-                       name + "_ge");
-*/
+                        + "_eq_le" + "_eq_ge" + "_conj");
 }
 
 // supposing leBinVar and geBinVar already exist,
