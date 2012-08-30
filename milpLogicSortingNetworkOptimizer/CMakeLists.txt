@@ -62,9 +62,9 @@ IF(APPLE)
   LIST(APPEND EXTRA_LIBS ${COREFOUNDATION} ${IOKIT})
 ENDIF(APPLE)
 
-add_executable( milpLogicSortingNetwork ${SOURCES} ${HEADERS})
+add_executable( milpLogicSortingNetworkOptimizer ${SOURCES} ${HEADERS})
 
-target_link_libraries( milpLogicSortingNetwork MilpLogic
+target_link_libraries( milpLogicSortingNetworkOptimizer MilpLogic
 # FlopCpp OsiDylp Dylp OsiVol Vol OsiSym Sym OsiCbc Cbc OsiClp Clp Cgl
 #Osi CoinUtils 
 #xprs xprb
