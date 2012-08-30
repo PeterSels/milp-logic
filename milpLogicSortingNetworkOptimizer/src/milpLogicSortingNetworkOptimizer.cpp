@@ -13,7 +13,6 @@ using namespace std;
 #include "GurobiSolver.h"
 #include "XpressSolver.h"
 #include "CplexSolver.h"
-//#include "MaxThreads.h"
 
 // User can turn on one of the below defines 
 // by setting it to true to activate the respective test.
@@ -28,13 +27,13 @@ void resetModel(unsigned int maxGetLicenseSeconds,
                 unsigned int maxSolverSeconds) {
   if (solver_==0) {
 #ifdef USE_GUROBI_NATIVE
-    solver_ = new GurobiSolver(maxGetLicenseSeconds, maxGetLicenseSeconds);
+    solver_ = new GurobiSolver(maxGetLicenseSeconds, maxSolverSeconds);
 #endif
 #ifdef USE_XPRESS_NATIVE
-    solver_ = new XpressSolver(maxGetLicenseSeconds, maxGetLicenseSeconds);
+    solver_ = new XpressSolver(maxGetLicenseSeconds, maxSolverSeconds);
 #endif
 #ifdef USE_CPLEX_NATIVE
-    solver_ = new CplexSolver(maxGetLicenseSeconds, maxGetLicenseSeconds);
+    solver_ = new CplexSolver(maxGetLicenseSeconds, maxSolverSeconds);
 #endif
   }
   assert(solver_!=0);
@@ -950,7 +949,8 @@ int main(int argc, char * argv[]) {
   
   // solve
   cout << "Solving model downto gap " << gap*100 << "%." << endl;
-  bool solved = solver_->solve(gap);
+  double twoDaysTimeInSeconds = 2 * 24 * 60 * 60;
+  bool solved = solver_->timedSolve(gap, 4, twoDaysTimeInSeconds);
   
   // check solver status
   if (!solved) {

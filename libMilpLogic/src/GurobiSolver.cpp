@@ -263,16 +263,19 @@ void GurobiSolver::setStartValueOf(SolverVar & var,
   var.set(GRB_DoubleAttr_Start, startValue);
 }
 
-bool GurobiSolver::solve(double gap, int nThreads) {
+bool GurobiSolver::solve(double gap, int nThreads, double maxSolveSeconds) {
   cout << "In GurobiSolver::solve()" << endl;
 
   // maybe set mesage level here, as in XpressSolver
   //model_->set(GRB_DBL_PAR_MIPGAP, gap); // C
   model_->getEnv().set(GRB_DoubleParam_MIPGap, gap); // C++
 
-  if (maxSolveSeconds_!=0) {
-    model_->getEnv().set(GRB_DoubleParam_TimeLimit, maxSolveSeconds_); // C++  
-  }
+  assert(maxSolveSeconds >= 0.0);
+  //if (maxSolveSeconds_!=0) {
+  //  model_->getEnv().set(GRB_DoubleParam_TimeLimit, maxSolveSeconds_); // C++
+  //}
+  maxSolveSeconds_ = maxSolveSeconds;
+  model_->getEnv().set(GRB_DoubleParam_TimeLimit, maxSolveSeconds); // C++
   
   // FIXME: The settings below should be moved to the Solver level
   // so that other solvers, like: CPLEX and XPRESS act the same
@@ -304,24 +307,33 @@ bool GurobiSolver::solve(double gap, int nThreads) {
     if (status == GRB_OPTIMAL) {
       solved_ = true;
       cout << "The model is solved optimally." << endl;
-      cout << "Objective: " 
-           //<< model_->get(GRB_DoubleAttr_ObjVal) 
+      cout << "Objective Function Value = "
            << getObjVal() 
            << endl;
     } else {
       solved_ = false;
       cout << "The model cannot be solved ";
+      bool unsolvable = false;
       if (status == GRB_UNBOUNDED) {
         cout << "because it is GRB_UNBOUNDED" << endl;
+        unsolvable = true;
       } else if (status == GRB_INF_OR_UNBD) { 
         cout << "because it is GRB_INF_OR_UNBD" << endl;
+        unsolvable = true;
       } else if (status == GRB_INFEASIBLE) {
         cout << "because it is GRB_INFEASIBLE" << endl;
+        unsolvable = true;
+      } else if (status == GRB_TIME_LIMIT) {
+        cout << "because the time limit you specified "
+        << maxSolveSeconds_
+        << " seconds is exceeded" << endl;
       } else {
         cout << "for unknown reasons." << endl;
       }
-      calcAnIIS();
-      reportAnIISTo(cout);
+      if (unsolvable) {
+        calcAnIIS();
+        reportAnIISTo(cout);
+      }
     }
   } catch (GRBException e) {
     cout << "Error code = " << e.getErrorCode() << endl;

@@ -424,7 +424,8 @@ void CplexSolver::setStartValueOf(SolverVar & var,
 }
 
 // Everything is handled here, nothing is thrown out
-bool CplexSolver::solve(double gap, int nThreads) {
+bool CplexSolver::solve(double gap, int nThreads,
+                        double maxSolveSeconds) {
   cout << "In CplexSolver::solve()" << endl;
   
   IloObjective obj;
@@ -458,10 +459,11 @@ bool CplexSolver::solve(double gap, int nThreads) {
     ofstream cplexLogStr(cplexLogFileName.c_str());
 	  global_cplex_->setOut(cplexLogStr);
   }
-  
-  if (maxSolveSeconds_!=0) {
-    global_cplex_->setParam(IloCplex::TiLim, maxSolveSeconds_);
-  }
+
+  assert(maxSolveSeconds_ >= 0.0);
+  maxSolveSeconds_ = maxSolveSeconds;
+  global_cplex_->setParam(IloCplex::TiLim, maxSolveSeconds);
+
   global_cplex_->setParam(IloCplex::EpGap, gap); // was 0.05
 
   solved_ = false;

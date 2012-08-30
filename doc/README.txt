@@ -26,6 +26,11 @@ inequalities equivalent with the wanted boolean relations are generated.
 
 (3) the resulting C++ code generating MILP model with this MilpLogic API more readable.
 
+(4) If you want you can also see the scalability tests in milpLogicSortingNetworkOptimizer
+as a solver benchmark. For these milpLogicSortingNetworkOptimizer
+models, some solvers solve these models in significantly lower time than others ...
+
+
 
 How to Search MilpLogic?
 -----------------------

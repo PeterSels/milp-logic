@@ -8,7 +8,19 @@
 
 # Here, our objective function is the number of comparators.
 
+# Usage: Debug/milpLogicSortingNetworkOptimizer
+#  <nSortNetworkInputs(N)>
+#  <nComparators(C)>
+#  <minimizeComparators(1)IoFeasibility(0)>
+#  <gap[0.0..1.0]>
+
 executable=./Debug/milpLogicSortingNetworkOptimizer
 
-$executable 2 1 1 0.0
+$executable 2 1 0 0.0
+$executable 3 3 0 0.0
+$executable 4 5 0 0.0
+$executable 5 9 0 0.0
+$executable 6 12 0 0.0
+#$executable 7 16 0 0.0
+#$executable 8 19 0 0.0
 

@@ -81,7 +81,7 @@ public:
   void setMaximize();
   void setStartValueOf(SolverVar & var,
                        double startValue) const;  
-  bool solve(double gap, int nThreads=0);
+  bool solve(double gap, int nThreads, double maxSolveSeconds);
 
   // get results
   unsigned int getNumberOfRows() const;

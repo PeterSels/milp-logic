@@ -788,7 +788,7 @@ void Solver::addSumSos1(const SolverVar & x, const SolverVar & y,
             ); // function row (1)
 }
 
-bool Solver::timedSolve(double gap, int nThreads) {
+bool Solver::timedSolve(double gap, int nThreads, double maxSolveSeconds) {
   string fullSolverName = getFullSolverName();
   cout << "Starting solver: " << fullSolverName << endl;
   
@@ -797,7 +797,7 @@ bool Solver::timedSolve(double gap, int nThreads) {
   userTime_ = -1.0;
   systemTime_ = -1.0;
   
-  bool result = solve(gap, nThreads);  
+  bool result = solve(gap, nThreads, maxSolveSeconds);
 
   timer::cpu_times elapsed_time = t.elapsed();
   
