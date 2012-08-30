@@ -184,8 +184,8 @@ source ~peter/.profile
 
 
 
-How to Build and Install?
------------------------
+How to Build and Install MilpLogic, including Examples?
+---------------------------------------------------
 
 This software has been built, installed and run on:
 - Apple OS X 10.8.1
@@ -232,6 +232,43 @@ Via CMake, it can setup project files for:
 - Apples XCode IDE  (just type ./redoCmx.sh xcode)
 - Eclipse  (just type ./redoCmx.sh eclipse)
 
+So run cmake on the file MilpLogic/CmakeLists.txt.
+
+For Windows you do this with the CMake GUI, which can be downloaded
+for free from http://www.cmake.org.
+Select the project: MilpLogic and click the Configure and then Setup
+buttons. You know generated a project called MilpLogi.sln in the
+MilpSolver directory. Load it in MicroSoft Visual STudio C++ and build
+it, run it, zip it, ship it, ...
+
+For *nix systems, in a terminal, simply type
+
+./redoCmx xcode
+
+to generate an XCode project, called MilpLogic.xcodeproject in the MilpLogic directory
+
+or
+
+./redoCmx eclipse
+
+to generate an Eclipse project, called MilpLogic.project in the MilpLogic directory
+
+or 
+
+either 
+
+./redoCmx 
+
+or 
+
+./redoCms unixmakefiles
+
+to generate Makefiles that can be used by typing
+
+make 
+
+in the MilpLogic directory, without the need for an IDE.
+
 
 
 How to Run the Tests?
@@ -257,6 +294,12 @@ The more involved test is in the directory
 Just go to this directory and in the terminal, type:
 ./milpLogicSortingNetworkOptimizer 
 
+
+
+Can this project be Improved?
+---------------------------
+
+Yes!
 
 
 How can this project be Improved?
