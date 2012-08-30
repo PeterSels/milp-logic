@@ -12,28 +12,16 @@ ENDIF()
 # refer to the root source directory of the project as ${MilpSolver_SOURCE_DIR} and
 # to the root binary directory of the project as ${MilpSolver_BINARY_DIR}.
 
-if(DEFINED ENV{DO_OPEN_MP})
-  message("DO_OPEN_MP is defined")
-  IF(APPLE)
-    SET(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION com.apple.compilers.llvmgcc42 CACHE STRING "" FORCE)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -O0")
-    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp -O0")
-  ENDIF()
-else()
-  message("DO_OPEN_MP is NOT defined")
-endif()
+project(MilpLogic)
 
-
-project(MilpLogically)
-
-INCLUDE($ENV{MILP_SOLVER_HOME}/boost.cmake)
+INCLUDE($ENV{MILP_LOGIC_HOME}/boost.cmake)
 
 
 # Recurse into the "libMilpSolver" etc. subdirectories.  This does not actually
 # cause another cmake executable to run.  The same process will walk through
 # the project's entire directory structure.
 
-add_subdirectory(libMilpLogically)
-add_subdirectory(milpLogicallyTest)
-add_subdirectory(milpLogicallySortingNetworkOptimizer)
+add_subdirectory(libMilpLogic)
+add_subdirectory(milpLogicTest)
+add_subdirectory(milpLogicSortingNetworkOptimizer)
 

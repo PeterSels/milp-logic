@@ -1,6 +1,30 @@
 This the file README.txt for the project 'MilpLogic'.
 
-MilpLogic is A Solver Abstraction Layer with a Boolean Layer on Top.
+What is this?
+-----------
+
+MilpLogic is A Solver Abstraction Layer with a Boolean Layer on Top,
+all written in C++.
+
+
+Project Goals?
+-------------
+
+It's intended to be used by C++ programmers as a library to make:
+
+(1) the setting up of general MILP (Mixed Integer Linear Programming)
+models more *solver independent*
+This is done by providing a solver independent general MILP building API in the class 'Solver'.
+
+(2) the setting up of MILP models with lots of *boolean variables and
+their logical constraints( (like implciation, negation, conjunction,
+disjunction) *a lot easier*.
+This is done by providing a (again solver independent) boolean logic
+variable and constraint addition API in the class 'Solver'.
+Internally and automatically the implied linear equations and
+inequalities equivalent with the wanted boolean relations are generated.
+
+(3) the resulting C++ code generating MILP model with this MilpLogic API more readable.
 
 
 How to Search MilpLogic?
@@ -72,14 +96,12 @@ showDirTree.bat
 
 on Windows systems.
 
-
-
      +----doc
 contains the projects'documentation. It contains this README.txt file.
 It also contains a the doxygen settings file 'Doxygen'.
-To generate doxygen documentation, just go to the doc direcctory and type:
+To generate doxygen documentation, just go to the doc directory and type:
 
-run.sh
+./run.sh
 
 This will generate a latex and html directory containing extensive documentation on this project.
 This includes class relationship diagrams, calling graphs, called-by graphs and more.
@@ -198,6 +220,16 @@ In Cplex and Xpress, this call is not implemented yet, since the exact same func
 Cplex and Xpress only allow starting values in the form of a full matrix of them, for all solver variables.
 One idea for implementing Solver::setStartValue(SolverVar)  then, for both Cplex and Xpress would be to cache the Solver::setStartValue(SolverVar)
 and store anc cache the starting values in a matrix, that is only read out later as a whole matrix, when actually starting the solver.
+
+- When building for xcode, we currnetly get some warnings:
+ld: warning: directory not found for option '-L/opt/ibm/ILOG/CPLEX_Studio_Academic124/cplex/lib/x86-64_darwin9_gcc4.0/static_pic/Debug'
+ld: warning: directory not found for option '-L/opt/ibm/ILOG/CPLEX_Studio_Academic124/concert/lib/x86-64_darwin9_gcc4.0/static_pic/Debug'
+ld: warning: directory not found for option '-L/Library/gurobi501/mac64/lib/Debug'
+ld: warning: directory not found for option '-L/usr/local/boost_1_50_0/stage/lib/Debug'
+This is because Debug is somehow appended to the specified library directories in the CMakeLists.txt file.
+The directory where the libraries are specified and found by the linker are the ones without the /Debug suffix, so building does go well,
+but we would like to get rid of these warnings.
+
  
 
 How to Contribute to this Project?
@@ -209,3 +241,16 @@ Search for MilpLogic.
 Git clone sources.
 Change sources.
 Git push changed sources.
+
+
+
+Questions?
+----------
+
+sels
+dot
+peter 
+at
+gmail
+dot 
+com

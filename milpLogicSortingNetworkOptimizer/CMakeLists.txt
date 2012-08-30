@@ -1,14 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 
-project( milpLogicallySortingNetworkOptimizer )
+project( milpLogicSortingNetworkOptimizer )
 
-INCLUDE($ENV{MILP_LOGICALLY_HOME}/boost.cmake)
-
-if(DEFINED ENV{DO_OPEN_MP})
-  SET(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION com.apple.compilers.llvmgcc42 CACHE STRING "" FORCE)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -O3")
-  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp -O3")
-endif()
+INCLUDE($ENV{MILP_LOGIC_HOME}/boost.cmake)
 
 IF(WIN32)
   SET(CMAKE_EXE_LINKER_FLAGS_DEBUG "/debug /FORCE:MULTIPLE")
@@ -19,12 +13,12 @@ ENDIF()
 file(GLOB_RECURSE HEADERS "*.h")
 
 set(SOURCES
- src/milpLogicallySortingNetworkOptimizer.cpp
+ src/milpLogicSortingNetworkOptimizer.cpp
 )
 
 include_directories(
  include
- $ENV{MILP_LOGICALLY_HOME}/libMilpLogically/include
+ $ENV{MILP_LOGIC_HOME}/libMilpLogic/include
 # $ENV{COIN_OR_HOME}/CoinAll-1.3.0/include/coin
  $ENV{CPLEX_HOME}/include
  $ENV{CONCERT_HOME}/include
@@ -50,7 +44,7 @@ ELSE()
 ENDIF()
 
 link_directories(
- $ENV{MILP_LOGICALLY_HOME}/libMilpLogically
+ $ENV{MILP_LOGIC_HOME}/libMilpLogic
 # $ENV{COIN_OR_HOME}/CoinAll-1.3.0/lib
  $ENV{CPLEX_HOME}/lib/${CPLEX_ARCH_DIR}
  $ENV{CONCERT_HOME}/lib/${CPLEX_ARCH_DIR}
@@ -68,13 +62,9 @@ IF(APPLE)
   LIST(APPEND EXTRA_LIBS ${COREFOUNDATION} ${IOKIT})
 ENDIF(APPLE)
 
-add_executable( milpLogicallySortingNetwork ${SOURCES} ${HEADERS})
+add_executable( milpLogicSortingNetwork ${SOURCES} ${HEADERS})
 
-if(DEFINED ENV{DO_OPEN_MP})
-  SET_TARGET_PROPERTIES( milpLogicallySortingNetwork PROPERTIES COMPILE_FLAGS "-fopenmp -O3" LINK_FLAGS "-fopenmp -O3")
-endif()
-
-target_link_libraries( milpLogicallySortingNetwork MilpLogically
+target_link_libraries( milpLogicSortingNetwork MilpLogic
 # FlopCpp OsiDylp Dylp OsiVol Vol OsiSym Sym OsiCbc Cbc OsiClp Clp Cgl
 #Osi CoinUtils 
 #xprs xprb

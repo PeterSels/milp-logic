@@ -8,9 +8,7 @@
 
 # Here, our objective function is the number of comparators.
 
-executable=./Debug/milpLogicallySortingNetwork
+executable=./Debug/milpLogicSortingNetworkOptimizer
 
 $executable 2 1 1 0.0
-
-
 

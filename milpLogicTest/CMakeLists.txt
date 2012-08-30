@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-project( milpLogicallyTest )
+project( milpLogicTest )
 
 IF(WIN32)
  SET(CMAKE_EXE_LINKER_FLAGS_DEBUG "/debug /FORCE:MULTIPLE")
@@ -10,15 +10,15 @@ ENDIF()
 
 file(GLOB_RECURSE HEADERS "*.h")
 
-INCLUDE($ENV{MILP_LOGICALLY_HOME}/boost.cmake)
+INCLUDE($ENV{MILP_LOGIC_HOME}/boost.cmake)
 
 set(SOURCES 
-  src/milpLogicallyTest.cpp
+  src/milpLogicTest.cpp
 )
 
 include_directories( 
   include
-  ${CMAKE_SOURCE_DIR}/libMilpLogically/include
+  ${CMAKE_SOURCE_DIR}/libMilpLogic/include
   $ENV{CPLEX_HOME}/include
   $ENV{CONCERT_HOME}/include
   $ENV{GUROBI_HOME}/include
@@ -46,7 +46,7 @@ ELSE()
 ENDIF()
 
 link_directories(
-  ${CMAKE_SOURCE_DIR}/libMilpLogically
+  ${CMAKE_SOURCE_DIR}/libMilpLogic
   $ENV{CPLEX_HOME}/lib/${CPLEX_ARCH_DIR}
   $ENV{CONCERT_HOME}/lib/${CPLEX_ARCH_DIR}
   $ENV{GUROBI_HOME}/lib
@@ -65,13 +65,9 @@ IF(APPLE)
    LIST(APPEND EXTRA_LIBS ${COREFOUNDATION} ${IOKIT})
 ENDIF(APPLE)
 
-add_executable( milpLogicallyTest ${SOURCES} ${HEADERS})
+add_executable( milpLogicTest ${SOURCES} ${HEADERS})
 
-if(DEFINED ENV{DO_OPEN_MP})
-  SET_TARGET_PROPERTIES( milpLogicallyTest PROPERTIES COMPILE_FLAGS "-fopenmp" LINK_FLAGS "-fopenmp")
-endif()
-
-target_link_libraries( milpLogicallyTest MilpLogically 
+target_link_libraries( milpLogicTest MilpLogic
 ${GUROBI_CPP} $ENV{GUROBI_MAIN_VERSION} 
 ilocplex cplex$ENV{CPLEX_VERSION} concert 
 ${XPRESS_LIBS}
