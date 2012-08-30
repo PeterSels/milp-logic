@@ -1,0 +1,4 @@
+executable=./Debug/milpLogicallyTest
+
+$executable
+

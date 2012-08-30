@@ -1,2 +1,2 @@
-perl tree.pl .
+perl ./tree.pl .
 
