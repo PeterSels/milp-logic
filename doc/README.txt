@@ -125,6 +125,65 @@ the input parameters to the milpLogicSortingNetworkOptimizer executable, this al
 MILP models of containing almost only boolean solver variables accross the different solvers one tries.
 
 
+Setting Environment Variables MilpLogic depends on
+------------------------------------------------
+
+Before you should do any builds, first set these environment
+variables. This holds for *nix OSes as well as for Windows versions.
+
+For Windows version, you have to manualle edit the environment
+variables in Computer > Properties > Advanced > Environment Variables.
+
+On *nix systems, you can add the following lines to your  ~/.bash file
+or  ~/.profile file. 
+
+
+export CPLEX_HOME=/opt/ibm/ILOG/CPLEX_Studio_Academic124/cplex
+export CONCERT_HOME=/opt/ibm/ILOG/CPLEX_Studio_Academic124/concert
+export CPLEX_ARCH_DIR=x86-64_darwin9_gcc4.0
+
+export ILOG_LICENSE_FILE=/usr/ilog/ilm/access.ilm
+export CPLEX_VERSION=
+
+#export GUROBI_MAIN_VERSION=gurobi30
+#export GUROBI_MAIN_VERSION=gurobi40
+#export GUROBI_MAIN_VERSION=gurobi45
+#export GUROBI_MAIN_VERSION=gurobi46
+export GUROBI_MAIN_VERSION=gurobi50
+
+#export GUROBI_VERSION=gurobi301
+#export GUROBI_VERSION=gurobi400
+#export GUROBI_VERSION=gurobi401
+#export GUROBI_VERSION=gurobi450
+#export GUROBI_VERSION=gurobi451
+#export GUROBI_VERSION=gurobi452
+#export GUROBI_VERSION=gurobi460
+#export GUROBI_VERSION=gurobi461
+#export GUROBI_VERSION=gurobi500
+export GUROBI_VERSION=gurobi501
+
+export GUROBI_HOME="/Library/${GUROBI_VERSION}/mac64"
+export PATH="${PATH}:${GUROBI_HOME}/bin"
+#export DYLD_LIBRARY_PATH="${GUROBI_HOME}/lib"
+export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH}:${GUROBI_HOME}/lib"
+
+#export GRB_LICENSE_FILE="${GUROBI_HOME}/gurobi.lic" 
+# The above line is only need if not put on this standard location
+
+export MILP_LOGIC_HOME=~peter/projects/MilpLogic
+
+
+After adding, dont forget to activate these settings by
+sourcing the changed file. For bash you do this by typing:
+
+~peter/.profile
+
+for tsh you do this by typing
+
+source ~peter/.profile
+
+
+
 How to Build and Install?
 -----------------------
 
@@ -235,7 +294,8 @@ This is because Debug is somehow appended to the specified library directories i
 The directory where the libraries are specified and found by the linker are the ones without the /Debug suffix, so building does go well,
 but we would like to get rid of these warnings.
 
- 
+ - Give wanring about time limit exceedin solver time limit. This works for Gurobi, but is still to implement for Cplex and Xpress.
+
 
 How to Contribute to this Project?
 -------------------------------

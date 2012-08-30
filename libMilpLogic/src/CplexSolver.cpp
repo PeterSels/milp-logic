@@ -490,6 +490,7 @@ bool CplexSolver::solve(double gap, int nThreads,
   } else if (mipStatus == IloAlgorithm::InfeasibleOrUnbounded) { // 5
     cout << "WARNING: Model is infeasible or unbounded." << endl;
     solved_ = false;
+        
   } else if (mipStatus == IloAlgorithm::Error) { // 6
     cout << "WARNING: Model solution gave error." << endl;
     solved_ = false;
@@ -503,6 +504,21 @@ bool CplexSolver::solve(double gap, int nThreads,
     cout << "Objective: " << getObjVal() << endl;
   } else {
     cout << "WARNING: No integer solution found!" << endl;
+    
+    /*
+     http://web.njit.edu/all_topics/Prog_Lang_Docs/cplex80/doc/refman/html/appendixB.html
+     http://web.njit.edu/all_topics/Prog_Lang_Docs/cplex80/doc/refman/html/getstat.html#998356
+     
+    lpstat = CPXgetstat (env, lp);
+    
+    if (...IloCplex::TimeLimInfeas) {
+      // 108 according to
+      // http://yetanothermathprogrammingconsultant.blogspot.be/2010/08/cplex-new-version.html
+      // but what is its constant name?
+      cout << "because the time limit you specified " << maxSolveSeconds_
+      << " seconds is exceeded" << endl;
+    }
+     */
   }
 
   return solved_;
