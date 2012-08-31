@@ -3,12 +3,11 @@ This the file README.txt for the project 'MilpLogic'.
 What is this?
 -----------
 
-MilpLogic is A Solver Abstraction Layer with a Boolean Layer on Top,
-all written in C++.
+MilpLogic is A C++ MILP Solver Abstraction Layer with a C++ Boolean Modelling Layer on Top.
+MILP stands for Mixed Integer Linear Programming.
 
-
-Project Goals?
--------------
+What are the Project Goals?
+-------------------------
 
 It's intended to be used by C++ programmers as a library to make:
 
@@ -26,7 +25,7 @@ inequalities equivalent with the wanted boolean relations are generated.
 
 (3) the resulting C++ code generating MILP model with this MilpLogic API more readable.
 
-(4) If you want you can also see the scalability tests in milpLogicSortingNetworkOptimizer
+(4) If you want, you can also see the scalability tests in milpLogicSortingNetworkOptimizer
 as a solver benchmark. For these milpLogicSortingNetworkOptimizer
 models, some solvers solve these models in significantly lower time than others ...
 
@@ -184,8 +183,8 @@ source ~peter/.profile
 
 
 
-How to Build and Install MilpLogic, including Examples?
----------------------------------------------------
+What does MilpLogic Depend On?
+------------------------------
 
 This software has been built, installed and run on:
 - Apple OS X 10.8.1
@@ -198,10 +197,10 @@ and Windows batch files recognizable by their .bat extension.
 
 It is set up generically, using CMake for Makefile and/or project generation.
 
-The project depands on:
+The project depends on:
 - C and C++ compiler (free, tested with  v4.2.1)
 - STL free, (included in c++ compiler)
-- Boost library (free, use v1.50.0 or later)
+- Boost library (free, use v1.50.0 or later) (only for the timer in Solver::timedSolve())
 - CMake (free, use v2.6 or later)
 
 To be able to build and run, you will need at least one of the MILP solvers that MilpSolver currently abstracts.
@@ -226,11 +225,15 @@ For newer versions, there is no guarantee, but usually little or nothing is chan
 and solver upgrades mainly improve performance of the internal algorithms.
 
 
-Via CMake, it can setup project files for:
+How to Build and Install MilpLogic, including Examples?
+---------------------------------------------------
+
+Via CMake, MilpLogic can setup project files for:
 - Microsoft Windows Visual Studio C++ sln and prj files (Download and use the CMake GUI for Windows)
 - plain Unix Makefiles, to be used at command line, typing just 'make' (just type ./redoCmx.sh)
 - Apples XCode IDE  (just type ./redoCmx.sh xcode)
 - Eclipse  (just type ./redoCmx.sh eclipse)
+
 
 So run cmake on the file MilpLogic/CmakeLists.txt.
 
@@ -350,6 +353,7 @@ Git clone sources.
 Change sources.
 Git push changed sources.
 
+Read more on it on http://code.google.com.
 
 
 Questions?
