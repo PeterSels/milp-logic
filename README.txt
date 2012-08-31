@@ -56,9 +56,9 @@ Directory structure
 The projects' structure, when you just downloaded it, should look like this:
 
 $ ./showDirTree.sh
-+----MilpLogic
-     +----README.txt
++----MilpLogicClone
      +----CMakeLists.txt
+     +----README.txt
      +----boost.cmake
      +----doc
      |    +----Doxyfile
@@ -82,13 +82,15 @@ $ ./showDirTree.sh
      |         +----XpressSolver.cpp
      +----milpLogicSortingNetworkOptimizer
      |    +----CMakeLists.txt
+     |    +----run.sh
      |    +----src
      |         +----milpLogicSortingNetworkOptimizer.cpp
      +----milpLogicTest
      |    +----CMakeLists.txt
+     |    +----run.sh
      |    +----src
      |         +----milpLogicTest.cpp
-     +----redoCmx.sh
+     +----regenerateProjectFiles.sh
      +----showDirTree.bat
      +----showDirTree.sh
      +----tree.pl
