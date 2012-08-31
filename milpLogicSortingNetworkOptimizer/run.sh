@@ -21,6 +21,10 @@ $executable 3 3 0 0.0
 $executable 4 5 0 0.0
 $executable 5 9 0 0.0
 $executable 6 12 0 0.0
+
+# The ones below take really long, hours, days, ...
+# but you're welcome to try them on your supercomputer.
+
 #$executable 7 16 0 0.0
 #$executable 8 19 0 0.0
 

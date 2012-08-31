@@ -68,6 +68,10 @@ int main(int argc, char * argv[]) {
 	
   solver_ = 0;
 	resetModel(1*60, 5*60); // arguments used by cplex only
+    
+  const double twoDaysTimeInSeconds = 2 * 24 * 60 * 60;
+  const int nThreads = 4;
+
   
   if (TEST_SOS) {
 		int i=1;
@@ -89,7 +93,7 @@ int main(int argc, char * argv[]) {
 			solver_->exportModelAsLpFile("sosx");			
 			
 			double gap = 0.0;
-      bool solved = solver_->timedSolve(gap);
+      bool solved = solver_->timedSolve(gap, 4, twoDaysTimeInSeconds);
       
       assert(solved);
       double objSol_ = solved ? solver_->getObjVal() : 0;
@@ -130,10 +134,12 @@ int main(int argc, char * argv[]) {
       
       solver_->setMinimize();
 			
-			//solver_->exportModelAsLpFile("sosxyf");						
+			//solver_->exportModelAsLpFile("sosxyf");
 			
 			double gap = 0.0;
-      bool solved = solver_->timedSolve(gap);
+      bool solved = solver_->timedSolve(gap, nThreads, twoDaysTimeInSeconds);
+      
+      
       
       assert(solved);
       double objSol_ = solved ? solver_->getObjVal() : 0;
@@ -230,7 +236,7 @@ int main(int argc, char * argv[]) {
     solver_->exportModelAsLpFile("le");
 		
 		double gap = 0.0;
-    bool solved = solver_->timedSolve(gap);
+    bool solved = solver_->timedSolve(gap, nThreads, twoDaysTimeInSeconds);
     assert(solved);
 		
     double objSol_ = solved ? solver_->getObjVal() : 0;
@@ -266,7 +272,7 @@ int main(int argc, char * argv[]) {
     } else {
       assert(le0Val==0);
       assert(le1Val==1);
-    }	
+    }
 		
 	} else if (TEST_BIN_EQ_EQS) {
 		
@@ -286,7 +292,7 @@ int main(int argc, char * argv[]) {
     solver_->exportModelAsLpFile("eq");
 		
 		double gap = 0.0;
-    bool solved = solver_->timedSolve(gap);
+    bool solved = solver_->timedSolve(gap, nThreads, twoDaysTimeInSeconds);
     assert(solved);
 		
     double objSol_ = solved ? solver_->getObjVal() : 0;

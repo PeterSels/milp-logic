@@ -950,8 +950,7 @@ int main(int argc, char * argv[]) {
   // solve
   cout << "Solving model downto gap " << gap*100 << "%." << endl;
   double twoDaysTimeInSeconds = 2 * 24 * 60 * 60;
-  //bool solved = solver_->timedSolve(gap, 4, twoDaysTimeInSeconds);
-  bool solved = solver_->timedSolve(gap, 4, 10.0);
+  bool solved = solver_->timedSolve(gap, 4, twoDaysTimeInSeconds);
   
   // check solver status
   if (!solved) {

@@ -3,8 +3,11 @@ This the file README.txt for the project 'MilpLogic'.
 What is this?
 -----------
 
-MilpLogic is A C++ MILP Solver Abstraction Layer with a C++ Boolean Modelling Layer on Top.
+MilpLogic is a C++ MILP Solver Abstraction Layer with a C++ Boolean Modelling Layer on Top.
 MILP stands for Mixed Integer Linear Programming.
+More on MILP can be found on
+http://en.wikipedia.org/wiki/Mixed_integer_linear_programming#Integer_unknowns
+
 
 What are the Project Goals?
 -------------------------
@@ -16,14 +19,14 @@ models more *solver independent*
 This is done by providing a solver independent general MILP building API in the class 'Solver'.
 
 (2) the setting up of MILP models with lots of *boolean variables and
-their logical constraints( (like implciation, negation, conjunction,
+their logical constraints( (like implication, negation, conjunction,
 disjunction) *a lot easier*.
 This is done by providing a (again solver independent) boolean logic
 variable and constraint addition API in the class 'Solver'.
 Internally and automatically the implied linear equations and
 inequalities equivalent with the wanted boolean relations are generated.
 
-(3) the resulting C++ code generating MILP model with this MilpLogic API more readable.
+(3) the resulting C++ code generating MILP model with this MilpLogic API impiore readable.
 
 (4) If you want, you can also see the scalability tests in milpLogicSortingNetworkOptimizer
 as a solver benchmark. For these milpLogicSortingNetworkOptimizer
@@ -41,9 +44,11 @@ You did already. If not, google for 'MilpLogic'. You'll find it, since the proje
 How to Download?
 -----------------
 
-Go to http://code.google.com and search for 'MilpLogic'.
-Search for MilpLogic.
-Checkout sousces.
+Go to http://code.google.com/p/milp-logic/
+
+Checkout sources.
+
+
 
 Directory structure
 -----------------
@@ -52,11 +57,11 @@ The projects' structure, when you just downloaded it, should look like this:
 
 $ ./showDirTree.sh
 +----MilpLogic
+     +----README.txt
      +----CMakeLists.txt
      +----boost.cmake
      +----doc
      |    +----Doxyfile
-     |    +----README.txt
      |    +----run.sh
      +----libMilpLogic
      |    +----CMakeLists.txt
@@ -101,7 +106,7 @@ showDirTree.bat
 on Windows systems.
 
      +----doc
-contains the projects'documentation. It contains this README.txt file.
+contains the projects'documentation.
 It also contains a the doxygen settings file 'Doxygen'.
 To generate doxygen documentation, just go to the doc directory and type:
 
@@ -203,7 +208,7 @@ The project depends on:
 - Boost library (free, use v1.50.0 or later) (only for the timer in Solver::timedSolve())
 - CMake (free, use v2.6 or later)
 
-To be able to build and run, you will need at least one of the MILP solvers that MilpSolver currently abstracts.
+To be able to build and run, you will also need at least one of the MILP solvers that MilpSolver currently abstracts.
 These are currently: CPLEX, Gurobi, Fico XPress. You can extend MipLogic for other servers too of course.
 Solver selection is done prior to building, by changing the defines in the header file libMilpLogic/HasSolver.h.
 
@@ -224,15 +229,24 @@ Slightly older versions also have been tested and work.
 For newer versions, there is no guarantee, but usually little or nothing is changed in the solver APIs
 and solver upgrades mainly improve performance of the internal algorithms.
 
+You will also need a license for any of the three mentioned solvers.
+
+
+What is the MilpLogic License Model?
+----------------------------------
+
+MilpLogic is open source software, subject to a ... license.
+See http://code.google.com for more information.
+
 
 How to Build and Install MilpLogic, including Examples?
 ---------------------------------------------------
 
 Via CMake, MilpLogic can setup project files for:
 - Microsoft Windows Visual Studio C++ sln and prj files (Download and use the CMake GUI for Windows)
-- plain Unix Makefiles, to be used at command line, typing just 'make' (just type ./redoCmx.sh)
-- Apples XCode IDE  (just type ./redoCmx.sh xcode)
-- Eclipse  (just type ./redoCmx.sh eclipse)
+- plain Unix Makefiles, to be used at command line, typing just 'make' (just type ./regenerateProjectFiles.sh)
+- Apples XCode IDE  (just type ./regenerateProjectFiles.sh xcode)
+- Eclipse  (just type ./regenerateProjectFiles.sh eclipse)
 
 
 So run cmake on the file MilpLogic/CmakeLists.txt.
@@ -246,13 +260,13 @@ it, run it, zip it, ship it, ...
 
 For *nix systems, in a terminal, simply type
 
-./redoCmx xcode
+./regenerateProjectFiles.sh xcode
 
 to generate an XCode project, called MilpLogic.xcodeproject in the MilpLogic directory
 
 or
 
-./redoCmx eclipse
+./regenerateProjectFiles.sh eclipse
 
 to generate an Eclipse project, called MilpLogic.project in the MilpLogic directory
 
@@ -260,11 +274,11 @@ or
 
 either 
 
-./redoCmx 
+./regenerateProjectFiles.sh
 
 or 
 
-./redoCms unixmakefiles
+./regenerateProjectFiles.sh unixmakefiles
 
 to generate Makefiles that can be used by typing
 
@@ -297,6 +311,30 @@ The more involved test is in the directory
 Just go to this directory and in the terminal, type:
 ./milpLogicSortingNetworkOptimizer 
 
+
+Where is the documentation?
+--------------------------
+
+We consider the test in
+     +----milpLogicTest
+     +----milpLogicSortingNetworkOptimizer
+as executable - and hence, always up to date - documentation.
+
+You can also generate documentation with doxygen in the 
+     +----doc
+subdirectory of MilpLogic.
+
+On *nix systems, just go there, and type 
+
+doxygen
+
+or on Windows systems, use the doxygen GUI.
+
+doxygen and its GUI can be downloaded freely from http://www.doxygen.org.
+
+doxygen generates class inheritance graphs, function call graphs.
+It also generates html interlinked code in the MilpLogic/doc/html subdirectory and latex and pdf files in the
+MilpLogic/doc/latex subdirectory.
 
 
 Can this project be Improved?
