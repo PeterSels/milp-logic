@@ -143,6 +143,7 @@ variables in Computer > Properties > Advanced > Environment Variables.
 On *nix systems, you can add the following lines to your  ~/.bash file
 or  ~/.profile file. 
 
+As an example, the relevant section in my ~/.profile file is:
 
 export CPLEX_HOME=/opt/ibm/ILOG/CPLEX_Studio_Academic124/cplex
 export CONCERT_HOME=/opt/ibm/ILOG/CPLEX_Studio_Academic124/concert
@@ -179,10 +180,10 @@ export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH}:${GUROBI_HOME}/lib"
 export MILP_LOGIC_HOME=~peter/projects/MilpLogic
 
 
-After adding, dont forget to activate these settings by
-sourcing the changed file. For bash you do this by typing:
+After adding the correct environment variables, don't forget to activate these settings by
+sourcing the changed file. For bash you do this by typing in your terminal:
 
-~peter/.profile
+. ~peter/.profile
 
 for tsh you do this by typing
 
@@ -214,13 +215,13 @@ To be able to build and run, you will also need at least one of the MILP solvers
 These are currently: CPLEX, Gurobi, Fico XPress. You can extend MipLogic for other servers too of course.
 Solver selection is done prior to building, by changing the defines in the header file libMilpLogic/HasSolver.h.
 
-To select Cplex, activate:
+To select Cplex, activate the line:
 #define USE_CPLEX_NATIVE
 
-To select Gurobi, activate:
-define USE_GUROBI_NATIVE
+To select Gurobi, activate the line:
+#define USE_GUROBI_NATIVE
 
-To define Xpressm activate:
+To select Xpress activate the line:
 #define USE_XPRESS_NATIVE
 
 Currently, only one of these defines can be active at any time.
@@ -237,8 +238,9 @@ You will also need a license for any of the three mentioned solvers.
 What is the MilpLogic License Model?
 ----------------------------------
 
-MilpLogic is open source software, subject to a ... license.
-See http://code.google.com for more information.
+MilpLogic is open source software, subject to a GPL v3 license.
+See http://www.gnu.org/copyleft/gpl.html
+for the complete license.
 
 
 How to Build and Install MilpLogic, including Examples?
@@ -257,7 +259,7 @@ For Windows you do this with the CMake GUI, which can be downloaded
 for free from http://www.cmake.org.
 Select the project: MilpLogic and click the Configure and then Setup
 buttons. You know generated a project called MilpLogi.sln in the
-MilpSolver directory. Load it in MicroSoft Visual STudio C++ and build
+MilpSolver directory. Load it in MicroSoft Visual Studio C++ and build
 it, run it, zip it, ship it, ...
 
 For *nix systems, in a terminal, simply type
@@ -342,7 +344,7 @@ MilpLogic/doc/latex subdirectory.
 Can this project be Improved?
 ---------------------------
 
-Yes!
+Yes, sure.
 
 
 How can this project be Improved?
