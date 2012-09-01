@@ -252,6 +252,8 @@ Via CMake, MilpLogic can setup project files for:
 - Apples XCode IDE  (just type ./regenerateProjectFiles.sh xcode)
 - Eclipse  (just type ./regenerateProjectFiles.sh eclipse)
 
+First set the environment variable MILP_LOGIC_HOME to the full path up
+to MilpLogic. (eg: /Users/peter/projects/MilpLogic).
 
 So run cmake on the file MilpLogic/CmakeLists.txt.
 
@@ -420,7 +422,7 @@ and in any case, add one global variable, called solver_.
 
 Solver * solver_;
 
-To hava generic resetModel function, you can add this:
+To have generic resetModel function, you can add this:
 
 void resetModel(unsigned int maxGetLicenseSeconds, 
                 unsigned int maxSolverSeconds) {
@@ -443,7 +445,7 @@ Starting a model is now as simple as:
 
   solver_ = 0;
   resetModel(1*60, 5*60); // arguments currently used by cplex only
-  solver_->setMinimize();
+  solver_->setMinimize(); // or solver_->setMaximize();
 
   const bool doUpdate = false;
 
@@ -465,7 +467,7 @@ Then one can start adding boolean variables:
 and now constraints:
 
           string constrName = "aEQb";
-          solver_->fastAddConstr(aVar, "==", bVar(), constrName);
+          solver_->fastAddConstr(aVar, "==", bVar, constrName);
 
 More involved examples are present in the directories: milpLogicTest
 and milpLogicSortingNetworkOptimizer.
