@@ -398,6 +398,80 @@ Git push changed sources.
 Read more on it on http://code.google.com.
 
 
+
+How to use MilpLogic API in my own C++ Program?
+-----------------------------------------------
+
+In HasSolver.h, activate the define you want, for example:
+
+#define USE_GUROBI_NATIVE
+
+Then in your own code include the corresponding solver include file
+
+#include "GurobiSolver.h"
+
+For Cplex only, add
+
+#ifdef USE_CPLEX_NATIVE
+extern IloEnv * global_env_;
+#endif
+
+and in any case, add one global variable, called solver_.
+
+Solver * solver_;
+
+To hava generic resetModel function, you can add this:
+
+void resetModel(unsigned int maxGetLicenseSeconds, 
+                unsigned int maxSolverSeconds) {
+  if (solver_==0) {
+#ifdef USE_GUROBI_NATIVE
+    solver_ = new GurobiSolver(maxGetLicenseSeconds, maxSolverSeconds);
+#endif
+#ifdef USE_XPRESS_NATIVE
+    solver_ = new XpressSolver(maxGetLicenseSeconds, maxSolverSeconds);
+#endif
+#ifdef USE_CPLEX_NATIVE
+    solver_ = new CplexSolver(maxGetLicenseSeconds, maxSolverSeconds);
+#endif
+  }
+  assert(solver_!=0);
+  solver_->resetModel();
+}
+
+Starting a model is now as simple as:
+
+  solver_ = 0;
+  resetModel(1*60, 5*60); // arguments currently used by cplex only
+  solver_->setMinimize();
+
+  const bool doUpdate = false;
+
+The doUpdate is a boolean that is used by Gurobi to update its state
+after adding variables. If set to true, you can define constraints
+over the variables only after you updated the model.
+This is designed so for efficiency reasons.
+
+Then one can start adding boolean variables:
+
+          string name0 = "a";
+          const SolverVar aVar = solver_->addBinVar(0, name, doUpdate);
+
+          string name0 = "b";
+          const SolverVar bVar = solver_->addBinVar(0, name, doUpdate);
+
+          solver_->update();
+
+and now constraints:
+
+          string constrName = "aEQb";
+          solver_->fastAddConstr(aVar, "==", bVar(), constrName);
+
+More involved examples are present in the directories: milpLogicTest
+and milpLogicSortingNetworkOptimizer.
+
+
+
 Questions?
 ----------
 

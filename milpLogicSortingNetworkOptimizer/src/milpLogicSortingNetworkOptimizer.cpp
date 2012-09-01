@@ -8,11 +8,9 @@
 
 using namespace std;
 
-#include "HasSolver.h"
-#include "Solver.h"
 #include "GurobiSolver.h"
-#include "XpressSolver.h"
-#include "CplexSolver.h"
+//#include "XpressSolver.h"
+//#include "CplexSolver.h"
 
 // User can turn on one of the below defines 
 // by setting it to true to activate the respective test.
