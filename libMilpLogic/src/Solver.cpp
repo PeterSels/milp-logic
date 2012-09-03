@@ -1,9 +1,9 @@
 #include <sstream>
 #include <assert.h>
-
 #include <boost/timer/timer.hpp>
 
 #include "Solver.h"
+#include "StringUtilities.h"
 
 #ifdef USE_CPLEX_NATIVE
 extern IloEnv * global_env_;
@@ -12,8 +12,9 @@ extern IloEnv * global_env_;
 using namespace std;
 using namespace boost;
 
-
+/*
 // Some needed string utility functions
+// Put here to avoid dependency on string utilities library.
 
 bool replace(string & str, char oldCh, char newCh) {
   unsigned int beyond = (unsigned int)str.length();
@@ -42,6 +43,8 @@ void replaceAllOddByEven(string & str, const string & oddEven) {
     replaceAll(str, oldCh, newCh);
   }
 }
+*/
+
 
 Solver::Solver(double maxGetLicenseSeconds, 
                double maxSolveSeconds)

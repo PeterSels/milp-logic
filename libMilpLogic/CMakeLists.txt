@@ -13,6 +13,7 @@ set(SOURCES
   src/CplexSolver.cpp
   src/GurobiSolver.cpp
   src/Solver.cpp
+  src/StringUtilities.cpp
   src/XpressSolver.cpp
 )
 
@@ -27,7 +28,7 @@ include_directories(
 
 add_library(MilpLogic STATIC ${SOURCES} ${HEADERS})
 
-if(DEFINED $ENV{DO_OPEN_MP})
-  SET_TARGET_PROPERTIES( MilpSolver PROPERTIES COMPILE_FLAGS "-fopenmp" )
-endif()
+#if(DEFINED $ENV{DO_OPEN_MP})
+#  SET_TARGET_PROPERTIES( MilpSolver PROPERTIES COMPILE_FLAGS "-fopenmp" )
+#endif()
 
