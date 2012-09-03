@@ -141,3 +141,77 @@ $executable 6 12 0 0.0
 ...
 
 Stopped at 94870s
+
+
+
+
+
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------------
+ RESULTS WITH XPRESS Fico v7.2.1
+-----------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+----------------------
+
+$executable 3 3 0 0.0
+
+
+Solving with Xpress v4.4.1 took:  0.030668s wall, 0.000000s user + 0.015600s system = 0.015600s CPU (50.9%)
+
+goal function value = 3
+Optimal comparator sorting network =
+=*=
+*+*
++=+
+
+Checking result with all 8 in- and output vectors
+Check is OK.
+
+
+----------------------
+
+$executable 4 5 0 0.0
+
+
+The model is solved optimally
+Solving with Xpress v4.4.1 took:  4.572897s wall, 6.552042s user + 0.046800s system = 6.598842s CPU (144.3%)
+
+goal function value = 5
+Optimal comparator sorting network =
+=**==
+=+=**
+*=+=+
++==+=
+
+Checking result with all 16 in- and output vectors
+Check is OK.
+
+----------------------
+
+
+$executable 5 9 0 0.0
+
+The model is solved optimally
+Solving with Xpress v4.4.1 took:  127.281106s wall, 127.624418s user +0.218401s system = 127.842820s CPU (100.4%)
+
+goal function value = 9
+Optimal comparator sorting network =
+*===*=**=
++*==+*=+=
+==*==+==*
+=+=*==+=+
+==++=====
+
+Checking result with all 32 in- and output vectors
+Check is OK.
+
+----------------------
+
