@@ -14,7 +14,7 @@ ENDIF()
 
 project(MilpLogic)
 
-INCLUDE($ENV{MILP_LOGIC_HOME}/boost.cmake)
+INCLUDE(${CMAKE_SOURCE_DIR}/boost.cmake)
 
 
 # Recurse into the "libMilpSolver" etc. subdirectories.  This does not actually
