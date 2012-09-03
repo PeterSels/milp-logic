@@ -203,6 +203,7 @@ export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH}:${GUROBI_HOME}/lib"
 #export GRB_LICENSE_FILE="${GUROBI_HOME}/gurobi.lic" 
 # The above line is only need if not put on this standard location
 
+# You can add this, in case other projects on other location need to refer to it
 export MILP_LOGIC_HOME=~peter/projects/MilpLogic
 
 

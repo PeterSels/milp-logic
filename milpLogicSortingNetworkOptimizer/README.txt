@@ -1,3 +1,56 @@
+We give some results here of runs of milpLogicSortingNetworkOptimizer
+with different solvers.
+
+
+(1) Results Meaning
+------------------
+
+A result like:
+=*=
+*+*
++=+
+means that there are 3 inputs, 1 at the left of eachr row.
+Each column represents an operation on the inputs.
+The first column:
+=
+*
++
+means that 
+(1) the top input is fed through (=) to the right,
+(2) the middle  is the AND (*) of the middle input and the lower input
+(since the corresponding + is at that row) and 
+(3) the bottom is the OR (+) of the bottom input and the middle (since
+the corresponding * is at that row).
+
+The next column, takes the resulting outputs from the first column
+operations and applies its own operators on it.
+*
++
+=
+Note that, per column, there is exactly one * and one +, and
+the * always occurs above the +. The * and + together are called a
+comparator,
+because they only compare two inputs and if they are not ordered, they
+are swapped. If they were already oredered, they are left alone (not
+swapped).
+
+
+We look for a network with the minimal number of comparators, so
+minimal number of columns, that will sort all the outputs in order, with the
+lowest one at the top and the highest one at the bottom. Whatever the
+inputs are.
+
+There is a Lemma that says that if a sorting network with N inputs (and
+N outputs) does sort all the 2^N binary string in 2^|N, then it will
+sort also all other sets of 2^N numbers.
+Comparators may have to be adapted, but the structure of the network
+in terms of comparators (So the +,*,= pattern) remains the same.
+
+
+
+
+(2) Some computational results with different solvers 
+------------------------------------------------
 
 
 -----------------------------------------------------------------------------------------------------------------------
