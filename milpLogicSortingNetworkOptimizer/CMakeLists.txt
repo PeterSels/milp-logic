@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 project( milpLogicSortingNetworkOptimizer )
 
-INCLUDE($ENV{MILP_LOGIC_HOME}/boost.cmake)
+INCLUDE(${CMAKE_SOURCE_DIR}/boost.cmake)
 
 IF(WIN32)
   SET(CMAKE_EXE_LINKER_FLAGS_DEBUG "/debug /FORCE:MULTIPLE")
