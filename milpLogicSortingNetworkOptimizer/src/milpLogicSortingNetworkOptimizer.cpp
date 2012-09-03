@@ -941,8 +941,8 @@ int main(int argc, char * argv[]) {
   unsigned int nNonZeroes = solver_->getNumberOfNonZeroes();
   cout << "(r,c,nz) = (" << nRows << ", " << nCols << ", " 
   << nNonZeroes << ")" << endl;
-  unsigned int nSets = solver_->getNumberOfSets();
-  cout << "ns = " << nSets << endl;
+  //unsigned int nSets = solver_->getNumberOfSets();
+  //cout << "ns = " << nSets << endl;
 
   
   // solve
