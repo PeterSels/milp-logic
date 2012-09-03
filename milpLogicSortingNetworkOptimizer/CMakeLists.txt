@@ -52,6 +52,7 @@ link_directories(
  $ENV{CPLEX_HOME}/lib/${CPLEX_ARCH_DIR}
  $ENV{CONCERT_HOME}/lib/${CPLEX_ARCH_DIR}
  $ENV{GUROBI_HOME}/lib
+ $ENV{XPRESS_HOME}/lib
  ${BOOST_LIBRARYDIR}/stage/lib
 )
 
