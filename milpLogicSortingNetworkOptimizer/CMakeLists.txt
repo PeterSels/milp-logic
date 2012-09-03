@@ -18,7 +18,7 @@ set(SOURCES
 
 include_directories(
  include
- $ENV{MILP_LOGIC_HOME}/libMilpLogic/include
+ ${CMAKE_SOURCE_DIR}/libMilpLogic/include
 # $ENV{COIN_OR_HOME}/CoinAll-1.3.0/include/coin
  $ENV{CPLEX_HOME}/include
  $ENV{CONCERT_HOME}/include
@@ -44,7 +44,7 @@ ELSE()
 ENDIF()
 
 link_directories(
- $ENV{MILP_LOGIC_HOME}/libMilpLogic
+ ${CMAKE_SOURCE_DIR}/libMilpLogic
 # $ENV{COIN_OR_HOME}/CoinAll-1.3.0/lib
  $ENV{CPLEX_HOME}/lib/${CPLEX_ARCH_DIR}
  $ENV{CONCERT_HOME}/lib/${CPLEX_ARCH_DIR}

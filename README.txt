@@ -138,7 +138,31 @@ Before you should do any builds, first set these environment
 variables. This holds for *nix OSes as well as for Windows versions.
 
 For Windows version, you have to manualle edit the environment
-variables in Computer > Properties > Advanced > Environment Variables.
+variables in Control Panel > All Control Panel Items > Advanced system
+settings > (Confirm Yes) >  
+
+Select the 'Advance' tab if not selected already.
+
+Click Environment Variables...
+
+Edit the System Variables, the lowest section of the two.
+This has the advantage that all users will see the changes you apply
+instead of only you.
+
+For example, in the case you are usng the solver Gurobi v5.0.1,
+set GUROBI_HOME to C:\gurobi501\win64
+or wherever it is installed.
+
+Set GUROBI_MAIN_VERSION to GUROBI50.
+
+For CPLEX, for example, if you are using v12.3,
+set CPLEX_HOME to C:\IBM\ILOG\CPLEX_Studio123\cplex
+set CONCERT_HOME to  C:\IBM\ILOG\CPLEX_Studio123\concert
+set CPLEX_LIB to cplex123
+set CPLEX_VERSION to 123
+
+For Xpress
+set XPRESS_HOME to C:\XPRESSMP
 
 On *nix systems, you can add the following lines to your  ~/.bash file
 or  ~/.profile file. 
