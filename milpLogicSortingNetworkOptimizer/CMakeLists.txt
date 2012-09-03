@@ -67,7 +67,7 @@ add_executable( milpLogicSortingNetworkOptimizer ${SOURCES} ${HEADERS})
 target_link_libraries( milpLogicSortingNetworkOptimizer MilpLogic
 # FlopCpp OsiDylp Dylp OsiVol Vol OsiSym Sym OsiCbc Cbc OsiClp Clp Cgl
 #Osi CoinUtils 
-#xprs xprb
+${XPRESS_LIBS}
 ${GUROBI_CPP} $ENV{GUROBI_MAIN_VERSION} 
 ilocplex cplex$ENV{CPLEX_VERSION} concert 
 ${MATH_LIB} ${EXTRA_LIBS} ${THREAD}
