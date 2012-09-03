@@ -164,7 +164,9 @@ set CPLEX_VERSION to 123
 For Xpress
 set XPRESS_HOME to C:\XPRESSMP
 
-On *nix systems, you can add the following lines to your  ~/.bash file
+Supported version of XPRESS, is for now, Xpress from Fico v7.2.1
+
+On *nix systems, you can add the following lines to your  ~/.bashrc file
 or  ~/.profile file. 
 
 As an example, the relevant section in my ~/.profile file is:

@@ -304,8 +304,8 @@ int main(int argc, char * argv[]) {
   unsigned int c = solver_->getNumberOfColumns();
   unsigned int nz = solver_->getNumberOfNonZeroes();
   cout << "(r,c,nz) = (" << r << ", " << c << ", " << nz << ")" << endl;
-  unsigned int ns = solver_->getNumberOfSets();
-  cout << "ns = " << ns << endl;
+  //unsigned int ns = solver_->getNumberOfSets();
+  //cout << "ns = " << ns << endl;
 	
 	return 0;
 }
