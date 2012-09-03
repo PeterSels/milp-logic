@@ -4,7 +4,7 @@ project(libMilpLogic)
 
 CMAKE_POLICY(SET CMP0009 OLD)
 
-INCLUDE($ENV{MILP_LOGIC_HOME}/boost.cmake)
+INCLUDE(${CMAKE_SOURCE_DIR}/boost.cmake)
 
 file(GLOB HEADERS "*.h" "./include/*.h")
 

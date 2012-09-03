@@ -10,7 +10,7 @@ ENDIF()
 
 file(GLOB_RECURSE HEADERS "*.h")
 
-INCLUDE($ENV{MILP_LOGIC_HOME}/boost.cmake)
+INCLUDE(${CMAKE_SOURCE_DIR}/boost.cmake)
 
 set(SOURCES 
   src/milpLogicTest.cpp
