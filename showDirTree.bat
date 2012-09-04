@@ -1,2 +1,2 @@
-perl tree.pl .
+perl win_tree.pl .
 

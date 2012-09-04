@@ -191,7 +191,9 @@ set CPLEX_VERSION to 123
 For Xpress
 set XPRESS_HOME to C:\XPRESSMP
 
-Supported version of XPRESS, is for now, Xpress from Fico v7.2.1
+Tested version of Xpress, are Fico v7.2.1 and Fico v7.3.
+For Xpress, defining only this directory location environment variable is sufficient.
+No version environment variables are necessary.
 
 On *nix systems, you can add the following lines to your  ~/.bashrc file
 or  ~/.profile file. 
