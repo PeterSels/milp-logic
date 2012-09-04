@@ -37,20 +37,44 @@ models, some solvers solve these models in significantly lower time than others 
 How to Search MilpLogic?
 -----------------------
 
-You did already. If not, google for 'MilpLogic'. You'll find it, since the project is hosted with them at http://code.google.com
-
+You did already. If not, google for 'milp-logic'. You'll find it, since the project is hosted with them at http://code.google.com
+or go directly to http://code.google.com/p/milp-logic.
 
 
 How to Download?
 -----------------
 
 Go to http://code.google.com/p/milp-logic/
+Click on the Source tab 
+or go directly to 
+http://code.google.com/p/milp-logic/source/checkout.
 
-Checkout sources.
+On this webpage, you see that you can checkout the repository using git by typing
+
+git clone https://code.google.com/p/milp-logic
+
+on the command line.
+If you get an error saying: 
+"
+Couldn't resolve host 'code.google.com'
+while accessing https://code.google.com/p/milp-logic/info/refs
+
+fatal: HTTP request failed
+"
+you probably have a network/firewall/DNS problem.
+So ask your network administrator.
+
+If all goes well instead, you should now have downloaded the code in
+your current directory.
+It's structure should look like the one in the paragraph below
+'Project Structure'.
+
+This webpage, also mentions some GUIs you can use instead of command
+line access method.
 
 
 
-Directory structure
+Project structure
 -----------------
 
 The projects' structure, when you just downloaded it, should look like this:
@@ -63,6 +87,7 @@ $ ./showDirTree.sh
      +----doc
      |    +----Doxyfile
      |    +----run.sh
+     |    +----run.bat
      +----libMilpLogic
      |    +----CMakeLists.txt
      |    +----include
@@ -83,11 +108,13 @@ $ ./showDirTree.sh
      +----milpLogicSortingNetworkOptimizer
      |    +----CMakeLists.txt
      |    +----run.sh
+     |    +----run.bat
      |    +----src
      |         +----milpLogicSortingNetworkOptimizer.cpp
      +----milpLogicTest
      |    +----CMakeLists.txt
      |    +----run.sh
+     |    +----run.bat
      |    +----src
      |         +----milpLogicTest.cpp
      +----regenerateProjectFiles.sh
