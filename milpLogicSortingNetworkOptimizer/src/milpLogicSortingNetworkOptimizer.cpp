@@ -5,6 +5,7 @@
 #include <cmath>
 #include <sstream>
 #include <vector>
+#include <cstdlib>
 
 using namespace std;
 
