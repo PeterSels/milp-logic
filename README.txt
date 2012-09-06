@@ -363,6 +363,16 @@ Just go to this directory and in the terminal, type:
 
 ./run.sh
 
+when on *nix systems, or
+
+./run.bat
+
+when on Windows ssytems.
+
+When you let CMake generate plain unix Makefiles, the directory where
+the executable is put is not the milpLogicTest /Debug subdirectory but the
+milpLogicTest one itself. So run ./milpLogicTest instead.
+
 In the C++ code in the file milpLogicTest/src/milpLogicTest.cpp,
 you can select which test you want to run by changing some defines at the beginning of the file.
 
@@ -372,6 +382,21 @@ The more involved test is in the directory
 
 Just go to this directory and in the terminal, type:
 ./milpLogicSortingNetworkOptimizer 
+
+Just go to this directory and in the terminal, type:
+
+./run.sh
+
+when on *nix systems, or
+
+./run.bat
+
+when on Windows ssytems.
+
+When you let CMake generate plain unix Makefiles, the directory where
+the executable is put is not the milpLogicSortingNetworkOptimizer /Debug subdirectory but the
+milpLogicTest one itself. So run ./milpLogicSortingNetworkOptimizer instead.
+
 
 
 Where is the documentation?

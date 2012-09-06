@@ -74,110 +74,111 @@ int main(int argc, char * argv[]) {
   const int nThreads = 4;
 
   if (TEST_SOS) {
-    cout << "TEST_SOS" << endl;
-		int i=0;
-    if (i==0) {
-      cout << "<<<<<<<<<<<<<<<<<< i = " << i << " >>>>>>>>>>>>>>" << endl;
-      
-      for (unsigned int m=0; m<2; m++) {
-        cout << "<<<<<<<<<<<<<<<<<< m = " << m << " >>>>>>>>>>>>>>" << endl;
-        
-        bool min = (m==0) ? false : true;
-        unsigned int lo = 10;
-        unsigned int hi = 99;
-        solver_->resetModel();
-        
-        const SolverVar x = solver_->addIntVar(lo, hi, 1, "x");
-        
-        solver_->addSos1(x);
-        
-        if (min) {
-          solver_->setMinimize();
-        } else {
-          solver_->setMaximize();
-        }
-        
-        solver_->exportModelAsLpFile("sosx");
-        
-        double gap = 0.0;
-        bool solved = solver_->timedSolve(gap, 4, twoDaysTimeInSeconds);
-        
-        assert(solved);
-        double objSol_ = solved ? solver_->getObjVal() : 0;
-        cout << "goal function value = " << objSol_ << endl;
-        double xVal = solver_->getValueOf(x);
-        cout << "x = " << xVal << endl;
-        if (min) {
-          assert(xVal == lo);
-          assert(objSol_ == lo);
-        } else {
-          assert(xVal == hi);
-          assert(objSol_ == hi);
-        }
-      }
-    }
     
-    i=1;
-    if (i==1) {
-      cout << "<<<<<<<<<<<<<<<<<< i = " << i << " >>>>>>>>>>>>>>" << endl;
-      // default is cost equals sum of x-variable values
-      unsigned int wx = 1;
-      unsigned int wy = 0;
-      bool realCost = true; // if true: use y variables value as cost
-      if (realCost) {
-        wx = 0;
-        wy = 1;
-      }
-			
+    for (unsigned int m=0; m<2; m++) {
+      
+      bool min = (m==0) ? false : true;
+      string suffix = (min ? "min" : "max");
+      
+      cout << "<<<<<<<<<<<<<<<<<< TEST_SOS 1: mode = "
+      << suffix << " >>>>>>>>>>>>>>"
+      << endl;
+      
+      unsigned int lo = 10;
+      unsigned int hi = 99;
       solver_->resetModel();
-      const SolverVar x = solver_->addIntVar(0, 99, wx, "x");
-      const SolverVar y = solver_->addIntVar(0, 99, wy, "y");
-			vector<double> parameters;
-			parameters.push_back(10);
-			
-			solver_->addBinVarsFor(&x, 1, true);
-			solver_->addBinConvexityAndReferenceRowsFor(&x);
-
-			solver_->addBinVarsFor(&y, 1, true);
-			solver_->addBinConvexityAndReferenceRowsFor(&y);
-			
-      solver_->addSos1(x, y, f, parameters/*, 1*/);
       
-      solver_->setMinimize();
-			
-			solver_->exportModelAsLpFile("sosxyf");
-			
-			double gap = 0.0;
-      bool solved = solver_->timedSolve(gap, nThreads, twoDaysTimeInSeconds);
+      const SolverVar x = solver_->addIntVar(lo, hi, 1, "x");
       
+      solver_->addSos1(x);
+      
+      if (min) {
+        solver_->setMinimize();
+      } else {
+        solver_->setMaximize();
+      }
+      
+      string name = "sosx_" + suffix;
+      solver_->exportModelAsLpFile(name);
+      
+      double gap = 0.0;
+      bool solved = solver_->timedSolve(gap, 4, twoDaysTimeInSeconds);
       
       assert(solved);
       double objSol_ = solved ? solver_->getObjVal() : 0;
-      cout << "goal function value = " << objSol_ << endl;   
+      cout << "goal function value = " << objSol_ << endl;
       double xVal = solver_->getValueOf(x);
-      int xIntVal = (int)xVal;
-      assert(xIntVal == xVal);
       cout << "x = " << xVal << endl;
-      double yVal = solver_->getValueOf(y);
-      cout << "y = " << yVal << endl;
-      cout << "check:f(x)=" << f(parameters, xIntVal) << ", y=" << yVal << endl;
-      
-      assert(xVal == 10);
-      assert(yVal == 20);
-      if (realCost) {
-        assert(objSol_ == 20); // yVal
+      if (min) {
+        assert(xVal == lo);
+        assert(objSol_ == lo);
       } else {
-        assert(objSol_ == 10); // xVal
+        assert(xVal == hi);
+        assert(objSol_ == hi);
       }
-    } 
+    }
+    cout << "TEST_SOS 1: OK" << endl;
+
+
+    cout << "<<<<<<<<<<<<<<<<<< TEST_SOS 2 >>>>>>>>>>>>>>" << endl;
+    // default is cost equals sum of x-variable values
+    unsigned int wx = 1;
+    unsigned int wy = 0;
+    bool realCost = true; // if true: use y variables value as cost
+    if (realCost) {
+      wx = 0;
+      wy = 1;
+    }
+    
+    solver_->resetModel();
+    const SolverVar x = solver_->addIntVar(0, 99, wx, "x");
+    const SolverVar y = solver_->addIntVar(0, 99, wy, "y");
+    vector<double> parameters;
+    parameters.push_back(10);
+    
+    solver_->addBinVarsFor(&x, 1, true);
+    solver_->addBinConvexityAndReferenceRowsFor(&x);
+    
+    solver_->addBinVarsFor(&y, 1, true);
+    solver_->addBinConvexityAndReferenceRowsFor(&y);
+    
+    solver_->addSos1(x, y, f, parameters/*, 1*/);
+    
+    solver_->setMinimize();
+    
+    solver_->exportModelAsLpFile("sosxyf");
+    
+    double gap = 0.0;
+    bool solved = solver_->timedSolve(gap, nThreads, twoDaysTimeInSeconds);
+    
+    
+    assert(solved);
+    double objSol_ = solved ? solver_->getObjVal() : 0;
+    cout << "goal function value = " << objSol_ << endl;
+    double xVal = solver_->getValueOf(x);
+    int xIntVal = (int)xVal;
+    assert(xIntVal == xVal);
+    cout << "x = " << xVal << endl;
+    double yVal = solver_->getValueOf(y);
+    cout << "y = " << yVal << endl;
+    cout << "check:f(x)=" << f(parameters, xIntVal) << ", y=" << yVal << endl;
+    
+    assert(xVal == 10);
+    assert(yVal == 20);
+    if (realCost) {
+      assert(objSol_ == 20); // yVal
+    } else {
+      assert(objSol_ == 10); // xVal
+    }
+    cout << "TEST_SOS 2: OK" << endl;
 		
-    cout << "TEST_SOS OK" << endl;
     
   }
   
   
   if (TEST_BIN_LE_EQS) {
-		cout << "TEST_BIN_LE_EQS" << endl;
+    cout << "<<<<<<<<<<<<<<<<<< TEST_BIN_LE_EQS >>>>>>>>>>>>>>" << endl;
+
     solver_->resetModel();
     
     const SolverVar b0 = solver_->addIntVar(10, 40, 0, "b0");
@@ -295,7 +296,7 @@ int main(int argc, char * argv[]) {
   
   if (TEST_BIN_EQ_EQS) {
 	
-    cout << "TEST_BIN_EQ_EQS" << endl;
+    cout << "<<<<<<<<<<<<<<<<<< TEST_BIN_EQ_EQS >>>>>>>>>>>>>>" << endl;
     
     solver_->resetModel();
     const SolverVar xVar = solver_->addIntVar(10, 100, 0, "x");
