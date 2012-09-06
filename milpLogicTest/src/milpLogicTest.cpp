@@ -14,7 +14,7 @@ using namespace std;
 // User can turn on one of the below defines 
 // by setting it to true to activate the respective test.
 #define TEST_SOS (true)
-#define TEST_BIN_LE_EQS (false)
+#define TEST_BIN_LE_EQS (true)
 #define TEST_BIN_EQ_EQS (true)
 
 #ifdef USE_CPLEX_NATIVE
@@ -73,44 +73,53 @@ int main(int argc, char * argv[]) {
   const double twoDaysTimeInSeconds = 2 * 24 * 60 * 60;
   const int nThreads = 4;
 
-  
   if (TEST_SOS) {
-		int i=1;
-    cout << "<<<<<<<<<<<<<<<<<< " << i << " >>>>>>>>>>>>>>" << endl;
+    cout << "TEST_SOS" << endl;
+		int i=0;
     if (i==0) {
-      bool min = false; // max if false
-      unsigned int lo = 10;
-      unsigned int hi = 99;
-      const SolverVar x = solver_->addIntVar(lo, hi, 1, "x");
-			
-      solver_->addSos1(x);
+      cout << "<<<<<<<<<<<<<<<<<< i = " << i << " >>>>>>>>>>>>>>" << endl;
       
-      if (min) {
-        solver_->setMinimize();      
-      } else {
-        solver_->setMaximize();
+      for (unsigned int m=0; m<2; m++) {
+        cout << "<<<<<<<<<<<<<<<<<< m = " << m << " >>>>>>>>>>>>>>" << endl;
+        
+        bool min = (m==0) ? false : true;
+        unsigned int lo = 10;
+        unsigned int hi = 99;
+        solver_->resetModel();
+        
+        const SolverVar x = solver_->addIntVar(lo, hi, 1, "x");
+        
+        solver_->addSos1(x);
+        
+        if (min) {
+          solver_->setMinimize();
+        } else {
+          solver_->setMaximize();
+        }
+        
+        solver_->exportModelAsLpFile("sosx");
+        
+        double gap = 0.0;
+        bool solved = solver_->timedSolve(gap, 4, twoDaysTimeInSeconds);
+        
+        assert(solved);
+        double objSol_ = solved ? solver_->getObjVal() : 0;
+        cout << "goal function value = " << objSol_ << endl;
+        double xVal = solver_->getValueOf(x);
+        cout << "x = " << xVal << endl;
+        if (min) {
+          assert(xVal == lo);
+          assert(objSol_ == lo);
+        } else {
+          assert(xVal == hi);
+          assert(objSol_ == hi);
+        }
       }
-			
-			solver_->exportModelAsLpFile("sosx");			
-			
-			double gap = 0.0;
-      bool solved = solver_->timedSolve(gap, 4, twoDaysTimeInSeconds);
-      
-      assert(solved);
-      double objSol_ = solved ? solver_->getObjVal() : 0;
-      cout << "goal function value = " << objSol_ << endl;   
-      double xVal = solver_->getValueOf(x);
-      cout << "x = " << xVal << endl;
-      if (min) {
-        assert(xVal == lo);
-        assert(objSol_ == lo);
-      } else {
-        assert(xVal == hi);
-        assert(objSol_ == hi);
-      }
-    }      
+    }
     
+    i=1;
     if (i==1) {
+      cout << "<<<<<<<<<<<<<<<<<< i = " << i << " >>>>>>>>>>>>>>" << endl;
       // default is cost equals sum of x-variable values
       unsigned int wx = 1;
       unsigned int wy = 0;
@@ -120,6 +129,7 @@ int main(int argc, char * argv[]) {
         wy = 1;
       }
 			
+      solver_->resetModel();
       const SolverVar x = solver_->addIntVar(0, 99, wx, "x");
       const SolverVar y = solver_->addIntVar(0, 99, wy, "y");
 			vector<double> parameters;
@@ -135,11 +145,10 @@ int main(int argc, char * argv[]) {
       
       solver_->setMinimize();
 			
-			//solver_->exportModelAsLpFile("sosxyf");
+			solver_->exportModelAsLpFile("sosxyf");
 			
 			double gap = 0.0;
       bool solved = solver_->timedSolve(gap, nThreads, twoDaysTimeInSeconds);
-      
       
       
       assert(solved);
@@ -162,8 +171,15 @@ int main(int argc, char * argv[]) {
       }
     } 
 		
-  } else if (TEST_BIN_LE_EQS) {
-		
+    cout << "TEST_SOS OK" << endl;
+    
+  }
+  
+  
+  if (TEST_BIN_LE_EQS) {
+		cout << "TEST_BIN_LE_EQS" << endl;
+    solver_->resetModel();
+    
     const SolverVar b0 = solver_->addIntVar(10, 40, 0, "b0");
     int m0 = 5;
     const SolverVar s0 = solver_->addIntVar( 0, 10, 1, "s0");
@@ -274,9 +290,14 @@ int main(int argc, char * argv[]) {
       assert(le0Val==0);
       assert(le1Val==1);
     }
-		
-	} else if (TEST_BIN_EQ_EQS) {
-		
+		cout << "TEST_BIN_LE_EQS OK" << endl;		
+	}
+  
+  if (TEST_BIN_EQ_EQS) {
+	
+    cout << "TEST_BIN_EQ_EQS" << endl;
+    
+    solver_->resetModel();
     const SolverVar xVar = solver_->addIntVar(10, 100, 0, "x");
     SolverExpr thirtyFiveExpr
 #ifdef USE_CPLEX_NATIVE
@@ -298,7 +319,9 @@ int main(int argc, char * argv[]) {
 		
     double objSol_ = solved ? solver_->getObjVal() : 0;
     cout << "goal function value = " << objSol_ << endl;   
-    cout << "x value             = " << solver_->getValueOf(xVar) << endl;	
+    cout << "x value             = " << solver_->getValueOf(xVar) << endl;
+    
+    cout << "TEST_BIN_EQ_EQS OK" << endl;
 	}
 	
 	unsigned int r = solver_->getNumberOfRows();
